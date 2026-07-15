@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TK-Chelsea Product Catalog</title>
+    <style>
+        /* ===== Security ===== */
+        img { -webkit-user-drag: none; user-select: none; pointer-events: none; }
+
+        /* ===== Base ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #1a1a2e;
+            --accent: #e94560;
+            --accent-hover: #ff6b81;
+            --whatsapp: #25D366;
+            --shop: #4F46E5;
+            --shop-hover: #6366f1;
+            --bg: #f5f5f5;
+            --card-bg: #ffffff;
+            --text: #333333;
+            --text-light: #666666;
+            --border: #e0e0e0;
+            --shadow: 0 2px 12px rgba(0,0,0,0.08);
+            --radius: 8px;
+        }
+        body {
+            font-family: -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ===== Contact Bar ===== */
+        .contact-bar {
+            background: var(--whatsapp);
+            color: white;
+            padding: 8px 24px;
+            position: sticky;
+            top: 0;
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            font-size: 14px;
+            font-weight: 600;
+            flex-wrap: wrap;
+        }
+        .contact-bar a {
+            color: white; text-decoration: none;
+            display: inline-flex; align-items: center; gap: 8px;
+            transition: opacity 0.2s;
+        }
+        .contact-bar a:hover { opacity: 0.85; }
+        .contact-bar .wa-icon { font-size: 20px; }
+        .contact-bar .phone-number { font-size: 15px; font-weight: 700; letter-spacing: 0.5px; }
+        .contact-bar .shop-link {
+            background: var(--shop);
+            padding: 8px 20px; border-radius: 20px;
+            font-size: 15px; font-weight: 700; letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(79,70,229,0.4);
+            transition: all 0.2s;
+        }
+        .contact-bar .shop-link:hover { background: var(--shop-hover); transform: scale(1.05); }
+
+        /* ===== Header ===== */
+        .header {
+            background: var(--primary); color: white; padding: 0;
+            position: sticky; top: 46px; z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.15);
+        }
+        .header-inner {
+            max-width: 1400px; margin: 0 auto;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 14px 24px;
+        }
+        .brand-logo { font-size: 26px; font-weight: 800; letter-spacing: 2px; color: white; }
+        .brand-logo span { color: var(--accent); }
+        .brand-sub { font-size: 11px; color: rgba(255,255,255,0.7); letter-spacing: 1.5px; text-transform: uppercase; }
+        .header-right { display: flex; align-items: center; gap: 16px; }
+        .header-stats { display: flex; gap: 20px; font-size: 13px; color: rgba(255,255,255,0.8); }
+        .header-stats strong { color: var(--accent-hover); }
+        .admin-toggle {
+            background: rgba(255,255,255,0.1); color: white;
+            border: 1px solid rgba(255,255,255,0.3); padding: 6px 14px;
+            border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: 500;
+            transition: all 0.2s; white-space: nowrap;
+        }
+        .admin-toggle:hover { background: rgba(255,255,255,0.2); }
+        .admin-toggle.active { background: var(--accent); border-color: var(--accent); }
+        .admin-badge {
+            display: none; position: fixed; bottom: 20px; right: 20px;
+            background: var(--accent); color: white; padding: 8px 16px;
+            border-radius: 20px; font-size: 12px; font-weight: 600; z-index: 1002;
+            box-shadow: var(--shadow); align-items: center; gap: 8px;
+        }
+        .admin-badge.active { display: inline-flex; }
+
+        /* ===== Category Nav ===== */
+        .category-nav {
+            background: white; border-bottom: 1px solid var(--border);
+            position: sticky; top: 110px; z-index: 999; box-shadow: var(--shadow);
+        }
+        .category-nav-inner {
+            max-width: 1400px; margin: 0 auto;
+            display: flex; align-items: center; padding: 0 24px; gap: 0; overflow-x: auto;
+        }
+        .cat-btn {
+            padding: 14px 18px; border: none; background: transparent; cursor: pointer;
+            font-size: 13px; font-weight: 500; color: var(--text-light);
+            transition: all 0.2s; position: relative; white-space: nowrap;
+        }
+        .cat-btn:hover { color: var(--accent); background: rgba(233,69,96,0.05); }
+        .cat-btn.active { color: var(--accent); font-weight: 600; }
+        .cat-btn.active::after {
+            content: ''; position: absolute; bottom: 0; left: 18px; right: 18px;
+            height: 3px; background: var(--accent); border-radius: 2px;
+        }
+        .cat-count {
+            display: inline-block; background: rgba(233,69,96,0.1); color: var(--accent);
+            font-size: 11px; padding: 2px 6px; border-radius: 10px; margin-left: 4px;
+        }
+
+        /* ===== Search Area ===== */
+        .search-area { max-width: 1400px; margin: 20px auto 0; padding: 0 24px; }
+        .search-tabs { display: flex; gap: 0; margin-bottom: 12px; }
+        .search-tab {
+            padding: 8px 20px; border: 2px solid var(--border); border-bottom: none;
+            border-radius: var(--radius) var(--radius) 0 0; background: white;
+            cursor: pointer; font-size: 14px; font-weight: 500; color: var(--text-light);
+            transition: all 0.2s; display: flex; align-items: center; gap: 6px;
+        }
+        .search-tab:hover { color: var(--accent); }
+        .search-tab.active {
+            color: var(--accent); background: white; border-color: var(--accent);
+            font-weight: 600; position: relative;
+        }
+        .search-tab.active::after {
+            content: ''; position: absolute; bottom: -2px; left: 0; right: 0;
+            height: 2px; background: white;
+        }
+        .search-panel {
+            border: 2px solid var(--border); border-radius: 0 var(--radius) var(--radius) var(--radius);
+            padding: 16px; background: white;
+        }
+        .search-panel.active-tab { border-color: var(--accent); }
+        .search-panel-content { display: none; }
+        .search-panel-content.active { display: block; }
+        .search-input {
+            width: 100%; max-width: 400px; padding: 10px 16px;
+            border: 2px solid var(--border); border-radius: var(--radius);
+            font-size: 14px; outline: none; transition: border-color 0.2s;
+        }
+        .search-input:focus { border-color: var(--accent); }
+
+        /* ===== Image Search ===== */
+        .image-search-drop { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+        .drop-zone {
+            width: 100%; max-width: 500px; padding: 40px 30px;
+            border: 3px dashed var(--border); border-radius: 12px;
+            text-align: center; cursor: pointer; transition: all 0.3s;
+            background: #fafafa; position: relative;
+        }
+        .drop-zone:hover { border-color: var(--accent); background: rgba(233,69,96,0.03); }
+        .drop-zone.drag-over { border-color: var(--accent); background: rgba(233,69,96,0.08); transform: scale(1.01); }
+        .drop-zone-icon { font-size: 48px; margin-bottom: 8px; }
+        .drop-zone-text { font-size: 16px; color: var(--text); font-weight: 500; }
+        .drop-zone-hint { font-size: 13px; color: var(--text-light); margin-top: 4px; }
+        .drop-zone input[type="file"] { display: none; }
+        .upload-preview {
+            max-width: 300px; margin: 12px auto; display: none;
+            border-radius: var(--radius); overflow: hidden;
+            border: 2px solid var(--accent); position: relative;
+        }
+        .upload-preview img { width: 100%; display: block; pointer-events: auto; }
+        .upload-preview .remove-btn {
+            position: absolute; top: 8px; right: 8px;
+            width: 28px; height: 28px; background: var(--accent); color: white;
+            border: none; border-radius: 50%; cursor: pointer; font-size: 16px;
+            display: flex; align-items: center; justify-content: center; pointer-events: auto;
+        }
+        .search-btn {
+            padding: 10px 24px; background: var(--accent); color: white;
+            border: none; border-radius: var(--radius); cursor: pointer;
+            font-size: 14px; font-weight: 600; transition: background 0.2s;
+            display: none;
+        }
+        .search-btn:hover { background: var(--accent-hover); }
+        .search-btn.visible { display: inline-flex; align-items: center; gap: 6px; }
+        .searching-spinner {
+            display: none; align-items: center; justify-content: center;
+            gap: 12px; padding: 20px;
+        }
+        .searching-spinner.active { display: flex; }
+        .mini-spinner {
+            width: 24px; height: 24px; border: 2px solid var(--border);
+            border-top-color: var(--accent); border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        /* ===== Match Results ===== */
+        .match-results { margin-top: 16px; display: none; }
+        .match-results.active { display: block; }
+        .match-results-title {
+            font-size: 16px; font-weight: 600; margin-bottom: 12px;
+            color: var(--text); display: flex; align-items: center; gap: 8px;
+        }
+        .match-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px;
+        }
+        .match-card {
+            background: var(--card-bg); border-radius: var(--radius); overflow: hidden;
+            box-shadow: var(--shadow); cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s; position: relative;
+        }
+        .match-card:hover { transform: translateY(-4px); box-shadow: 0 8px 30px rgba(0,0,0,0.12); }
+        .match-badge {
+            position: absolute; top: 8px; left: 8px;
+            background: var(--accent); color: white;
+            padding: 4px 12px; border-radius: 20px;
+            font-size: 12px; font-weight: 700; z-index: 3;
+        }
+        .match-badge.gold { background: #FFD700; color: #333; }
+        .match-image-wrap {
+            width: 100%; aspect-ratio: 16/9; overflow: hidden;
+            background: #f8f8f8; display: flex; align-items: center; justify-content: center;
+            position: relative;
+        }
+        .match-image-wrap img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .match-info { padding: 10px 14px; }
+        .match-model { font-size: 14px; font-weight: 600; color: var(--text); }
+        .match-cat { font-size: 12px; color: var(--text-light); margin-top: 2px; }
+        .match-similarity { font-size: 11px; color: var(--accent); font-weight: 600; margin-top: 4px; }
+        .similarity-bar { height: 4px; background: var(--border); border-radius: 2px; margin-top: 4px; }
+        .similarity-fill { height: 4px; border-radius: 2px; background: var(--accent); transition: width 0.5s ease; }
+
+        /* ===== Products Grid ===== */
+        .products-section { max-width: 1400px; margin: 0 auto; padding: 20px 24px 40px; }
+        .section-title {
+            font-size: 20px; font-weight: 600; margin-bottom: 16px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .section-title .cat-icon {
+            width: 24px; height: 24px; background: var(--accent); border-radius: 4px;
+            display: inline-flex; align-items: center; justify-content: center;
+            color: white; font-size: 12px;
+        }
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .product-card {
+            background: var(--card-bg); border-radius: var(--radius); overflow: hidden;
+            box-shadow: var(--shadow); transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer; position: relative;
+        }
+        .product-card:hover { transform: translateY(-4px); box-shadow: 0 8px 30px rgba(0,0,0,0.12); }
+        .product-image-wrap {
+            width: 100%; aspect-ratio: 16/9; overflow: hidden; position: relative;
+            background: #f8f8f8; display: flex; align-items: center; justify-content: center;
+        }
+        .product-image-wrap img { max-width: 100%; max-height: 100%; object-fit: contain; transition: transform 0.3s; }
+        .product-card:hover .product-image-wrap img { transform: scale(1.05); }
+        .watermark {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: repeating-linear-gradient(-45deg, transparent, transparent 80px,
+                rgba(255,255,255,0.03) 80px, rgba(255,255,255,0.03) 82px);
+            pointer-events: none; z-index: 2;
+        }
+        .price-blur {
+            position: absolute; top: 0; left: 0; right: 0; height: 18%;
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            background: rgba(255,255,255,0.5); z-index: 3;
+            pointer-events: none; transition: opacity 0.3s;
+        }
+        body.admin-mode .price-blur { opacity: 0; }
+        .product-info { padding: 12px 16px; }
+        .product-model { font-size: 15px; font-weight: 600; color: var(--text); }
+        .product-category { font-size: 12px; color: var(--text-light); margin-top: 4px; }
+
+        /* ===== Lightbox ===== */
+        .lightbox {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.92); z-index: 9999;
+            justify-content: center; align-items: center; flex-direction: column;
+        }
+        .lightbox.active { display: flex; }
+        .lightbox-close {
+            position: absolute; top: 20px; right: 30px; color: white; font-size: 32px;
+            cursor: pointer; width: 50px; height: 50px;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(255,255,255,0.1); border-radius: 50%; transition: background 0.2s; z-index: 10;
+        }
+        .lightbox-close:hover { background: rgba(255,255,255,0.2); }
+        .lightbox-img-wrap {
+            position: relative; display: inline-block;
+        }
+        .lightbox-img { max-width: 85vw; max-height: 80vh; object-fit: contain; border-radius: 4px; display: block; }
+        .lightbox-img-wrap .price-blur { height: 18%; border-radius: 4px 4px 0 0; }
+        .lightbox-info { color: rgba(255,255,255,0.8); font-size: 14px; margin-top: 16px; text-align: center; }
+        .lightbox-info .model-name { font-size: 18px; font-weight: 600; color: white; }
+        .lightbox-nav {
+            position: absolute; top: 50%; transform: translateY(-50%); color: white;
+            font-size: 40px; cursor: pointer; width: 60px; height: 80px;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(255,255,255,0.05); border-radius: 8px; transition: background 0.2s; z-index: 10;
+        }
+        .lightbox-nav:hover { background: rgba(255,255,255,0.15); }
+        .lightbox-prev { left: 20px; }
+        .lightbox-next { right: 20px; }
+        .lightbox-counter { color: rgba(255,255,255,0.5); font-size: 12px; margin-top: 8px; }
+
+        /* ===== Admin Modal ===== */
+        .admin-modal {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6); z-index: 10000;
+            justify-content: center; align-items: center; padding: 20px;
+        }
+        .admin-modal.active { display: flex; }
+        .admin-modal-box {
+            background: white; border-radius: 12px; padding: 28px; width: 100%;
+            max-width: 360px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center;
+        }
+        .admin-modal-box h3 { margin-bottom: 8px; font-size: 18px; color: var(--text); }
+        .admin-modal-box p { font-size: 13px; color: var(--text-light); margin-bottom: 16px; }
+        .admin-modal-box input {
+            width: 100%; padding: 12px 14px; border: 2px solid var(--border);
+            border-radius: var(--radius); font-size: 14px; margin-bottom: 12px; outline: none;
+        }
+        .admin-modal-box input:focus { border-color: var(--accent); }
+        .admin-modal-box .error { color: var(--accent); font-size: 12px; min-height: 18px; margin-bottom: 8px; }
+        .admin-modal-box button {
+            width: 100%; padding: 12px; background: var(--accent); color: white;
+            border: none; border-radius: var(--radius); font-size: 14px; font-weight: 600; cursor: pointer;
+        }
+        .admin-modal-box button:hover { background: var(--accent-hover); }
+        .admin-modal-box .cancel {
+            background: transparent; color: var(--text-light); margin-top: 8px;
+        }
+        .admin-modal-box .cancel:hover { background: rgba(0,0,0,0.05); color: var(--text); }
+
+        /* ===== Footer ===== */
+        .footer {
+            background: var(--primary); color: rgba(255,255,255,0.6);
+            padding: 24px; text-align: center; font-size: 13px;
+        }
+        .footer a { color: var(--accent-hover); text-decoration: none; }
+        .footer .wa-footer { color: var(--whatsapp); text-decoration: none; font-weight: 600; }
+        .footer .shop-footer { color: #a5b4fc; text-decoration: none; font-weight: 600; }
+        .footer .shop-footer:hover { color: #c7d2fe; }
+        .footer-links { display: flex; justify-content: center; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 8px; }
+
+        /* ===== Empty / Loading ===== */
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-light); }
+        .empty-state .empty-icon { font-size: 48px; margin-bottom: 16px; }
+        .loading-overlay { display: flex; justify-content: center; align-items: center; padding: 60px; }
+        .spinner {
+            width: 40px; height: 40px; border: 3px solid var(--border);
+            border-top-color: var(--accent); border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 768px) {
+            .contact-bar { font-size: 12px; padding: 6px 12px; gap: 8px; }
+            .contact-bar .phone-number { font-size: 13px; }
+            .contact-bar .shop-link { font-size: 11px; padding: 3px 8px; }
+            .header { top: 42px; }
+            .header-inner { padding: 12px 16px; }
+            .brand-logo { font-size: 22px; }
+            .header-stats { display: none; }
+            .admin-toggle { font-size: 11px; padding: 4px 10px; }
+            .category-nav-inner { flex-wrap: nowrap; padding: 0 12px; gap: 0; }
+            .cat-btn { padding: 10px 10px; font-size: 12px; }
+            .products-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+            .products-section { padding: 16px; }
+            .search-area { padding: 0 16px; }
+            .drop-zone { padding: 24px 16px; }
+            .match-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+            .lightbox-img { max-width: 95vw; max-height: 70vh; }        }
+        @media print { body { display: none; } }
+    </style>
+</head>
+<body>
+
+    <!-- Contact Bar -->
+    <div class="contact-bar">
+        <a href="https://wa.me/8618969078738" target="_blank" rel="noopener">
+            <span class="wa-icon">&#128172;</span>
+            <span class="phone-number">+86 189 6907 8738</span>
+        </a>
+        <a class="shop-link" href="https://www.mingxin.shop/" target="_blank" rel="noopener">
+            &#128722; Order Online at mingxin.shop
+        </a>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-inner">
+            <div class="brand">
+                <div>
+                    <div class="brand-logo">TK<span>-</span>Chelsea</div>
+                    <div class="brand-sub">Sports Apparel Catalog</div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="header-stats">
+                    <span><strong id="totalCount">0</strong> Products</span>
+                    <span><strong>7</strong> Categories</span>
+                </div>
+                <button class="admin-toggle" id="adminToggle" onclick="toggleAdminModal()">&#128274; Admin</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Category Nav -->
+    <nav class="category-nav">
+        <div class="category-nav-inner" id="categoryNav"></div>
+    </nav>
+
+    <!-- Search Area -->
+    <div class="search-area">
+        <div class="search-tabs">
+            <button class="search-tab active" id="tabText" onclick="switchSearchTab('text')">&#128270; Search by Model</button>
+            <button class="search-tab" id="tabImage" onclick="switchSearchTab('image')">&#128247; Search by Image</button>
+        </div>
+        <div class="search-panel active-tab">
+            <div class="search-panel-content active" id="panelText">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search by model number..." autocomplete="off">
+            </div>
+            <div class="search-panel-content" id="panelImage">
+                <div class="image-search-drop">
+                    <div class="drop-zone" id="dropZone">
+                        <div class="drop-zone-icon">&#128247;</div>
+                        <div class="drop-zone-text">Upload a product photo</div>
+                        <div class="drop-zone-hint">Drag & drop or click to select &mdash; JPG, PNG supported</div>
+                        <input type="file" id="imageFileInput" accept="image/jpeg,image/png,image/webp">
+                    </div>
+                    <div class="upload-preview" id="uploadPreview">
+                        <img id="previewImg" src="" alt="Preview">
+                        <button class="remove-btn" onclick="removeUpload()">&#10005;</button>
+                    </div>
+                    <button class="search-btn" id="searchImageBtn" onclick="searchByImage()">&#128269; Find Similar Products</button>
+                    <div class="searching-spinner" id="searchingSpinner">
+                        <div class="mini-spinner"></div>
+                        <span id="spinnerText">Analyzing image...</span>
+                    </div>
+                </div>
+                <div class="match-results" id="matchResults">
+                    <div class="match-results-title"><span class="match-icon">&#127919;</span> Top Matches</div>
+                    <div class="match-grid" id="matchGrid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products Section -->
+    <main class="products-section" id="productsSection">
+        <div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div></div>
+    </main>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox-close" id="lightboxClose">&times;</div>
+        <div class="lightbox-nav lightbox-prev" id="lightboxPrev">&#8249;</div>
+        <div class="lightbox-nav lightbox-next" id="lightboxNext">&#8250;</div>
+        <div class="lightbox-img-wrap">
+            <img class="lightbox-img" id="lightboxImg" src="" alt="">
+            <div class="price-blur"></div>
+        </div>
+        <div class="lightbox-info">
+            <div class="model-name" id="lightboxModel"></div>
+            <div id="lightboxCat"></div>
+            <div class="lightbox-counter" id="lightboxCounter"></div>
+        </div>
+    </div>
+
+    <!-- Admin Modal -->
+    <div class="admin-modal" id="adminModal">
+        <div class="admin-modal-box">
+            <h3>Admin Mode</h3>
+            <p>Enter password to view prices and full product details.</p>
+            <input type="password" id="adminPassword" placeholder="Password" onkeydown="if(event.key==='Enter')confirmAdmin()">
+            <div class="error" id="adminError"></div>
+            <button onclick="confirmAdmin()">Confirm</button>
+            <button class="cancel" onclick="closeAdminModal()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Admin Badge -->
+    <div class="admin-badge" id="adminBadge">
+        <span>&#128275;</span> Admin Mode Active
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>TK-Chelsea &copy; 2026 &mdash; This catalog is for authorized viewing only. Do not redistribute.</p>
+        <div class="footer-links">
+            <span>WhatsApp: <a class="wa-footer" href="https://wa.me/8618969078738">+86 189 6907 8738</a></span>
+            <span>Shop Online: <a class="shop-footer" href="https://www.mingxin.shop/" target="_blank" rel="noopener">www.mingxin.shop</a></span>
+        </div>
+    </footer>
+
+    <script>
+        // ===== Security =====
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('dragstart', e => {
+            if (e.target.id === 'previewImg' || e.target.id === 'dropZone') return;
+            e.preventDefault();
+        });
+        document.addEventListener('keydown', e => {
+            if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S' || e.key === 'p' || e.key === 'P')) e.preventDefault();
+        });
+        document.addEventListener('beforeprint', e => e.preventDefault());
+
+        // ===== Constants =====
+        const CATEGORIES = [
+            { key: 'all', label: 'All', icon: '&#128196;' },
+            { key: 'Wind jacket', label: 'Wind Jacket', icon: '&#129509;' },
+            { key: 'Football bag', label: 'Football Bag', icon: '&#128092;' },
+            { key: 'Short training kit', label: 'Short Training Kit', icon: '&#128085;' },
+            { key: 'Referee Kit', label: 'Referee Kit', icon: '&#9878;' },
+            { key: 'Long training Kit', label: 'Long Training Kit', icon: '&#128087;' },
+            { key: 'Goal keeper', label: 'Goalkeeper', icon: '&#129510;' },
+            { key: 'Tracksuit', label: 'Tracksuit', icon: '&#127939;' },
+        ];
+        const CATEGORY_EN = {
+            'Wind jacket': 'Wind Jacket', 'Football bag': 'Football Bag',
+            'Short training kit': 'Short Training Kit', 'Referee Kit': 'Referee Kit',
+            'Long training Kit': 'Long Training Kit', 'Goal keeper': 'Goalkeeper',
+            'Tracksuit': 'Tracksuit',
+        };
+
+        // Feature parameters (must match compute_features.py v4)
+        const BINS = 8;
+        const NUM_BINS = BINS * BINS * BINS; // 512
+        const BRIGHTNESS_MIN = 60;
+        const BRIGHTNESS_SCALE = 40;
+        const SAT_MIN = 0.08;
+        const SAT_SCALE = 1.2;
+
+        // Admin password (client-side only, not real security)
+        const ADMIN_PASSWORD = 'lovechinaloveworld';
+
+        // ===== State =====
+        let products = [];
+        let featuresData = null;
+        let currentCategory = 'all';
+        let searchQuery = '';
+        let lightboxIndex = -1;
+        let filteredProducts = [];
+        let uploadedImageData = null;
+        let isAdmin = false;
+
+        // ===== Admin Mode =====
+        function toggleAdminModal() {
+            if (isAdmin) {
+                exitAdmin();
+            } else {
+                document.getElementById('adminModal').classList.add('active');
+                document.getElementById('adminPassword').value = '';
+                document.getElementById('adminError').textContent = '';
+                setTimeout(() => document.getElementById('adminPassword').focus(), 100);
+            }
+        }
+        function closeAdminModal() {
+            document.getElementById('adminModal').classList.remove('active');
+        }
+        function confirmAdmin() {
+            const input = document.getElementById('adminPassword').value.trim();
+            if (input === ADMIN_PASSWORD) {
+                enterAdmin();
+                closeAdminModal();
+            } else {
+                document.getElementById('adminError').textContent = 'Incorrect password.';
+            }
+        }
+        function enterAdmin() {
+            isAdmin = true;
+            document.body.classList.add('admin-mode');
+            document.getElementById('adminToggle').innerHTML = '&#128275; Exit Admin';
+            document.getElementById('adminToggle').classList.add('active');
+            document.getElementById('adminBadge').classList.add('active');
+        }
+        function exitAdmin() {
+            isAdmin = false;
+            document.body.classList.remove('admin-mode');
+            document.getElementById('adminToggle').innerHTML = '&#128274; Admin';
+            document.getElementById('adminToggle').classList.remove('active');
+            document.getElementById('adminBadge').classList.remove('active');
+        }
+
+        // ===== Search Tab Switch =====
+        function switchSearchTab(tab) {
+            document.getElementById('tabText').classList.toggle('active', tab === 'text');
+            document.getElementById('tabImage').classList.toggle('active', tab === 'image');
+            document.getElementById('panelText').classList.toggle('active', tab === 'text');
+            document.getElementById('panelImage').classList.toggle('active', tab === 'image');
+            if (tab === 'text') document.getElementById('matchResults').classList.remove('active');
+        }
+
+        // ===== Drop Zone =====
+        const dropZone = document.getElementById('dropZone');
+        const imageFileInput = document.getElementById('imageFileInput');
+
+        dropZone.addEventListener('click', () => imageFileInput.click());
+        dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+        dropZone.addEventListener('dragleave', e => { e.preventDefault(); dropZone.classList.remove('drag-over'); });
+        dropZone.addEventListener('drop', e => {
+            e.preventDefault(); dropZone.classList.remove('drag-over');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) handleImageUpload(file);
+        });
+        imageFileInput.addEventListener('change', e => {
+            const file = e.target.files[0];
+            if (file) handleImageUpload(file);
+        });
+
+        function handleImageUpload(file) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                uploadedImageData = e.target.result;
+                document.getElementById('previewImg').src = uploadedImageData;
+                document.getElementById('uploadPreview').style.display = 'block';
+                document.getElementById('searchImageBtn').classList.add('visible');
+                document.getElementById('matchResults').classList.remove('active');
+                dropZone.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removeUpload() {
+            uploadedImageData = null;
+            document.getElementById('uploadPreview').style.display = 'none';
+            document.getElementById('searchImageBtn').classList.remove('visible');
+            document.getElementById('matchResults').classList.remove('active');
+            dropZone.style.display = 'block';
+            imageFileInput.value = '';
+        }
+
+        // ===== Canvas Utility =====
+        function drawToCanvas(img, dstW, dstH) {
+            const canvas = document.createElement('canvas');
+            canvas.width = dstW;
+            canvas.height = dstH;
+            const ctx = canvas.getContext('2d', { willReadFrequently: true });
+            ctx.drawImage(img, 0, 0, dstW, dstH);
+            return ctx.getImageData(0, 0, dstW, dstH).data;
+        }
+
+        // ===== Pixel Weight (brightness + saturation) =====
+        function computePixelWeight(r, g, b) {
+            const maxVal = Math.max(r, g, b);
+            const minVal = Math.min(r, g, b);
+            if (maxVal < BRIGHTNESS_MIN) return 0;
+            const sat = maxVal > 0 ? (maxVal - minVal) / maxVal : 0;
+            const satWeight = Math.max(0, Math.min(1, (sat - SAT_MIN) * SAT_SCALE));
+            const brightWeight = Math.min(1, (maxVal - BRIGHTNESS_MIN) / BRIGHTNESS_SCALE);
+            return satWeight * brightWeight;
+        }
+
+        // ===== Weighted Histogram (from full image) =====
+        function computeWeightedHistogram(img, bins) {
+            const totalBins = bins * bins * bins;
+            const histogram = new Array(totalBins).fill(0);
+            const binSize = 256 / bins;
+            const data = drawToCanvas(img, 100, 100);
+            let totalWeight = 0;
+
+            for (let i = 0; i < data.length; i += 4) {
+                const r = data[i], g = data[i + 1], b = data[i + 2];
+                const weight = computePixelWeight(r, g, b);
+                if (weight <= 0) continue;
+                const rBin = Math.min(Math.floor(r / binSize), bins - 1);
+                const gBin = Math.min(Math.floor(g / binSize), bins - 1);
+                const bBin = Math.min(Math.floor(b / binSize), bins - 1);
+                const idx = rBin * bins * bins + gBin * bins + bBin;
+                histogram[idx] += weight;
+                totalWeight += weight;
+            }
+            if (totalWeight > 0) {
+                for (let i = 0; i < totalBins; i++) histogram[i] /= totalWeight;
+            }
+            return histogram;
+        }
+
+        // ===== Center Histogram (center 60% crop) =====
+        function computeCenterHistogram(img, bins) {
+            const canvas = document.createElement('canvas');
+            const w = img.naturalWidth || img.width;
+            const h = img.naturalHeight || img.height;
+            const cropRatio = 0.6;
+            const cropW = Math.floor(w * cropRatio);
+            const cropH = Math.floor(h * cropRatio);
+            const left = Math.floor((w - cropW) / 2);
+            const top = Math.floor((h - cropH) / 2);
+
+            canvas.width = 100;
+            canvas.height = 100;
+            const ctx = canvas.getContext('2d', { willReadFrequently: true });
+            ctx.drawImage(img, left, top, cropW, cropH, 0, 0, 100, 100);
+            const data = ctx.getImageData(0, 0, 100, 100).data;
+
+            const totalBins = bins * bins * bins;
+            const histogram = new Array(totalBins).fill(0);
+            const binSize = 256 / bins;
+            let totalWeight = 0;
+
+            for (let i = 0; i < data.length; i += 4) {
+                const r = data[i], g = data[i + 1], b = data[i + 2];
+                const weight = computePixelWeight(r, g, b);
+                if (weight <= 0) continue;
+                const rBin = Math.min(Math.floor(r / binSize), bins - 1);
+                const gBin = Math.min(Math.floor(g / binSize), bins - 1);
+                const bBin = Math.min(Math.floor(b / binSize), bins - 1);
+                const idx = rBin * bins * bins + gBin * bins + bBin;
+                histogram[idx] += weight;
+                totalWeight += weight;
+            }
+            if (totalWeight > 0) {
+                for (let i = 0; i < totalBins; i++) histogram[i] /= totalWeight;
+            }
+            return histogram;
+        }
+
+        // ===== Perceptual Hashes =====
+        function computeDhash(img) {
+            const hashSize = 16;
+            const canvas = document.createElement('canvas');
+            canvas.width = hashSize + 1;
+            canvas.height = hashSize;
+            const ctx = canvas.getContext('2d', { willReadFrequently: true });
+            ctx.drawImage(img, 0, 0, hashSize + 1, hashSize);
+            const data = ctx.getImageData(0, 0, hashSize + 1, hashSize).data;
+            const hashBits = [];
+            for (let y = 0; y < hashSize; y++) {
+                for (let x = 0; x < hashSize; x++) {
+                    const leftIdx = (y * (hashSize + 1) + x) * 4;
+                    const rightIdx = (y * (hashSize + 1) + x + 1) * 4;
+                    const leftGray = data[leftIdx] * 0.299 + data[leftIdx + 1] * 0.587 + data[leftIdx + 2] * 0.114;
+                    const rightGray = data[rightIdx] * 0.299 + data[rightIdx + 1] * 0.587 + data[rightIdx + 2] * 0.114;
+                    hashBits.push(leftGray > rightGray ? 1 : 0);
+                }
+            }
+            return hashBits;
+        }
+
+        function computeAhash(img) {
+            const hashSize = 8;
+            const data = drawToCanvas(img, hashSize, hashSize);
+            let avgGray = 0;
+            for (let i = 0; i < data.length; i += 4) {
+                avgGray += data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
+            }
+            avgGray /= (hashSize * hashSize);
+            const hashBits = [];
+            for (let i = 0; i < data.length; i += 4) {
+                const gray = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
+                hashBits.push(gray > avgGray ? 1 : 0);
+            }
+            return hashBits;
+        }
+
+        // ===== Comparison Functions =====
+        // Weighted intersection (IDF-weighted histogram overlap)
+        function weightedIntersection(h1, h2, idf) {
+            let sum = 0;
+            for (let i = 0; i < h1.length; i++) {
+                sum += Math.min(h1[i], h2[i]) * idf[i];
+            }
+            return sum;
+        }
+
+        function hammingDist(hash1, hash2) {
+            let diff = 0;
+            for (let i = 0; i < hash1.length; i++) {
+                if (hash1[i] !== hash2[i]) diff++;
+            }
+            return diff;
+        }
+
+        // ===== Scoring (v4: simple weighted intersection + hashes) =====
+        function computeScore(qFeatures, catFeature, idfColor, idfCenter) {
+            const histScore = weightedIntersection(qFeatures.colorHist, catFeature.color_hist, idfColor);
+            const centerScore = weightedIntersection(qFeatures.centerHist, catFeature.center_hist, idfCenter);
+            const dDist = hammingDist(qFeatures.dhash, catFeature.dhash);
+            const aDist = hammingDist(qFeatures.ahash, catFeature.ahash);
+            const dhashScore = Math.max(0, 1 - dDist / 256);
+            const ahashScore = Math.max(0, 1 - aDist / 64);
+            return histScore * 0.40 + centerScore * 0.45 + dhashScore * 0.10 + ahashScore * 0.05;
+        }
+
+        // ===== Extract features for a query image =====
+        function extractQueryFeatures(img) {
+            return {
+                colorHist: computeWeightedHistogram(img, BINS),
+                centerHist: computeCenterHistogram(img, BINS),
+                dhash: computeDhash(img),
+                ahash: computeAhash(img),
+            };
+        }
+
+        // ===== Search by Image (v4: multi-region matching) =====
+        async function searchByImage() {
+            if (!uploadedImageData) return;
+
+            const spinner = document.getElementById('searchingSpinner');
+            const spinnerText = document.getElementById('spinnerText');
+            spinner.classList.add('active');
+            document.getElementById('searchImageBtn').classList.remove('visible');
+
+            try {
+                // Load query image
+                const img = new Image();
+                await new Promise((resolve, reject) => {
+                    img.onload = resolve;
+                    img.onerror = reject;
+                    img.src = uploadedImageData;
+                });
+
+                // Load catalog features
+                if (!featuresData) {
+                    spinnerText.textContent = 'Loading catalog data...';
+                    const resp = await fetch('features.json');
+                    featuresData = await resp.json();
+                }
+
+                spinnerText.textContent = 'Analyzing image...';
+
+                // Generate query regions for multi-region matching
+                const w = img.naturalWidth || img.width;
+                const h = img.naturalHeight || img.height;
+                const regions = [];
+
+                // Region 0: whole image
+                regions.push({ name: 'whole', x: 0, y: 0, w: w, h: h });
+
+                // 3x3 grid
+                for (let r = 0; r < 3; r++) {
+                    for (let c = 0; c < 3; c++) {
+                        const left = Math.floor(c * w / 3);
+                        const top = Math.floor(r * h / 3);
+                        const right = Math.floor((c + 1) * w / 3);
+                        const bottom = Math.floor((r + 1) * h / 3);
+                        regions.push({
+                            name: `g${r}${c}`,
+                            x: left, y: top, w: right - left, h: bottom - top
+                        });
+                    }
+                }
+
+                // Center crops at different scales
+                for (const ratio of [0.4, 0.5, 0.6, 0.7]) {
+                    const cropW = Math.floor(w * ratio);
+                    const cropH = Math.floor(h * ratio);
+                    const left = Math.floor((w - cropW) / 2);
+                    const top = Math.floor((h - cropH) / 2);
+                    regions.push({
+                        name: `c${Math.round(ratio * 100)}`,
+                        x: left, y: top, w: cropW, h: cropH
+                    });
+                }
+
+                // Extract features for each region
+                const regionFeatures = [];
+                for (const region of regions) {
+                    // Create a cropped canvas for the region
+                    const regionCanvas = document.createElement('canvas');
+                    regionCanvas.width = region.w;
+                    regionCanvas.height = region.h;
+                    const rCtx = regionCanvas.getContext('2d');
+                    rCtx.drawImage(img, region.x, region.y, region.w, region.h, 0, 0, region.w, region.h);
+
+                    const features = extractQueryFeatures(regionCanvas);
+                    regionFeatures.push({ name: region.name, features });
+                }
+
+                // Match each catalog image against all query regions (take best region score)
+                const idfColor = featuresData.idf_color;
+                const idfCenter = featuresData.idf_center;
+                const matchResults = [];
+
+                for (const catFeature of featuresData.features) {
+                    let bestScore = -1;
+                    let bestRegion = '';
+
+                    for (const rf of regionFeatures) {
+                        const s = computeScore(rf.features, catFeature, idfColor, idfCenter);
+                        if (s > bestScore) {
+                            bestScore = s;
+                            bestRegion = rf.name;
+                        }
+                    }
+
+                    const pageMatch = catFeature.file.match(/page_(\d+)\.jpg/);
+                    const pageNum = pageMatch ? parseInt(pageMatch[1]) : 0;
+                    const product = products.find(p => p.page === pageNum);
+
+                    if (product) {
+                        matchResults.push({
+                            product,
+                            score: bestScore,
+                            region: bestRegion,
+                        });
+                    }
+                }
+
+                matchResults.sort((a, b) => b.score - a.score);
+                renderMatchResults(matchResults.slice(0, 8));
+
+            } catch (err) {
+                console.error('Image search error:', err);
+                document.getElementById('matchGrid').innerHTML = '<div class="empty-state"><div class="empty-icon">&#10060;</div><p>Search failed. Please try again.</p></div>';
+                document.getElementById('matchResults').classList.add('active');
+            }
+
+            spinner.classList.remove('active');
+            document.getElementById('searchImageBtn').classList.add('visible');
+        }
+
+        // ===== Render Match Results =====
+        function renderMatchResults(matches) {
+            const grid = document.getElementById('matchGrid');
+            grid.innerHTML = '';
+
+            if (matches.length === 0) {
+                grid.innerHTML = '<div class="empty-state"><div class="empty-icon">&#128269;</div><p>No similar products found.</p></div>';
+                document.getElementById('matchResults').classList.add('active');
+                return;
+            }
+
+            const bestScore = matches[0].score || 0.01;
+
+            matches.forEach((match, idx) => {
+                const catEn = CATEGORY_EN[match.product.category] || match.product.category;
+                const pct = Math.max(5, Math.min(99, Math.round((match.score / bestScore) * 100)));
+                const badgeText = idx === 0 ? 'BEST MATCH' : `#${idx + 1}`;
+                const badgeClass = idx === 0 ? 'gold' : '';
+
+                const card = document.createElement('div');
+                card.className = 'match-card';
+                card.onclick = () => {
+                    currentCategory = 'all'; searchQuery = '';
+                    renderCategories(); applyFilters();
+                    const pIdx = filteredProducts.findIndex(p => p.page === match.product.page);
+                    if (pIdx >= 0) openLightbox(pIdx);
+                };
+
+                card.innerHTML = `
+                    <div class="match-badge ${badgeClass}">${badgeText}</div>
+                    <div class="match-image-wrap">
+                        <img src="catalog-images/${match.product.image}" alt="${match.product.model}" loading="lazy" draggable="false">
+                        <div class="price-blur"></div>
+                    </div>
+                    <div class="match-info">
+                        <div class="match-model">${match.product.model}</div>
+                        <div class="match-cat">${catEn}</div>
+                        <div class="match-similarity">${pct}% match</div>
+                        <div class="similarity-bar"><div class="similarity-fill" style="width:${pct}%"></div></div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            document.getElementById('matchResults').classList.add('active');
+        }
+
+        // ===== Load Products =====
+        async function loadProducts() {
+            try {
+                const resp = await fetch('products.json');
+                products = await resp.json();
+                document.getElementById('totalCount').textContent = products.length;
+                renderCategories();
+                applyFilters();
+                document.getElementById('loadingOverlay').style.display = 'none';
+            } catch (err) {
+                console.error('Failed to load products:', err);
+                document.getElementById('loadingOverlay').innerHTML = '<p style="color:#e94560;">Failed to load data. Please refresh the page.</p>';
+            }
+        }
+
+        // ===== Render Category Nav =====
+        function renderCategories() {
+            const nav = document.getElementById('categoryNav');
+            nav.innerHTML = '';
+            CATEGORIES.forEach(cat => {
+                const count = cat.key === 'all' ? products.length : products.filter(p => p.category === cat.key).length;
+                const btn = document.createElement('button');
+                btn.className = 'cat-btn' + (currentCategory === cat.key ? ' active' : '');
+                btn.innerHTML = `${cat.icon || ''} ${cat.label} <span class="cat-count">${count}</span>`;
+                btn.onclick = () => {
+                    currentCategory = cat.key; searchQuery = '';
+                    document.getElementById('searchInput').value = '';
+                    document.getElementById('matchResults').classList.remove('active');
+                    renderCategories(); applyFilters();
+                };
+                nav.appendChild(btn);
+            });
+        }
+
+        // ===== Apply Filters =====
+        function applyFilters() {
+            filteredProducts = products.filter(p => {
+                const catMatch = currentCategory === 'all' || p.category === currentCategory;
+                const catEn = CATEGORY_EN[p.category] || p.category;
+                const searchMatch = !searchQuery || p.model.toLowerCase().includes(searchQuery.toLowerCase()) || catEn.toLowerCase().includes(searchQuery.toLowerCase());
+                return catMatch && searchMatch;
+            });
+            renderProducts();
+        }
+
+        // ===== Render Products =====
+        function renderProducts() {
+            const section = document.getElementById('productsSection');
+            section.innerHTML = '';
+            if (filteredProducts.length === 0) {
+                section.innerHTML = '<div class="empty-state"><div class="empty-icon">&#128269;</div><p>No products found</p></div>';
+                return;
+            }
+            const catInfo = CATEGORIES.find(c => c.key === currentCategory);
+            const catLabel = catInfo ? catInfo.label : 'All Products';
+            const title = document.createElement('div');
+            title.className = 'section-title';
+            title.innerHTML = `<span class="cat-icon">${catInfo ? catInfo.icon || '&#128196;' : '&#128196;'}</span> ${catLabel} (${filteredProducts.length} items)`;
+            section.appendChild(title);
+            const grid = document.createElement('div');
+            grid.className = 'products-grid';
+            filteredProducts.forEach((product, idx) => {
+                const catEn = CATEGORY_EN[product.category] || product.category;
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.onclick = () => openLightbox(idx);
+                card.innerHTML = `
+                    <div class="product-image-wrap">
+                        <img src="catalog-images/${product.image}" alt="${product.model}" loading="lazy" draggable="false">
+                        <div class="watermark"></div>
+                        <div class="price-blur"></div>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-model">${product.product_model || product.model}</div>
+                        <div class="product-category">${catEn}</div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            section.appendChild(grid);
+        }
+
+        // ===== Text Search =====
+        document.getElementById('searchInput').addEventListener('input', e => {
+            searchQuery = e.target.value.trim();
+            if (searchQuery) currentCategory = 'all';
+            renderCategories(); applyFilters();
+        });
+
+        // ===== Lightbox =====
+        function openLightbox(idx) {
+            lightboxIndex = idx;
+            const product = filteredProducts[idx];
+            const catEn = CATEGORY_EN[product.category] || product.category;
+            document.getElementById('lightboxImg').src = `catalog-images/${product.image}`;
+            document.getElementById('lightboxModel').textContent = product.model;
+            document.getElementById('lightboxCat').textContent = catEn;
+            document.getElementById('lightboxCounter').textContent = `${idx + 1} / ${filteredProducts.length}`;
+            document.getElementById('lightbox').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('active');
+            document.body.style.overflow = '';
+            lightboxIndex = -1;
+        }
+        function navigateLightbox(dir) {
+            if (lightboxIndex < 0) return;
+            const newIdx = lightboxIndex + dir;
+            if (newIdx < 0 || newIdx >= filteredProducts.length) return;
+            openLightbox(newIdx);
+        }
+        document.getElementById('lightboxClose').onclick = closeLightbox;
+        document.getElementById('lightboxPrev').onclick = () => navigateLightbox(-1);
+        document.getElementById('lightboxNext').onclick = () => navigateLightbox(1);
+        document.addEventListener('keydown', e => {
+            if (lightboxIndex < 0) return;
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowLeft') navigateLightbox(-1);
+            if (e.key === 'ArrowRight') navigateLightbox(1);
+        });
+        document.getElementById('lightbox').addEventListener('click', e => { if (e.target.id === 'lightbox') closeLightbox(); });
+
+        // ===== Init =====
+        loadProducts();
+    </script>
+</body>
+</html>
