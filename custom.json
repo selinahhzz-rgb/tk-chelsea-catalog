@@ -1,0 +1,655 @@
+{
+  "subcategories": [
+    {
+      "key": "fabric",
+      "label": "Fabric / 布料",
+      "icon": "🧵"
+    },
+    {
+      "key": "short-sleeve",
+      "label": "Short Sleeve / 短袖",
+      "icon": "👕"
+    },
+    {
+      "key": "long-sleeve",
+      "label": "Long Sleeve / 长袖",
+      "icon": "🧥"
+    },
+    {
+      "key": "socks",
+      "label": "Socks / 袜子",
+      "icon": "🧦"
+    },
+    {
+      "key": "tracksuit",
+      "label": "Tracksuit / 训练服",
+      "icon": "🏃"
+    },
+    {
+      "key": "size",
+      "label": "Size Guide / 尺码参考",
+      "icon": "📏"
+    }
+  ],
+  "items": [
+    {
+      "name": "NBA200",
+      "subcategory": "fabric",
+      "image": "Fabric/NBA200.jpg",
+      "type": "image"
+    },
+    {
+      "name": "NBA240",
+      "subcategory": "fabric",
+      "image": "Fabric/NBA240.jpg",
+      "type": "image"
+    },
+    {
+      "name": "NK160",
+      "subcategory": "fabric",
+      "image": "Fabric/NK160.jpg",
+      "type": "image"
+    },
+    {
+      "name": "低弹网150",
+      "subcategory": "fabric",
+      "image": "Fabric/低弹网150.jpg",
+      "type": "image"
+    },
+    {
+      "name": "健康布250",
+      "subcategory": "fabric",
+      "image": "Fabric/健康布250.jpg",
+      "type": "image"
+    },
+    {
+      "name": "健康布280",
+      "subcategory": "fabric",
+      "image": "Fabric/健康布280.jpg",
+      "type": "image"
+    },
+    {
+      "name": "冰感流星雨160",
+      "subcategory": "fabric",
+      "image": "Fabric/冰感流星雨160.jpg",
+      "type": "image"
+    },
+    {
+      "name": "冰感火箭170",
+      "subcategory": "fabric",
+      "image": "Fabric/冰感火箭170.jpg",
+      "type": "image"
+    },
+    {
+      "name": "几何提花170",
+      "subcategory": "fabric",
+      "image": "Fabric/几何提花170.jpg",
+      "type": "image"
+    },
+    {
+      "name": "双枪布160",
+      "subcategory": "fabric",
+      "image": "Fabric/双枪布160.jpg",
+      "type": "image"
+    },
+    {
+      "name": "双面布150",
+      "subcategory": "fabric",
+      "image": "Fabric/双面布150.jpg",
+      "type": "image"
+    },
+    {
+      "name": "小米通160",
+      "subcategory": "fabric",
+      "image": "Fabric/小米通160.jpg",
+      "type": "image"
+    },
+    {
+      "name": "小锋眼160",
+      "subcategory": "fabric",
+      "image": "Fabric/小锋眼160.jpg",
+      "type": "image"
+    },
+    {
+      "name": "方格双面布125",
+      "subcategory": "fabric",
+      "image": "Fabric/方格双面布125.jpg",
+      "type": "image"
+    },
+    {
+      "name": "明盺提花160",
+      "subcategory": "fabric",
+      "image": "Fabric/明盺提花160.jpg",
+      "type": "image"
+    },
+    {
+      "name": "梯形提花170",
+      "subcategory": "fabric",
+      "image": "Fabric/梯形提花170.jpg",
+      "type": "image"
+    },
+    {
+      "name": "涤氨透气孔160",
+      "subcategory": "fabric",
+      "image": "Fabric/涤氨透气孔160.jpg",
+      "type": "image"
+    },
+    {
+      "name": "满天星160",
+      "subcategory": "fabric",
+      "image": "Fabric/满天星160.jpg",
+      "type": "image"
+    },
+    {
+      "name": "牛奶丝230",
+      "subcategory": "fabric",
+      "image": "Fabric/牛奶丝230.jpg",
+      "type": "image"
+    },
+    {
+      "name": "球员格子150",
+      "subcategory": "fabric",
+      "image": "Fabric/球员格子150.jpg",
+      "type": "image"
+    },
+    {
+      "name": "短点空网",
+      "subcategory": "fabric",
+      "image": "Fabric/短点空网.jpg",
+      "type": "image"
+    },
+    {
+      "name": "篮球提花160",
+      "subcategory": "fabric",
+      "image": "Fabric/篮球提花160.jpg",
+      "type": "image"
+    },
+    {
+      "name": "耐克球员160",
+      "subcategory": "fabric",
+      "image": "Fabric/耐克球员160.jpg",
+      "type": "image"
+    },
+    {
+      "name": "菱形布150",
+      "subcategory": "fabric",
+      "image": "Fabric/菱形布150.jpg",
+      "type": "image"
+    },
+    {
+      "name": "蜂窝160",
+      "subcategory": "fabric",
+      "image": "Fabric/蜂窝160.jpg",
+      "type": "image"
+    },
+    {
+      "name": "蝴蝶网160",
+      "subcategory": "fabric",
+      "image": "Fabric/蝴蝶网160.jpg",
+      "type": "image"
+    },
+    {
+      "name": "迷彩提花160",
+      "subcategory": "fabric",
+      "image": "Fabric/迷彩提花160.jpg",
+      "type": "image"
+    },
+    {
+      "name": "针孔布150",
+      "subcategory": "fabric",
+      "image": "Fabric/针孔布150.jpg",
+      "type": "image"
+    },
+    {
+      "name": "阿迪球员160",
+      "subcategory": "fabric",
+      "image": "Fabric/阿迪球员160.jpg",
+      "type": "image"
+    },
+    {
+      "name": "雨点布160",
+      "subcategory": "fabric",
+      "image": "Fabric/雨点布160.jpg",
+      "type": "image"
+    },
+    {
+      "name": "T恤-1",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/T恤-1.jpg",
+      "type": "image"
+    },
+    {
+      "name": "T恤-2",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/T恤-2.jpg",
+      "type": "image"
+    },
+    {
+      "name": "polo衫-1",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/polo衫-1.jpg",
+      "type": "image"
+    },
+    {
+      "name": "skirt-1",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/skirt-1.jpg",
+      "type": "image"
+    },
+    {
+      "name": "skirt-2",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/skirt-2.jpg",
+      "type": "image"
+    },
+    {
+      "name": "儿童款式-1-红色",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/儿童款式-1-红色.jpg",
+      "type": "image"
+    },
+    {
+      "name": "儿童款式-2-红色",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/儿童款式-2-红色.jpg",
+      "type": "image"
+    },
+    {
+      "name": "儿童款式1-黄色",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/儿童款式1-黄色.jpg",
+      "type": "image"
+    },
+    {
+      "name": "儿童款式2-黄色",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/儿童款式2-黄色.jpg",
+      "type": "image"
+    },
+    {
+      "name": "定制球衣-10",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/定制球衣-10.jpg",
+      "type": "image"
+    },
+    {
+      "name": "定制球衣-11",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/定制球衣-11.jpg",
+      "type": "image"
+    },
+    {
+      "name": "定制球衣-3",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/定制球衣-3.jpg",
+      "type": "image"
+    },
+    {
+      "name": "定制球衣-5",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/定制球衣-5.jpg",
+      "type": "image"
+    },
+    {
+      "name": "定制球衣-6",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/定制球衣-6.jpg",
+      "type": "image"
+    },
+    {
+      "name": "定制球衣-7",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/定制球衣-7.jpg",
+      "type": "image"
+    },
+    {
+      "name": "定制球衣-8",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/定制球衣-8.jpg",
+      "type": "image"
+    },
+    {
+      "name": "定制球衣-9",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/定制球衣-9.jpg",
+      "type": "image"
+    },
+    {
+      "name": "定制球衣1",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/定制球衣1.jpg",
+      "type": "image"
+    },
+    {
+      "name": "定制球衣12",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/定制球衣12.jpg",
+      "type": "image"
+    },
+    {
+      "name": "定制球衣13",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/定制球衣13.jpg",
+      "type": "image"
+    },
+    {
+      "name": "定制球衣2",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/定制球衣2.jpg",
+      "type": "image"
+    },
+    {
+      "name": "定制球衣3",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/定制球衣3.jpg",
+      "type": "image"
+    },
+    {
+      "name": "定制球衣4",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/定制球衣4.jpg",
+      "type": "image"
+    },
+    {
+      "name": "球衣2",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/球衣2.jpg",
+      "type": "image"
+    },
+    {
+      "name": "球衣A-1",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/球衣A-1.jpg",
+      "type": "image"
+    },
+    {
+      "name": "球衣A-2",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/球衣A-2.jpg",
+      "type": "image"
+    },
+    {
+      "name": "球衣AB-1",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/球衣AB-1.jpg",
+      "type": "image"
+    },
+    {
+      "name": "球衣AB-2",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/球衣AB-2.jpg",
+      "type": "image"
+    },
+    {
+      "name": "球衣B-1",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/球衣B-1.jpg",
+      "type": "image"
+    },
+    {
+      "name": "球衣B-2",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/球衣B-2.jpg",
+      "type": "image"
+    },
+    {
+      "name": "球衣CD-1",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/球衣CD-1.jpg",
+      "type": "image"
+    },
+    {
+      "name": "球衣CD-2",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/球衣CD-2.jpg",
+      "type": "image"
+    },
+    {
+      "name": "球衣D-1",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/球衣D-1.jpg",
+      "type": "image"
+    },
+    {
+      "name": "球衣M-1",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/球衣M-1.jpg",
+      "type": "image"
+    },
+    {
+      "name": "球衣M-2",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/球衣M-2.jpg",
+      "type": "image"
+    },
+    {
+      "name": "球衣M-3",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/球衣M-3.jpg",
+      "type": "image"
+    },
+    {
+      "name": "球衣M-4",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/球衣M-4.jpg",
+      "type": "image"
+    },
+    {
+      "name": "球衣R-1",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/球衣R-1.jpg",
+      "type": "image"
+    },
+    {
+      "name": "球衣R-2",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/球衣R-2.jpg",
+      "type": "image"
+    },
+    {
+      "name": "球衣R-3",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/球衣R-3.jpg",
+      "type": "image"
+    },
+    {
+      "name": "球衣R-4",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/球衣R-4.jpg",
+      "type": "image"
+    },
+    {
+      "name": "球衣RD-1",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/球衣RD-1.jpg",
+      "type": "image"
+    },
+    {
+      "name": "球衣RD-2",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/球衣RD-2.jpg",
+      "type": "image"
+    },
+    {
+      "name": "球衣Z-1",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/球衣Z-1.jpg",
+      "type": "image"
+    },
+    {
+      "name": "球衣Z-2",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/球衣Z-2.jpg",
+      "type": "image"
+    },
+    {
+      "name": "球衣j-1",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/球衣j-1.jpg",
+      "type": "image"
+    },
+    {
+      "name": "球衣j-3",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/球衣j-3.jpg",
+      "type": "image"
+    },
+    {
+      "name": "球衣j-4",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/球衣j-4.jpg",
+      "type": "image"
+    },
+    {
+      "name": "球衣j-5",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/球衣j-5.jpg",
+      "type": "image"
+    },
+    {
+      "name": "衣服-米色",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/衣服-米色.jpg",
+      "type": "image"
+    },
+    {
+      "name": "衣服-黑色",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/衣服-黑色.jpg",
+      "type": "image"
+    },
+    {
+      "name": "衣服款-1",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/衣服款-1.jpg",
+      "type": "image"
+    },
+    {
+      "name": "裤子-白色-2",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/裤子-白色-2.jpg",
+      "type": "image"
+    },
+    {
+      "name": "裤子-黑色-1",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/裤子-黑色-1.jpg",
+      "type": "image"
+    },
+    {
+      "name": "守门员红色-1",
+      "subcategory": "long-sleeve",
+      "image": "LongSleeve/守门员红色-1.jpg",
+      "type": "image"
+    },
+    {
+      "name": "守门员红色-2",
+      "subcategory": "long-sleeve",
+      "image": "LongSleeve/守门员红色-2.jpg",
+      "type": "image"
+    },
+    {
+      "name": "守门员绿色-1",
+      "subcategory": "long-sleeve",
+      "image": "LongSleeve/守门员绿色-1.jpg",
+      "type": "image"
+    },
+    {
+      "name": "守门员绿色-2",
+      "subcategory": "long-sleeve",
+      "image": "LongSleeve/守门员绿色-2.jpg",
+      "type": "image"
+    },
+    {
+      "name": "守门员蓝色-1",
+      "subcategory": "long-sleeve",
+      "image": "LongSleeve/守门员蓝色-1.jpg",
+      "type": "image"
+    },
+    {
+      "name": "守门员蓝色-2",
+      "subcategory": "long-sleeve",
+      "image": "LongSleeve/守门员蓝色-2.jpg",
+      "type": "image"
+    },
+    {
+      "name": "袜子-1",
+      "subcategory": "socks",
+      "image": "Socks/袜子-1.jpg",
+      "type": "image"
+    },
+    {
+      "name": "袜子-2",
+      "subcategory": "socks",
+      "image": "Socks/袜子-2.jpg",
+      "type": "image"
+    },
+    {
+      "name": "袜子-3",
+      "subcategory": "socks",
+      "image": "Socks/袜子-3.jpg",
+      "type": "image"
+    },
+    {
+      "name": "袜子-4-1",
+      "subcategory": "socks",
+      "image": "Socks/袜子-4-1.jpg",
+      "type": "image"
+    },
+    {
+      "name": "袜子-4-2",
+      "subcategory": "socks",
+      "image": "Socks/袜子-4-2.jpg",
+      "type": "image"
+    },
+    {
+      "name": "训练服-1",
+      "subcategory": "tracksuit",
+      "image": "Tracksuit/训练服-1.jpg",
+      "type": "image"
+    },
+    {
+      "name": "训练服1",
+      "subcategory": "tracksuit",
+      "image": "Tracksuit/训练服1.jpg",
+      "type": "image"
+    },
+    {
+      "name": "训练服2",
+      "subcategory": "tracksuit",
+      "image": "Tracksuit/训练服2.jpg",
+      "type": "image"
+    },
+    {
+      "name": "训练服3",
+      "subcategory": "tracksuit",
+      "image": "Tracksuit/训练服3.jpg",
+      "type": "image"
+    },
+    {
+      "name": "训练服4",
+      "subcategory": "tracksuit",
+      "image": "Tracksuit/训练服4.jpg",
+      "type": "image"
+    },
+    {
+      "name": "Football_Jersey_Size_1 （better for child）",
+      "subcategory": "size",
+      "image": "Size/Football_Jersey_Size_1 （better for child）.jpg",
+      "type": "image"
+    },
+    {
+      "name": "Football Kit Size Chart EU Adult and Kids",
+      "subcategory": "size",
+      "image": "Size/Football_Kit_Size_Chart_EU_Adult_and_Kids.html",
+      "type": "html",
+      "link": "custom-images/Size/Football_Kit_Size_Chart_EU_Adult_and_Kids.html"
+    },
+    {
+      "name": "socks_size_chart",
+      "subcategory": "size",
+      "image": "Size/socks_size_chart.jpg",
+      "type": "image"
+    }
+  ]
+}

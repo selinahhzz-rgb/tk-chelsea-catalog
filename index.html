@@ -124,6 +124,32 @@
             font-size: 11px; padding: 2px 6px; border-radius: 10px; margin-left: 4px;
         }
 
+        /* ===== Subcategory Nav ===== */
+        .subcategory-nav {
+            background: #fff; border-bottom: 1px solid var(--border);
+            position: sticky; top: 158px; z-index: 998; box-shadow: var(--shadow);
+        }
+        .subcategory-nav-inner {
+            max-width: 1400px; margin: 0 auto; display: flex; align-items: center;
+            padding: 0 24px; gap: 0; overflow-x: auto;
+        }
+        .subcat-btn {
+            padding: 11px 16px; border: none; background: transparent; cursor: pointer;
+            font-size: 13px; font-weight: 500; color: var(--text-light);
+            transition: all 0.2s; position: relative; white-space: nowrap;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .subcat-btn:hover { color: var(--shop); background: rgba(79,70,229,0.05); }
+        .subcat-btn.active { color: var(--shop); font-weight: 600; }
+        .subcat-btn.active::after {
+            content: ''; position: absolute; bottom: 0; left: 16px; right: 16px;
+            height: 3px; background: var(--shop); border-radius: 2px;
+        }
+        .subcat-count {
+            display: inline-block; background: rgba(79,70,229,0.1); color: var(--shop);
+            font-size: 11px; padding: 1px 6px; border-radius: 10px; margin-left: 2px;
+        }
+
         /* ===== Search Area ===== */
         .search-area { max-width: 1400px; margin: 20px auto 0; padding: 0 24px; }
         .search-tabs { display: flex; gap: 0; margin-bottom: 12px; }
@@ -274,6 +300,12 @@
             pointer-events: none; transition: opacity 0.3s;
         }
         body.admin-mode .price-blur { opacity: 0; }
+        .html-badge {
+            position: absolute; bottom: 8px; right: 8px;
+            background: var(--shop); color: white; padding: 4px 10px;
+            border-radius: 16px; font-size: 11px; font-weight: 600; z-index: 3;
+            box-shadow: 0 2px 8px rgba(79,70,229,0.4); pointer-events: none;
+        }
         .product-info { padding: 12px 16px; }
         .product-model { font-size: 15px; font-weight: 600; color: var(--text); }
         .product-category { font-size: 12px; color: var(--text-light); margin-top: 4px; }
@@ -406,8 +438,8 @@
             </div>
             <div class="header-right">
                 <div class="header-stats">
-                    <span><strong id="totalCount">0</strong> Products</span>
-                    <span><strong>7</strong> Categories</span>
+                    <span><strong id="totalCount">0</strong> Items</span>
+                    <span><strong id="catCount">8</strong> Categories</span>
                 </div>
                 <button class="admin-toggle" id="adminToggle" onclick="toggleAdminModal()">&#128274; Admin</button>
             </div>
@@ -417,6 +449,11 @@
     <!-- Category Nav -->
     <nav class="category-nav">
         <div class="category-nav-inner" id="categoryNav"></div>
+    </nav>
+
+    <!-- Subcategory Nav (Custom Project) -->
+    <nav class="subcategory-nav" id="subCategoryNav" style="display:none;">
+        <div class="subcategory-nav-inner" id="subCategoryNavInner"></div>
     </nav>
 
     <!-- Search Area -->
@@ -524,6 +561,7 @@
             { key: 'Long training Kit', label: 'Long Training Kit', icon: '&#128087;' },
             { key: 'Goal keeper', label: 'Goalkeeper', icon: '&#129510;' },
             { key: 'Tracksuit', label: 'Tracksuit', icon: '&#127939;' },
+            { key: '__custom__', label: 'Custom Project', icon: '&#10024;', custom: true },
         ];
         const CATEGORY_EN = {
             'Wind jacket': 'Wind Jacket', 'Football bag': 'Football Bag',
@@ -545,8 +583,10 @@
 
         // ===== State =====
         let products = [];
+        let customData = null;        // { subcategories, items }
         let featuresData = null;
         let currentCategory = 'all';
+        let currentSubcategory = 'all';  // for custom view
         let searchQuery = '';
         let lightboxIndex = -1;
         let filteredProducts = [];
@@ -971,7 +1011,16 @@
             try {
                 const resp = await fetch('products.json');
                 products = await resp.json();
-                document.getElementById('totalCount').textContent = products.length;
+                let customCount = 0;
+                try {
+                    const cResp = await fetch('custom.json');
+                    customData = await cResp.json();
+                    customCount = customData.items.length;
+                } catch (e) {
+                    console.error('Failed to load custom.json:', e);
+                    customData = { subcategories: [], items: [] };
+                }
+                document.getElementById('totalCount').textContent = products.length + customCount;
                 renderCategories();
                 applyFilters();
                 document.getElementById('loadingOverlay').style.display = 'none';
@@ -986,22 +1035,76 @@
             const nav = document.getElementById('categoryNav');
             nav.innerHTML = '';
             CATEGORIES.forEach(cat => {
-                const count = cat.key === 'all' ? products.length : products.filter(p => p.category === cat.key).length;
+                let count;
+                if (cat.key === 'all') count = products.length + (customData ? customData.items.length : 0);
+                else if (cat.custom) count = customData ? customData.items.length : 0;
+                else count = products.filter(p => p.category === cat.key).length;
                 const btn = document.createElement('button');
                 btn.className = 'cat-btn' + (currentCategory === cat.key ? ' active' : '');
                 btn.innerHTML = `${cat.icon || ''} ${cat.label} <span class="cat-count">${count}</span>`;
                 btn.onclick = () => {
-                    currentCategory = cat.key; searchQuery = '';
+                    currentCategory = cat.key; currentSubcategory = 'all'; searchQuery = '';
                     document.getElementById('searchInput').value = '';
                     document.getElementById('matchResults').classList.remove('active');
+                    const isCustom = !!cat.custom;
+                    document.getElementById('subCategoryNav').style.display = isCustom ? 'block' : 'none';
+                    if (isCustom) renderSubcategories();
                     renderCategories(); applyFilters();
                 };
                 nav.appendChild(btn);
             });
         }
 
+        // ===== Render Subcategory Nav (Custom) =====
+        function renderSubcategories() {
+            const nav = document.getElementById('subCategoryNavInner');
+            nav.innerHTML = '';
+            if (!customData) return;
+            // "All" subcategory
+            const allBtn = document.createElement('button');
+            allBtn.className = 'subcat-btn' + (currentSubcategory === 'all' ? ' active' : '');
+            allBtn.innerHTML = `&#128196; All <span class="subcat-count">${customData.items.length}</span>`;
+            allBtn.onclick = () => { currentSubcategory = 'all'; renderSubcategories(); applyFilters(); };
+            nav.appendChild(allBtn);
+            customData.subcategories.forEach(sub => {
+                const count = customData.items.filter(i => i.subcategory === sub.key).length;
+                const btn = document.createElement('button');
+                btn.className = 'subcat-btn' + (currentSubcategory === sub.key ? ' active' : '');
+                btn.innerHTML = `${sub.icon || ''} ${sub.label} <span class="subcat-count">${count}</span>`;
+                btn.onclick = () => {
+                    currentSubcategory = sub.key; renderSubcategories(); applyFilters();
+                };
+                nav.appendChild(btn);
+            });
+        }
+
+        // ===== Normalize custom item into product-like shape =====
+        function customToProduct(item) {
+            return {
+                model: item.name,
+                category: 'Custom Project',
+                category_cn: '定制项目',
+                image: item.image,
+                custom: true,
+                type: item.type || 'image',
+                link: item.link || '',
+                subcategory: item.subcategory,
+            };
+        }
+
         // ===== Apply Filters =====
         function applyFilters() {
+            if (currentCategory === '__custom__' && customData) {
+                let list = customData.items.map(customToProduct);
+                if (currentSubcategory !== 'all') {
+                    list = list.filter(p => p.subcategory === currentSubcategory);
+                }
+                const q = searchQuery.toLowerCase();
+                if (q) list = list.filter(p => p.model.toLowerCase().includes(q));
+                filteredProducts = list;
+                renderProducts();
+                return;
+            }
             filteredProducts = products.filter(p => {
                 const catMatch = currentCategory === 'all' || p.category === currentCategory;
                 const catEn = CATEGORY_EN[p.category] || p.category;
@@ -1028,21 +1131,38 @@
             const grid = document.createElement('div');
             grid.className = 'products-grid';
             filteredProducts.forEach((product, idx) => {
-                const catEn = CATEGORY_EN[product.category] || product.category;
+                const catEn = product.custom ? (product.category_cn || '定制项目') : (CATEGORY_EN[product.category] || product.category);
+                const base = product.custom ? 'custom-images/' : 'catalog-images/';
+                const imgSrc = base + encodeURI(product.image);
                 const card = document.createElement('div');
                 card.className = 'product-card';
-                card.onclick = () => openLightbox(idx);
-                card.innerHTML = `
-                    <div class="product-image-wrap">
-                        <img src="catalog-images/${product.image}" alt="${product.model}" loading="lazy" draggable="false">
-                        <div class="watermark"></div>
-                        <div class="price-blur"></div>
-                    </div>
-                    <div class="product-info">
-                        <div class="product-model">${product.product_model || product.model}</div>
-                        <div class="product-category">${catEn}</div>
-                    </div>
-                `;
+                let infoHtml, innerHtml;
+                if (product.type === 'html') {
+                    // HTML link card (e.g. size chart)
+                    card.onclick = () => window.open(product.link, '_blank', 'noopener');
+                    innerHtml = `
+                        <div class="product-image-wrap">
+                            <img src="${imgSrc}" alt="${product.model}" loading="lazy" draggable="false">
+                            <div class="html-badge">&#128206; Open</div>
+                        </div>
+                        <div class="product-info">
+                            <div class="product-model">${product.model}</div>
+                            <div class="product-category">${catEn} &middot; Click to open</div>
+                        </div>`;
+                } else {
+                    card.onclick = () => openLightbox(idx);
+                    innerHtml = `
+                        <div class="product-image-wrap">
+                            <img src="${imgSrc}" alt="${product.model}" loading="lazy" draggable="false">
+                            <div class="watermark"></div>
+                            ${product.custom ? '' : '<div class="price-blur"></div>'}
+                        </div>
+                        <div class="product-info">
+                            <div class="product-model">${product.product_model || product.model}</div>
+                            <div class="product-category">${catEn}</div>
+                        </div>`;
+                }
+                card.innerHTML = innerHtml;
                 grid.appendChild(card);
             });
             section.appendChild(grid);
@@ -1051,7 +1171,7 @@
         // ===== Text Search =====
         document.getElementById('searchInput').addEventListener('input', e => {
             searchQuery = e.target.value.trim();
-            if (searchQuery) currentCategory = 'all';
+            if (searchQuery && currentCategory !== '__custom__') currentCategory = 'all';
             renderCategories(); applyFilters();
         });
 
@@ -1059,11 +1179,15 @@
         function openLightbox(idx) {
             lightboxIndex = idx;
             const product = filteredProducts[idx];
-            const catEn = CATEGORY_EN[product.category] || product.category;
-            document.getElementById('lightboxImg').src = `catalog-images/${product.image}`;
+            const catEn = product.custom ? (product.category_cn || '定制项目') : (CATEGORY_EN[product.category] || product.category);
+            const base = product.custom ? 'custom-images/' : 'catalog-images/';
+            document.getElementById('lightboxImg').src = base + encodeURI(product.image);
             document.getElementById('lightboxModel').textContent = product.model;
             document.getElementById('lightboxCat').textContent = catEn;
             document.getElementById('lightboxCounter').textContent = `${idx + 1} / ${filteredProducts.length}`;
+            // Hide price blur for custom items (no price info)
+            const lbPriceBlur = document.querySelector('.lightbox-img-wrap .price-blur');
+            if (lbPriceBlur) lbPriceBlur.style.display = product.custom ? 'none' : '';
             document.getElementById('lightbox').classList.add('active');
             document.body.style.overflow = 'hidden';
         }
