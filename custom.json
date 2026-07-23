@@ -1,11 +1,6 @@
 {
   "subcategories": [
     {
-      "key": "fabric",
-      "label": "Fabric / 布料",
-      "icon": "🧵"
-    },
-    {
       "key": "short-sleeve",
       "label": "Short Sleeve / 短袖",
       "icon": "👕"
@@ -29,6 +24,11 @@
       "key": "size",
       "label": "Size Guide / 尺码参考",
       "icon": "📏"
+    },
+    {
+      "key": "fabric",
+      "label": "Fabric / 布料",
+      "icon": "🧵"
     }
   ],
   "items": [
@@ -641,9 +641,8 @@
     {
       "name": "Football Kit Size Chart EU Adult and Kids",
       "subcategory": "size",
-      "image": "Size/Football_Kit_Size_Chart_EU_Adult_and_Kids.html",
-      "type": "html",
-      "link": "custom-images/Size/Football_Kit_Size_Chart_EU_Adult_and_Kids.html"
+      "image": "Size/Football_Kit_Size_Chart_EU_Adult_and_Kids.jpg",
+      "type": "image"
     },
     {
       "name": "socks_size_chart",
