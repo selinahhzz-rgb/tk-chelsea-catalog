@@ -1726,6 +1726,9 @@
     "color": "（080）",
     "price_code": "p14.8",
     "size_text": "",
+    "size_image": "hoodies/hoodie_adult_01_size.jpg",
+    "fabric_image": "hoodies/hoodie_adult_01_fabric.jpg",
+    "color_image": "hoodies/hoodie_adult_01_color.jpg",
     "model_full": "42% cotton JR001 350GSM Fleece Inside Hoodie（080） p14.8"
   },
   {
@@ -1740,6 +1743,9 @@
     "color": "（080）",
     "price_code": "p16.9",
     "size_text": "",
+    "size_image": "hoodies/hoodie_adult_02_size.jpg",
+    "fabric_image": "hoodies/hoodie_adult_02_fabric.jpg",
+    "color_image": "hoodies/hoodie_adult_02_color.jpg",
     "model_full": "85% cotton JR004 380 GSM Fleece Inside Hoodie（080） p16.9"
   },
   {
@@ -1754,6 +1760,9 @@
     "color": "（085）",
     "price_code": "P16.9",
     "size_text": "",
+    "size_image": "hoodies/hoodie_adult_03_size.jpg",
+    "fabric_image": "hoodies/hoodie_adult_03_fabric.jpg",
+    "color_image": "hoodies/hoodie_adult_03_color.jpg",
     "model_full": "JR005 380 GSM 100% Cotton French Terry Hoodie With Drawstring（085） P16.9"
   },
   {
@@ -1768,6 +1777,9 @@
     "color": "（090）",
     "price_code": "p19.2",
     "size_text": "",
+    "size_image": "hoodies/hoodie_adult_04_size.jpg",
+    "fabric_image": "hoodies/hoodie_adult_04_fabric.jpg",
+    "color_image": "hoodies/hoodie_adult_04_color.jpg",
     "model_full": "49% Cotton JR003 450GSM Fleece Inside Hoodie (oversize)（090） p19.2"
   },
   {
@@ -1782,6 +1794,9 @@
     "color": "（090）",
     "price_code": "p19.2",
     "size_text": "",
+    "size_image": "hoodies/hoodie_adult_05_size.jpg",
+    "fabric_image": "hoodies/hoodie_adult_05_fabric.jpg",
+    "color_image": "hoodies/hoodie_adult_05_color.jpg",
     "model_full": "81% Cotton JR002 450GSM French Terry Hoodie (oversize)（090） p19.2"
   },
   {
@@ -1796,6 +1811,9 @@
     "color": "（100）",
     "price_code": "p15.9",
     "size_text": "",
+    "size_image": "hoodies/hoodie_adult_06_size.jpg",
+    "fabric_image": "hoodies/hoodie_adult_06_fabric.jpg",
+    "color_image": "hoodies/hoodie_adult_06_color.jpg",
     "model_full": "54.9% Cotton SH 460 GSM French Terry Hoodie (oversize)（100） p15.9"
   },
   {
@@ -1810,6 +1828,9 @@
     "color": "（100）",
     "price_code": "p22.9",
     "size_text": "",
+    "size_image": "hoodies/hoodie_adult_07_size.jpg",
+    "fabric_image": "hoodies/hoodie_adult_07_fabric.jpg",
+    "color_image": "hoodies/hoodie_adult_07_color.jpg",
     "model_full": "81% Cotton JR006 450 GSM Frence Terry Zipper Hoodie （100） p22.9"
   },
   {
@@ -1824,6 +1845,9 @@
     "color": "（120）",
     "price_code": "p24",
     "size_text": "",
+    "size_image": "hoodies/hoodie_adult_08_size.jpg",
+    "fabric_image": "hoodies/hoodie_adult_08_fabric.jpg",
+    "color_image": "hoodies/hoodie_adult_08_color.jpg",
     "model_full": "30%cotton (regular) JY002 460 GSM Fleece Hoodie （120） p24"
   },
   {
@@ -1838,6 +1862,9 @@
     "color": "（090）",
     "price_code": "p13.7",
     "size_text": "",
+    "size_image": "hoodies/hoodie_adult_09_size.jpg",
+    "fabric_image": "hoodies/hoodie_adult_09_fabric.jpg",
+    "color_image": "hoodies/hoodie_adult_09_color.jpg",
     "model_full": "95%cotton JY001 460 GSM Fleece Hoodie （090） p13.7"
   },
   {
@@ -1852,6 +1879,9 @@
     "color": "（120）",
     "price_code": "p21.9",
     "size_text": "",
+    "size_image": "hoodies/hoodie_adult_10_size.jpg",
+    "fabric_image": "hoodies/hoodie_adult_10_fabric.jpg",
+    "color_image": "hoodies/hoodie_adult_10_color.jpg",
     "model_full": "96%Cotton JY/SH001 500 GSM French Terry Hoodie（120） p21.9"
   },
   {
@@ -1866,6 +1896,9 @@
     "color": "（130）",
     "price_code": "p16.5",
     "size_text": "",
+    "size_image": "hoodies/hoodie_adult_11_size.jpg",
+    "fabric_image": "hoodies/hoodie_adult_11_fabric.jpg",
+    "color_image": "hoodies/hoodie_adult_11_color.jpg",
     "model_full": "65.2%cotton JY-M063 Fleece Hoodie （130） p16.5"
   },
   {
@@ -1880,6 +1913,9 @@
     "color": "（120）",
     "price_code": "P21.7",
     "size_text": "",
+    "size_image": "hoodies/hoodie_adult_12_size.jpg",
+    "fabric_image": "hoodies/hoodie_adult_12_fabric.jpg",
+    "color_image": "hoodies/hoodie_adult_12_color.jpg",
     "model_full": "100%cotton JY-AMD553 Fleece Hoodie （120） P21.7"
   },
   {
@@ -1894,6 +1930,9 @@
     "color": "（090）",
     "price_code": "P16.5",
     "size_text": "",
+    "size_image": "hoodies/hoodie_adult_13_size.jpg",
+    "fabric_image": "hoodies/hoodie_adult_13_fabric.jpg",
+    "color_image": "hoodies/hoodie_adult_13_color.jpg",
     "model_full": "34%cotton JY-AG00018 Fleece Hoodiep （090） P16.5"
   },
   {
@@ -1908,6 +1947,9 @@
     "color": "(006)",
     "price_code": "P8.6",
     "size_text": "",
+    "size_image": "hoodies/hoodie_child_01_size.jpg",
+    "fabric_image": "hoodies/hoodie_child_01_fabric.jpg",
+    "color_image": "hoodies/hoodie_child_01_color.jpg",
     "model_full": "68% cotton SH-WY052 French (006)Terry P8.6"
   },
   {
@@ -1922,6 +1964,9 @@
     "color": null,
     "price_code": "P8.8",
     "size_text": "",
+    "size_image": "hoodies/hoodie_child_02_size.jpg",
+    "fabric_image": "hoodies/hoodie_child_02_fabric.jpg",
+    "color_image": "hoodies/hoodie_child_02_color.jpg",
     "model_full": "41% cotton SH-WY056 French Terry P8.8"
   },
   {
@@ -1936,6 +1981,9 @@
     "color": "(004)",
     "price_code": "p12.6",
     "size_text": "",
+    "size_image": "hoodies/hoodie_child_03_size.jpg",
+    "fabric_image": "hoodies/hoodie_child_03_fabric.jpg",
+    "color_image": "hoodies/hoodie_child_03_color.jpg",
     "model_full": "100% cotton JY-BW14(004) p12.6"
   },
   {
@@ -1950,6 +1998,9 @@
     "color": "(050)",
     "price_code": "p8",
     "size_text": "",
+    "size_image": "hoodies/hoodie_child_04_size.jpg",
+    "fabric_image": "hoodies/hoodie_child_04_fabric.jpg",
+    "color_image": "hoodies/hoodie_child_04_color.jpg",
     "model_full": "62% Cotton SH-M086(050) p8"
   },
   {
@@ -1964,6 +2015,9 @@
     "color": "(070)",
     "price_code": "P13.5",
     "size_text": "",
+    "size_image": "hoodies/hoodie_child_05_size.jpg",
+    "fabric_image": "hoodies/hoodie_child_05_fabric.jpg",
+    "color_image": "hoodies/hoodie_child_05_color.jpg",
     "model_full": "42% Cotton JY-BW350103(070) P13.5"
   },
   {
@@ -1978,6 +2032,9 @@
     "color": "(045)",
     "price_code": "p12.6",
     "size_text": "",
+    "size_image": "hoodies/hoodie_child_06_size.jpg",
+    "fabric_image": "hoodies/hoodie_child_06_fabric.jpg",
+    "color_image": "hoodies/hoodie_child_06_color.jpg",
     "model_full": "100% cotton JY-BW15(045) p12.6"
   },
   {
@@ -1992,6 +2049,9 @@
     "color": null,
     "price_code": "P9.6",
     "size_text": "",
+    "size_image": "hoodies/hoodie_child_07_size.jpg",
+    "fabric_image": "hoodies/hoodie_child_07_fabric.jpg",
+    "color_image": "hoodies/hoodie_child_07_color.jpg",
     "model_full": "36% cotton SH-WY779 Ultra- sofT P9.6"
   }
 ]
