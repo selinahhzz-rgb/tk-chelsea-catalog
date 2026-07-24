@@ -337,6 +337,33 @@
         .lb-spec { display: flex; flex-wrap: wrap; gap: 6px 14px; justify-content: center; margin-top: 8px; font-size: 13px; }
         .lb-spec span b { color: #fff; font-weight: 600; }
         .lb-size { margin-top: 8px; font-size: 12px; color: rgba(255,255,255,0.7); }
+        .lightbox-details { margin-top: 14px; max-width: 860px; }
+        .lb-details-list { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+        .lb-detail-item {
+            background: rgba(255,255,255,0.08);
+            border-radius: 10px;
+            padding: 8px;
+            width: 140px;
+            text-align: center;
+            transition: transform 0.2s, background 0.2s;
+            cursor: pointer;
+        }
+        .lb-detail-item:hover { transform: translateY(-3px); background: rgba(255,255,255,0.14); }
+        .lb-detail-label {
+            color: rgba(255,255,255,0.75);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+        .lb-detail-item img {
+            width: 100%;
+            height: 110px;
+            object-fit: contain;
+            border-radius: 6px;
+            background: rgba(255,255,255,0.06);
+        }
         .lightbox-nav {
             position: absolute; top: 50%; transform: translateY(-50%); color: white;
             font-size: 40px; cursor: pointer; width: 60px; height: 80px;
@@ -590,6 +617,7 @@
             <div class="model-name" id="lightboxModel"></div>
             <div id="lightboxCat"></div>
             <div id="lightboxSpec"></div>
+            <div class="lightbox-details" id="lightboxDetails"></div>
             <div class="lightbox-counter" id="lightboxCounter"></div>
         </div>
     </div>
@@ -1240,6 +1268,19 @@
             if (p.size_text) html += `<div class="lb-size"><b>Size:</b> ${p.size_text.replace(/,/g, ', ')}</div>`;
             return html;
         }
+        function buildLightboxDetails(p) {
+            const base = p.custom ? 'custom-images/' : 'catalog-images/';
+            const items = [];
+            if (p.size_image) items.push({ label: 'Size Chart', src: cdn(base + p.size_image) });
+            if (p.fabric_image) items.push({ label: 'Fabric Detail', src: cdn(base + p.fabric_image) });
+            if (p.color_image) items.push({ label: 'Color Options', src: cdn(base + p.color_image) });
+            if (!items.length) return '';
+            return `<div class="lb-details-list">` + items.map(it => `
+                <div class="lb-detail-item" onclick="window.open('${it.src}', '_blank')">
+                    <div class="lb-detail-label">${it.label}</div>
+                    <img src="${it.src}" alt="${it.label}" loading="lazy">
+                </div>`).join('') + `</div>`;
+        }
 
         // ===== Render Products =====
         function renderProducts() {
@@ -1451,6 +1492,7 @@
             document.getElementById('lightboxModel').textContent = product.model;
             document.getElementById('lightboxCat').textContent = catEn;
             document.getElementById('lightboxSpec').innerHTML = buildLightboxSpec(product);
+            document.getElementById('lightboxDetails').innerHTML = buildLightboxDetails(product);
             document.getElementById('lightboxCounter').textContent = `${idx + 1} / ${filteredProducts.length}`;
             // Hide price blur for custom items (no price info)
             const lbPriceBlur = document.querySelector('.lightbox-img-wrap .price-blur');
