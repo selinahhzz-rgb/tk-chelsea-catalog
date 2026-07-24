@@ -531,8 +531,8 @@
         <div class="subcategory-nav-inner" id="subCategoryNavInner"></div>
     </nav>
 
-    <!-- Search Area -->
-    <div class="search-area">
+        <!-- Search Area -->
+        <div class="search-area" id="searchArea">
         <div class="search-tabs">
             <button class="search-tab active" id="tabText" onclick="switchSearchTab('text')">&#128270; Search by Model</button>
             <button class="search-tab" id="tabImage" onclick="switchSearchTab('image')">&#128247; Search by Image</button>
@@ -1116,6 +1116,8 @@
         function renderCategories() {
             const nav = document.getElementById('categoryNav');
             nav.innerHTML = '';
+            // 定制类目（Custom Project）隐藏搜索功能区，仅非定制类目提供搜索
+            document.getElementById('searchArea').style.display = (currentCategory === '__custom__') ? 'none' : '';
             CATEGORIES.forEach(cat => {
                 let count;
                 if (cat.key === 'all') count = products.length + (customData ? customData.items.length : 0);
