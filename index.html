@@ -133,6 +133,25 @@
             max-width: 1400px; margin: 0 auto; display: flex; align-items: center;
             padding: 0 24px; gap: 0; overflow-x: auto;
         }
+        /* ===== View Mode Toggle ===== */
+        .mode-toggle {
+            display: flex; justify-content: center; gap: 10px;
+            background: #fff; border-bottom: 1px solid var(--border);
+            padding: 10px 12px; position: sticky; top: 110px; z-index: 999;
+            box-shadow: var(--shadow);
+        }
+        .mode-toggle-btn {
+            flex: 1; max-width: 300px;
+            padding: 10px 18px; font-size: 14px; font-weight: 600;
+            color: var(--text-light); background: transparent;
+            border: 1px solid var(--border); border-radius: 999px;
+            cursor: pointer; transition: all 0.2s; white-space: nowrap;
+        }
+        .mode-toggle-btn:hover:not(.active) { background: #f5f6f8; color: var(--text); }
+        .mode-toggle-btn.active {
+            background: var(--primary); color: #fff; border-color: var(--primary);
+            box-shadow: 0 2px 8px rgba(255,107,53,0.25);
+        }
         .subcat-btn {
             padding: 11px 16px; border: none; background: transparent; cursor: pointer;
             font-size: 13px; font-weight: 500; color: var(--text-light);
@@ -552,6 +571,12 @@
         </div>
     </header>
 
+    <!-- 视图模式切换：把定制项目单独拉出来，不再埋在类目末尾 -->
+    <div class="mode-toggle" id="modeToggle">
+        <button class="mode-toggle-btn active" data-mode="catalog" onclick="switchMode('catalog')">产品目录 · Products</button>
+        <button class="mode-toggle-btn" data-mode="custom" onclick="switchMode('custom')">定制项目 · Custom</button>
+    </div>
+
     <!-- Category Nav -->
     <nav class="category-nav">
         <div class="category-nav-inner" id="categoryNav"></div>
@@ -678,7 +703,6 @@
             { key: 'Tracksuit', label: 'Tracksuit', icon: '&#127939;' },
             { key: 'Hoodie', label: 'Hoodie', icon: '&#129537;' },
             { key: 'Hoodie child', label: 'Hoodie Child', icon: '&#128085;' },
-            { key: '__custom__', label: 'Custom Project', icon: '&#10024;', custom: true },
         ];
         // ===== Cloudinary Fetch CDN (方式A: 质量零损失, 国内节点加速) =====
         // 填入你的 Cloudinary cloud name 即启用; 留空则降级为原相对路径(不破坏网站)
@@ -719,6 +743,7 @@
         let filteredProducts = [];
         let uploadedImageData = null;
         let isAdmin = false;
+        let viewMode = 'catalog';   // 'catalog' | 'custom'  —— 把定制项目单独拉出来
 
         // ===== Admin Mode =====
         function toggleAdminModal() {
@@ -1118,7 +1143,7 @@
                     <div class="match-badge ${badgeClass}">${badgeText}</div>
                     <div class="match-image-wrap">
                         <img src="${cdn('catalog-images/' + match.product.image)}" alt="${match.product.model}" loading="lazy" draggable="false">
-                        <div class="price-blur"></div>
+                        ${needsPriceBlur(match.product) ? '<div class="price-blur"></div>' : ''}
                     </div>
                     <div class="match-info">
                         <div class="match-model">${match.product.model}</div>
@@ -1182,6 +1207,35 @@
                 };
                 nav.appendChild(btn);
             });
+        }
+
+        // ===== View Mode Switch (产品目录 / 定制项目) =====
+        function switchMode(mode) {
+            viewMode = mode;
+            document.querySelectorAll('.mode-toggle-btn').forEach(b => {
+                b.classList.toggle('active', b.dataset.mode === mode);
+            });
+            const catNav = document.querySelector('.category-nav');
+            const subNav = document.getElementById('subCategoryNav');
+            const searchArea = document.getElementById('searchArea');
+            document.getElementById('matchResults').classList.remove('active');
+            document.getElementById('searchInput').value = '';
+            searchQuery = '';
+            if (mode === 'custom') {
+                currentCategory = '__custom__';
+                currentSubcategory = 'all';
+                catNav.style.display = 'none';
+                subNav.style.display = 'block';
+                searchArea.style.display = 'none';
+                renderSubcategories();
+            } else {
+                currentCategory = 'all';
+                currentSubcategory = 'all';
+                catNav.style.display = '';
+                subNav.style.display = 'none';
+                renderCategories();   // 内部按 currentCategory 控制 searchArea 显隐
+            }
+            applyFilters();
         }
 
         // ===== Render Subcategory Nav (Custom) =====
@@ -1282,6 +1336,13 @@
                 </div>`).join('') + `</div>`;
         }
 
+        // 不需要价格遮蔽的类目（如卫衣：顶部遮罩会挡住完整衣服，故整图展示）
+        function needsPriceBlur(p) {
+            if (p.custom) return false;
+            if (p.category === 'Hoodie' || p.category === 'Hoodie child') return false;
+            return true;
+        }
+
         // ===== Render Products =====
         function renderProducts() {
             const section = document.getElementById('productsSection');
@@ -1291,7 +1352,7 @@
                 return;
             }
             const catInfo = CATEGORIES.find(c => c.key === currentCategory);
-            const catLabel = catInfo ? catInfo.label : 'All Products';
+            const catLabel = catInfo ? catInfo.label : (currentCategory === '__custom__' ? 'Custom Project' : 'All Products');
             const title = document.createElement('div');
             title.className = 'section-title';
             title.innerHTML = `<span class="cat-icon">${catInfo ? catInfo.icon || '&#128196;' : '&#128196;'}</span> ${catLabel} (${filteredProducts.length} items)`;
@@ -1311,7 +1372,7 @@
                         <img src="${imgSrc}" alt="${product.model}" loading="lazy" draggable="false">
                         <div class="watermark"></div>
                         ${protectWm}
-                        ${product.custom ? '' : '<div class="price-blur"></div>'}
+                        ${needsPriceBlur(product) ? '<div class="price-blur"></div>' : ''}
                     </div>
                     <div class="product-info">
                         <div class="product-model">${product.product_model || product.model}</div>
@@ -1496,7 +1557,7 @@
             document.getElementById('lightboxCounter').textContent = `${idx + 1} / ${filteredProducts.length}`;
             // Hide price blur for custom items (no price info)
             const lbPriceBlur = document.querySelector('.lightbox-img-wrap .price-blur');
-            if (lbPriceBlur) lbPriceBlur.style.display = product.custom ? 'none' : '';
+            if (lbPriceBlur) lbPriceBlur.style.display = needsPriceBlur(product) ? '' : 'none';
             // Show tiled brand watermark for protected custom garments
             const lbWm = document.getElementById('lightboxWm');
             if (lbWm) lbWm.style.display = (product.custom && product.subcategory !== 'size' && product.subcategory !== 'fabric') ? 'block' : 'none';
