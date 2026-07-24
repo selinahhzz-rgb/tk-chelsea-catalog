@@ -294,7 +294,7 @@
                 rgba(255,255,255,0.03) 80px, rgba(255,255,255,0.03) 82px);
             pointer-events: none; z-index: 2;
         }
-        /* Tiled brand watermark for protected custom garments (short/long sleeve, socks, fabric, tracksuit) */
+        /* Tiled brand watermark for protected custom garments (short/long sleeve, socks, tracksuit) — NOT fabric/size */
         .tiled-watermark {
             position: absolute; top: 0; left: 0; right: 0; bottom: 0;
             z-index: 4; pointer-events: none; opacity: 0.6;
@@ -414,6 +414,79 @@
             .match-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
             .lightbox-img { max-width: 95vw; max-height: 70vh; }        }
         @media print { body { display: none; } }
+        /* ===== Craft / Process Comparison ===== */
+        .process-section { max-width: 1320px; margin: 0 auto; padding: 24px; }
+        .process-intro { text-align: center; margin-bottom: 28px; }
+        .process-intro h2 { font-size: 25px; color: var(--primary); margin-bottom: 10px; letter-spacing: 0.3px; }
+        .process-intro p { color: var(--text-light); font-size: 14px; max-width: 760px; margin: 0 auto; line-height: 1.7; }
+
+        .process-grid {
+            display: grid; gap: 22px;
+            grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+            align-items: stretch;
+        }
+        .process-card {
+            background: var(--card-bg); border: 1px solid var(--border);
+            border-radius: var(--radius); box-shadow: var(--shadow);
+            overflow: hidden; display: flex; flex-direction: column;
+            transition: transform .2s, box-shadow .2s;
+        }
+        .process-card:hover { transform: translateY(-4px); box-shadow: 0 10px 28px rgba(0,0,0,0.13); }
+        .pc-head {
+            display: flex; align-items: center; gap: 12px; padding: 16px 18px;
+            background: linear-gradient(135deg, var(--primary), #16213e); color: #fff;
+        }
+        .pc-num {
+            flex: 0 0 34px; width: 34px; height: 34px; border-radius: 50%;
+            background: var(--accent); color: #fff; font-weight: 700; font-size: 15px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .pc-head .pc-icon { font-size: 23px; line-height: 1; }
+        .pc-title { flex: 1; min-width: 0; }
+        .pc-title .en { font-size: 16px; font-weight: 700; line-height: 1.25; }
+        .pc-title .cn { font-size: 12px; opacity: 0.72; margin-top: 2px; }
+        .pc-tag { padding: 10px 18px; font-size: 13px; color: var(--text-light); background: #fafafa; border-bottom: 1px solid var(--border); line-height: 1.55; }
+        .pc-img { display: block; width: 100%; max-height: 300px; object-fit: cover; background: #f0f0f0; }
+        .pc-foil { margin-top: 14px; padding: 14px; border: 1px solid #e7c66b; border-radius: 10px; background: linear-gradient(135deg,#fffdf4,#fdf6e3); }
+        .pc-foil .foil-h { font-size: 14px; font-weight: 700; color: #9a6b00; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .pc-foil .foil-tag { font-size: 11px; font-weight: 500; color: #8a6d1f; background: #f4e3b0; padding: 2px 8px; border-radius: 20px; }
+        .pc-foil .foil-note { margin-top: 10px; font-size: 13px; line-height: 1.6; color: #6b5a2a; }
+        .pc-body { padding: 14px 18px 18px; flex: 1; }
+        .pc-block-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; margin: 2px 0 8px; display: flex; align-items: center; gap: 6px; }
+        .pc-block-title.pros { color: #1a9e5c; }
+        .pc-block-title.cons { color: #d97706; }
+        .pc-list { list-style: none; display: flex; flex-direction: column; gap: 7px; margin: 0 0 12px; }
+        .pc-list li { font-size: 13px; line-height: 1.45; display: flex; gap: 8px; align-items: flex-start; color: var(--text); }
+        .pc-list li .ic { flex: 0 0 16px; font-size: 13px; line-height: 1.5; }
+        .pc-list.pros li .ic { color: #1a9e5c; }
+        .pc-list.cons li .ic { color: #d97706; }
+        .pc-process-note {
+            font-size: 12px; background: #eef2ff; color: #3730a3;
+            border-left: 3px solid var(--shop); padding: 8px 12px; border-radius: 4px; margin-bottom: 12px; line-height: 1.55;
+        }
+        .pc-sub { border-top: 1px dashed var(--border); padding-top: 12px; margin-top: 12px; }
+        .pc-sub .sub-h { font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 8px; display: flex; align-items: baseline; gap: 6px; }
+        .pc-sub .sub-h .sub-cn { font-weight: 400; color: var(--text-light); font-size: 12px; }
+
+        .matrix-wrap { max-width: 1320px; margin: 40px auto 0; padding: 0 24px; }
+        .matrix-wrap h3 { font-size: 19px; color: var(--primary); text-align: center; margin-bottom: 16px; }
+        .matrix-table { width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); font-size: 13px; }
+        .matrix-table th, .matrix-table td { padding: 13px 10px; text-align: center; border-bottom: 1px solid var(--border); }
+        .matrix-table th { background: var(--primary); color: #fff; font-weight: 600; font-size: 12px; letter-spacing: 0.3px; }
+        .matrix-table td:first-child, .matrix-table th:first-child { text-align: left; }
+        .matrix-table tbody tr:last-child td { border-bottom: none; }
+        .matrix-table tbody tr:hover { background: #fafafa; }
+        .matrix-table .m-name { font-weight: 600; color: var(--text); }
+        .pill { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+        .pill.good { background: #e6f7ee; color: #1a9e5c; }
+        .pill.mid { background: #fff4e0; color: #c9760a; }
+        .pill.poor { background: #fdeaea; color: #d23b3b; }
+
+        @media (max-width: 600px) {
+            .process-intro h2 { font-size: 21px; }
+            .matrix-table { font-size: 11px; }
+            .matrix-table th, .matrix-table td { padding: 9px 5px; }
+        }
     </style>
 </head>
 <body>
@@ -1076,10 +1149,12 @@
             allBtn.onclick = () => { currentSubcategory = 'all'; renderSubcategories(); applyFilters(); };
             nav.appendChild(allBtn);
             customData.subcategories.forEach(sub => {
-                const count = customData.items.filter(i => i.subcategory === sub.key).length;
+                const isProcess = sub.key === 'process';
+                const count = isProcess ? null : customData.items.filter(i => i.subcategory === sub.key).length;
                 const btn = document.createElement('button');
                 btn.className = 'subcat-btn' + (currentSubcategory === sub.key ? ' active' : '');
-                btn.innerHTML = `${sub.icon || ''} ${sub.label} <span class="subcat-count">${count}</span>`;
+                const badge = isProcess ? '<span class="subcat-count">指南</span>' : `<span class="subcat-count">${count}</span>`;
+                btn.innerHTML = `${sub.icon || ''} ${sub.label} ${badge}`;
                 btn.onclick = () => {
                     currentSubcategory = sub.key; renderSubcategories(); applyFilters();
                 };
@@ -1104,6 +1179,7 @@
         // ===== Apply Filters =====
         function applyFilters() {
             if (currentCategory === '__custom__' && customData) {
+                if (currentSubcategory === 'process') { renderProcessPage(); return; }
                 let list = customData.items.map(customToProduct);
                 if (currentSubcategory !== 'all') {
                     list = list.filter(p => p.subcategory === currentSubcategory);
@@ -1146,7 +1222,7 @@
                 const card = document.createElement('div');
                 card.className = 'product-card';
                 card.onclick = () => openLightbox(idx);
-                const protectWm = (product.custom && product.subcategory !== 'size') ? '<div class="tiled-watermark"></div>' : '';
+                const protectWm = (product.custom && product.subcategory !== 'size' && product.subcategory !== 'fabric') ? '<div class="tiled-watermark"></div>' : '';
                 card.innerHTML = `
                     <div class="product-image-wrap">
                         <img src="${imgSrc}" alt="${product.model}" loading="lazy" draggable="false">
@@ -1161,6 +1237,158 @@
                 grid.appendChild(card);
             });
             section.appendChild(grid);
+        }
+
+        // ===== Craft / Process Comparison Data =====
+        const PROCESS_DATA = {
+            title: 'Comparison of Four Printing & Embroidery Processes',
+            subtitle: 'Choose the right craft for your custom jersey. Four craft families — Embroidery includes Direct Embroidery (3.1) and Embroidered Patch (3.2).',
+            processes: [
+                {
+                    num: '1', icon: '🖨️', en: 'Direct Digital Printing', cn: '数码直喷',
+                    tag: 'Print the pattern straight onto the fabric — no plate required.',
+                    pros: [
+                        'No extra plate cost',
+                        "Strong fastness — the print won't fall off during wearing & washing (permanent)",
+                        'Simplest operation, shortest lead time, high efficiency'
+                    ],
+                    cons: [ 'No obvious drawbacks among the four crafts' ]
+                },
+                {
+                    num: '2', icon: '🔥', en: 'Heat Transfer Printing', cn: '热转印',
+                    tag: 'Transfer a pre-printed film onto the garment with heat.',
+                    image: 'custom-images/Process/heat-transfer.jpg',
+                    foilImage: 'custom-images/Process/hot-foil.jpg',
+                    foilNote: 'Hot Stamping Foil (烫金) is a special type of heat transfer using metallic foil. Customers who want a gold, shiny, eye-catching effect can choose this option.',
+                    pros: [ 'Free of plate charge', 'Simple process, low technical threshold' ],
+                    cons: [
+                        'Hard to guarantee unified & accurate logo positioning in mass production',
+                        'Transfer layer is prone to peeling after repeated washing'
+                    ]
+                },
+                {
+                    num: '3', icon: '🧵', en: 'Embroidery', cn: '刺绣',
+                    tag: 'Stitch the design into the fabric — the most durable option.',
+                    embroidery: [
+                        {
+                            sub: '3.1', title: 'Direct Embroidery', cn: '直接刺绣',
+                            image: 'custom-images/Process/direct-embroidery.jpg',
+                            pros: [
+                                'Extremely durable, never falls off',
+                                'Great for irregular patterns, hollow-out graphics & letter logos'
+                            ],
+                            cons: [ 'High unit production cost', 'Longer manufacturing cycle', 'Plate making fee required' ]
+                        },
+                        {
+                            sub: '3.2', title: 'Embroidered Patch', cn: '刺绣贴',
+                            note: 'Embroider patterns onto the base fabric first, then sew the finished woven label onto garments.',
+                            image: 'custom-images/Process/embroidered-patch.jpg',
+                            pros: [
+                                'Permanent adhesion without falling off',
+                                'More convenient processing, higher efficiency than solid embroidery',
+                                'Matches regular geometric shapes perfectly'
+                            ],
+                            cons: [ 'Expensive manufacturing cost', 'Long production period', 'Plate cost is compulsory' ]
+                        }
+                    ]
+                },
+                {
+                    num: '4', icon: '💎', en: 'Silicone Printing', cn: '硅胶印花',
+                    tag: 'Raised, premium-textured print that stands out on the garment.',
+                    image: 'custom-images/Process/silicone.jpg',
+                    pros: [ 'Presents a premium, high-grade visual texture on clothes' ],
+                    cons: [ 'Higher material & production cost', 'Poor washing resistance — easy to peel off over time' ]
+                }
+            ],
+            matrix: {
+                cols: ['Craft', 'Cost', 'Durability', 'Wash Resistance', 'Lead Time', 'Plate Fee'],
+                rows: [
+                    { name: 'Direct Digital Printing', cost: 'good', durability: 'good', wash: 'good', lead: 'good', plate: 'good' },
+                    { name: 'Heat Transfer Printing', cost: 'good', durability: 'poor', wash: 'poor', lead: 'good', plate: 'good' },
+                    { name: 'Direct Embroidery', cost: 'poor', durability: 'good', wash: 'good', lead: 'poor', plate: 'poor' },
+                    { name: 'Embroidered Patch', cost: 'poor', durability: 'good', wash: 'good', lead: 'poor', plate: 'poor' },
+                    { name: 'Silicone Printing', cost: 'poor', durability: 'poor', wash: 'poor', lead: 'mid', plate: 'good' }
+                ]
+            }
+        };
+
+        // ===== Render Craft / Process Comparison Page =====
+        function renderProcessPage() {
+            const section = document.getElementById('productsSection');
+            const d = PROCESS_DATA;
+            const pillText = { good: 'Good', mid: 'Medium', poor: 'Poor' };
+
+            const cardHTML = d.processes.map(p => {
+                if (p.embroidery) {
+                    const subs = p.embroidery.map(s => `
+                        <div class="pc-sub">
+                            <div class="sub-h">${s.sub} ${s.title} <span class="sub-cn">${s.cn}</span></div>
+                            ${s.image ? `<img class="pc-img" src="${s.image}" alt="${s.title}">` : ''}
+                            ${s.note ? `<div class="pc-process-note">${s.note}</div>` : ''}
+                            <div class="pc-block-title pros">✓ Advantages / 优点</div>
+                            <ul class="pc-list pros">${s.pros.map(x => `<li><span class="ic">✓</span><span>${x}</span></li>`).join('')}</ul>
+                            <div class="pc-block-title cons">⚠ Disadvantages / 缺点</div>
+                            <ul class="pc-list cons">${s.cons.map(x => `<li><span class="ic">⚠</span><span>${x}</span></li>`).join('')}</ul>
+                        </div>`).join('');
+                    return `
+                    <div class="process-card">
+                        <div class="pc-head"><div class="pc-num">${p.num}</div><div class="pc-icon">${p.icon}</div>
+                            <div class="pc-title"><div class="en">${p.en}</div><div class="cn">${p.cn}</div></div></div>
+                        <div class="pc-tag">${p.tag}</div>
+                        <div class="pc-body">${subs}</div>
+                    </div>`;
+                }
+                return `
+                <div class="process-card">
+                    <div class="pc-head"><div class="pc-num">${p.num}</div><div class="pc-icon">${p.icon}</div>
+                        <div class="pc-title"><div class="en">${p.en}</div><div class="cn">${p.cn}</div></div></div>
+                    <div class="pc-tag">${p.tag}</div>
+                    ${p.image ? `<img class="pc-img" src="${p.image}" alt="${p.en}">` : ''}
+                    ${p.foilImage ? `
+                    <div class="pc-foil">
+                        <div class="foil-h">✨ Hot Stamping Foil / 烫金 <span class="foil-tag">a special heat-transfer variant</span></div>
+                        <img class="pc-img" src="${p.foilImage}" alt="Hot Stamping Foil">
+                        <div class="foil-note">${p.foilNote}</div>
+                    </div>` : ''}
+                    <div class="pc-body">
+                        <div class="pc-block-title pros">✓ Advantages / 优点</div>
+                        <ul class="pc-list pros">${p.pros.map(x => `<li><span class="ic">✓</span><span>${x}</span></li>`).join('')}</ul>
+                        <div class="pc-block-title cons">⚠ Disadvantages / 缺点</div>
+                        <ul class="pc-list cons">${p.cons.map(x => `<li><span class="ic">⚠</span><span>${x}</span></li>`).join('')}</ul>
+                    </div>
+                </div>`;
+            }).join('');
+
+            const m = d.matrix;
+            const matrixHead = m.cols.map(c => `<th>${c}</th>`).join('');
+            const matrixRows = m.rows.map(r => `
+                <tr>
+                    <td class="m-name">${r.name}</td>
+                    <td><span class="pill ${r.cost}">${pillText[r.cost]}</span></td>
+                    <td><span class="pill ${r.durability}">${pillText[r.durability]}</span></td>
+                    <td><span class="pill ${r.wash}">${pillText[r.wash]}</span></td>
+                    <td><span class="pill ${r.lead}">${pillText[r.lead]}</span></td>
+                    <td><span class="pill ${r.plate}">${pillText[r.plate]}</span></td>
+                </tr>`).join('');
+
+            section.innerHTML = `
+                <div class="process-section">
+                    <div class="process-intro">
+                        <h2>${d.title}</h2>
+                        <p>${d.subtitle}</p>
+                    </div>
+                    <div class="process-grid">${cardHTML}</div>
+                    <div class="matrix-wrap">
+                        <h3>Quick Comparison at a Glance</h3>
+                        <table class="matrix-table">
+                            <thead><tr>${matrixHead}</tr></thead>
+                            <tbody>${matrixRows}</tbody>
+                        </table>
+                        <p style="text-align:center;color:var(--text-light);font-size:12px;margin-top:12px;">
+                            Green = favorable to your order · Amber = medium · Red = unfavorable
+                        </p>
+                    </div>
+                </div>`;
         }
 
         // ===== Text Search =====
@@ -1185,7 +1413,7 @@
             if (lbPriceBlur) lbPriceBlur.style.display = product.custom ? 'none' : '';
             // Show tiled brand watermark for protected custom garments
             const lbWm = document.getElementById('lightboxWm');
-            if (lbWm) lbWm.style.display = (product.custom && product.subcategory !== 'size') ? 'block' : 'none';
+            if (lbWm) lbWm.style.display = (product.custom && product.subcategory !== 'size' && product.subcategory !== 'fabric') ? 'block' : 'none';
             document.getElementById('lightbox').classList.add('active');
             document.body.style.overflow = 'hidden';
         }
