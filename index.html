@@ -645,6 +645,15 @@
             { key: 'Tracksuit', label: 'Tracksuit', icon: '&#127939;' },
             { key: '__custom__', label: 'Custom Project', icon: '&#10024;', custom: true },
         ];
+        // ===== Cloudinary Fetch CDN (方式A: 质量零损失, 国内节点加速) =====
+        // 填入你的 Cloudinary cloud name 即启用; 留空则降级为原相对路径(不破坏网站)
+        const CLOUD_NAME = 'f7ereto0';
+        const SITE_BASE = 'https://selinahhzz-rgb.github.io/tk-chelsea-catalog/';
+        function cdn(rel) {
+            if (!CLOUD_NAME) return rel;
+            const remote = SITE_BASE + rel;
+            return `https://res.cloudinary.com/${CLOUD_NAME}/image/fetch/${encodeURIComponent(remote)}`;
+        }
         const CATEGORY_EN = {
             'Wind jacket': 'Wind Jacket', 'Football bag': 'Football Bag',
             'Short training kit': 'Short Training Kit', 'Referee Kit': 'Referee Kit',
@@ -1072,7 +1081,7 @@
                 card.innerHTML = `
                     <div class="match-badge ${badgeClass}">${badgeText}</div>
                     <div class="match-image-wrap">
-                        <img src="catalog-images/${match.product.image}" alt="${match.product.model}" loading="lazy" draggable="false">
+                        <img src="${cdn('catalog-images/' + match.product.image)}" alt="${match.product.model}" loading="lazy" draggable="false">
                         <div class="price-blur"></div>
                     </div>
                     <div class="match-info">
@@ -1220,7 +1229,7 @@
             filteredProducts.forEach((product, idx) => {
                 const catEn = product.custom ? (product.category_cn || '定制项目') : (CATEGORY_EN[product.category] || product.category);
                 const base = product.custom ? 'custom-images/' : 'catalog-images/';
-                const imgSrc = base + encodeURI(product.image);
+                const imgSrc = cdn(base + product.image);
                 const card = document.createElement('div');
                 card.className = 'product-card';
                 card.onclick = () => openLightbox(idx);
@@ -1325,7 +1334,7 @@
                     const subs = p.embroidery.map(s => `
                         <div class="pc-sub">
                             <div class="sub-h">${s.sub} ${s.title} <span class="sub-cn">${s.cn}</span></div>
-                            ${s.image ? `<img class="pc-img" src="${s.image}" alt="${s.title}">` : ''}
+                            ${s.image ? `<img class="pc-img" src="${cdn(s.image)}" alt="${s.title}">` : ''}
                             ${s.note ? `<div class="pc-process-note">${s.note}</div>` : ''}
                             <div class="pc-block-title pros">✓ Advantages / 优点</div>
                             <ul class="pc-list pros">${s.pros.map(x => `<li><span class="ic">✓</span><span>${x}</span></li>`).join('')}</ul>
@@ -1345,11 +1354,11 @@
                     <div class="pc-head"><div class="pc-num">${p.num}</div><div class="pc-icon">${p.icon}</div>
                         <div class="pc-title"><div class="en">${p.en}</div><div class="cn">${p.cn}</div></div></div>
                     <div class="pc-tag">${p.tag}</div>
-                    ${p.image ? `<img class="pc-img" src="${p.image}" alt="${p.en}">` : ''}
+                    ${p.image ? `<img class="pc-img" src="${cdn(p.image)}" alt="${p.en}">` : ''}
                     ${p.foilImage ? `
                     <div class="pc-foil">
                         <div class="foil-h">✨ Hot Stamping Foil / 烫金 <span class="foil-tag">a special heat-transfer variant</span></div>
-                        <img class="pc-img" src="${p.foilImage}" alt="Hot Stamping Foil">
+                        <img class="pc-img" src="${cdn(p.foilImage)}" alt="Hot Stamping Foil">
                         <div class="foil-note">${p.foilNote}</div>
                     </div>` : ''}
                     <div class="pc-body">
@@ -1406,7 +1415,7 @@
             const product = filteredProducts[idx];
             const catEn = product.custom ? (product.category_cn || '定制项目') : (CATEGORY_EN[product.category] || product.category);
             const base = product.custom ? 'custom-images/' : 'catalog-images/';
-            document.getElementById('lightboxImg').src = base + encodeURI(product.image);
+            document.getElementById('lightboxImg').src = cdn(base + product.image);
             document.getElementById('lightboxModel').textContent = product.model;
             document.getElementById('lightboxCat').textContent = catEn;
             document.getElementById('lightboxCounter').textContent = `${idx + 1} / ${filteredProducts.length}`;
