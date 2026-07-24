@@ -1396,7 +1396,7 @@
         // ===== Text Search =====
         document.getElementById('searchInput').addEventListener('input', e => {
             searchQuery = e.target.value.trim();
-            if (searchQuery && currentCategory !== '__custom__') currentCategory = 'all';
+            // 保留当前类目上下文：在某分类下搜索只搜该分类，不再强制切回 all（跨类目）
             renderCategories(); applyFilters();
         });
 
