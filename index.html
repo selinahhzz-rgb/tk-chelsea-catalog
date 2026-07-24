@@ -693,10 +693,9 @@
 
         // ===== Constants =====
         const CATEGORIES = [
-            { key: 'all', label: 'All', icon: '&#128196;' },
+            { key: 'Short training kit', label: 'Short Training Kit', icon: '&#128085;' },
             { key: 'Wind jacket', label: 'Wind Jacket', icon: '&#129509;' },
             { key: 'Football bag', label: 'Football Bag', icon: '&#128092;' },
-            { key: 'Short training kit', label: 'Short Training Kit', icon: '&#128085;' },
             { key: 'Referee Kit', label: 'Referee Kit', icon: '&#9878;' },
             { key: 'Long training Kit', label: 'Long Training Kit', icon: '&#128087;' },
             { key: 'Goal keeper', label: 'Goalkeeper', icon: '&#129510;' },
@@ -736,7 +735,7 @@
         let products = [];
         let customData = null;        // { subcategories, items }
         let featuresData = null;
-        let currentCategory = 'all';
+        let currentCategory = 'Short training kit';
         let currentSubcategory = 'all';  // for custom view
         let searchQuery = '';
         let lightboxIndex = -1;
@@ -1229,7 +1228,7 @@
                 searchArea.style.display = 'none';
                 renderSubcategories();
             } else {
-                currentCategory = 'all';
+                currentCategory = 'Short training kit';
                 currentSubcategory = 'all';
                 catNav.style.display = '';
                 subNav.style.display = 'none';
