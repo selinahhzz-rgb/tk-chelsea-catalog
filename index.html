@@ -311,6 +311,7 @@
         .product-info { padding: 12px 16px; }
         .product-model { font-size: 15px; font-weight: 600; color: var(--text); }
         .product-category { font-size: 12px; color: var(--text-light); margin-top: 4px; }
+        .product-spec { font-size: 11px; color: var(--primary); margin-top: 5px; line-height: 1.4; }
 
         /* ===== Lightbox ===== */
         .lightbox {
@@ -333,6 +334,9 @@
         .lightbox-img-wrap .price-blur { height: 18%; border-radius: 4px 4px 0 0; }
         .lightbox-info { color: rgba(255,255,255,0.8); font-size: 14px; margin-top: 16px; text-align: center; }
         .lightbox-info .model-name { font-size: 18px; font-weight: 600; color: white; }
+        .lb-spec { display: flex; flex-wrap: wrap; gap: 6px 14px; justify-content: center; margin-top: 8px; font-size: 13px; }
+        .lb-spec span b { color: #fff; font-weight: 600; }
+        .lb-size { margin-top: 8px; font-size: 12px; color: rgba(255,255,255,0.7); }
         .lightbox-nav {
             position: absolute; top: 50%; transform: translateY(-50%); color: white;
             font-size: 40px; cursor: pointer; width: 60px; height: 80px;
@@ -585,6 +589,7 @@
         <div class="lightbox-info">
             <div class="model-name" id="lightboxModel"></div>
             <div id="lightboxCat"></div>
+            <div id="lightboxSpec"></div>
             <div class="lightbox-counter" id="lightboxCounter"></div>
         </div>
     </div>
@@ -643,6 +648,8 @@
             { key: 'Long training Kit', label: 'Long Training Kit', icon: '&#128087;' },
             { key: 'Goal keeper', label: 'Goalkeeper', icon: '&#129510;' },
             { key: 'Tracksuit', label: 'Tracksuit', icon: '&#127939;' },
+            { key: 'Hoodie', label: 'Hoodie', icon: '&#129537;' },
+            { key: 'Hoodie child', label: 'Hoodie Child', icon: '&#128085;' },
             { key: '__custom__', label: 'Custom Project', icon: '&#10024;', custom: true },
         ];
         // ===== Cloudinary Fetch CDN (方式A: 质量零损失, 国内节点加速) =====
@@ -659,6 +666,7 @@
             'Short training kit': 'Short Training Kit', 'Referee Kit': 'Referee Kit',
             'Long training Kit': 'Long Training Kit', 'Goal keeper': 'Goalkeeper',
             'Tracksuit': 'Tracksuit',
+            'Hoodie': 'Hoodie', 'Hoodie child': 'Hoodie (Child)',
         };
 
         // Feature parameters (must match compute_features.py v4)
@@ -1210,6 +1218,29 @@
             renderProducts();
         }
 
+        // ===== Product spec line (hoodies etc.) =====
+        function productSpecLine(p) {
+            const parts = [];
+            if (p.gsm) parts.push(p.gsm + ' GSM');
+            if (p.fabric) parts.push(p.fabric);
+            if (p.composition) parts.push(p.composition);
+            if (p.color) parts.push('色号 ' + p.color);
+            if (!parts.length) return '';
+            return `<div class="product-spec">${parts.join(' · ')}</div>`;
+        }
+        function buildLightboxSpec(p) {
+            const rows = [];
+            if (p.gsm) rows.push(['GSM', p.gsm]);
+            if (p.fabric) rows.push(['Fabric', p.fabric]);
+            if (p.composition) rows.push(['Composition', p.composition]);
+            if (p.color) rows.push(['Color', p.color]);
+            if (p.price_code) rows.push(['Ref', p.price_code]);
+            let html = '';
+            if (rows.length) html += '<div class="lb-spec">' + rows.map(r => `<span><b>${r[0]}:</b> ${r[1]}</span>`).join('') + '</div>';
+            if (p.size_text) html += `<div class="lb-size"><b>Size:</b> ${p.size_text.replace(/,/g, ', ')}</div>`;
+            return html;
+        }
+
         // ===== Render Products =====
         function renderProducts() {
             const section = document.getElementById('productsSection');
@@ -1244,6 +1275,7 @@
                     <div class="product-info">
                         <div class="product-model">${product.product_model || product.model}</div>
                         <div class="product-category">${catEn}</div>
+                        ${productSpecLine(product)}
                     </div>`;
                 grid.appendChild(card);
             });
@@ -1418,6 +1450,7 @@
             document.getElementById('lightboxImg').src = cdn(base + product.image);
             document.getElementById('lightboxModel').textContent = product.model;
             document.getElementById('lightboxCat').textContent = catEn;
+            document.getElementById('lightboxSpec').innerHTML = buildLightboxSpec(product);
             document.getElementById('lightboxCounter').textContent = `${idx + 1} / ${filteredProducts.length}`;
             // Hide price blur for custom items (no price info)
             const lbPriceBlur = document.querySelector('.lightbox-img-wrap .price-blur');
