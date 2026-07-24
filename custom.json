@@ -26,192 +26,17 @@
       "icon": "📏"
     },
     {
+      "key": "process",
+      "label": "Craft & Printing / 工艺",
+      "icon": "🎨"
+    },
+    {
       "key": "fabric",
       "label": "Fabric / 布料",
       "icon": "🧵"
     }
   ],
   "items": [
-    {
-      "name": "NBA200",
-      "subcategory": "fabric",
-      "image": "Fabric/NBA200.jpg",
-      "type": "image"
-    },
-    {
-      "name": "NBA240",
-      "subcategory": "fabric",
-      "image": "Fabric/NBA240.jpg",
-      "type": "image"
-    },
-    {
-      "name": "NK160",
-      "subcategory": "fabric",
-      "image": "Fabric/NK160.jpg",
-      "type": "image"
-    },
-    {
-      "name": "低弹网150",
-      "subcategory": "fabric",
-      "image": "Fabric/低弹网150.jpg",
-      "type": "image"
-    },
-    {
-      "name": "健康布250",
-      "subcategory": "fabric",
-      "image": "Fabric/健康布250.jpg",
-      "type": "image"
-    },
-    {
-      "name": "健康布280",
-      "subcategory": "fabric",
-      "image": "Fabric/健康布280.jpg",
-      "type": "image"
-    },
-    {
-      "name": "冰感流星雨160",
-      "subcategory": "fabric",
-      "image": "Fabric/冰感流星雨160.jpg",
-      "type": "image"
-    },
-    {
-      "name": "冰感火箭170",
-      "subcategory": "fabric",
-      "image": "Fabric/冰感火箭170.jpg",
-      "type": "image"
-    },
-    {
-      "name": "几何提花170",
-      "subcategory": "fabric",
-      "image": "Fabric/几何提花170.jpg",
-      "type": "image"
-    },
-    {
-      "name": "双枪布160",
-      "subcategory": "fabric",
-      "image": "Fabric/双枪布160.jpg",
-      "type": "image"
-    },
-    {
-      "name": "双面布150",
-      "subcategory": "fabric",
-      "image": "Fabric/双面布150.jpg",
-      "type": "image"
-    },
-    {
-      "name": "小米通160",
-      "subcategory": "fabric",
-      "image": "Fabric/小米通160.jpg",
-      "type": "image"
-    },
-    {
-      "name": "小锋眼160",
-      "subcategory": "fabric",
-      "image": "Fabric/小锋眼160.jpg",
-      "type": "image"
-    },
-    {
-      "name": "方格双面布125",
-      "subcategory": "fabric",
-      "image": "Fabric/方格双面布125.jpg",
-      "type": "image"
-    },
-    {
-      "name": "明盺提花160",
-      "subcategory": "fabric",
-      "image": "Fabric/明盺提花160.jpg",
-      "type": "image"
-    },
-    {
-      "name": "梯形提花170",
-      "subcategory": "fabric",
-      "image": "Fabric/梯形提花170.jpg",
-      "type": "image"
-    },
-    {
-      "name": "涤氨透气孔160",
-      "subcategory": "fabric",
-      "image": "Fabric/涤氨透气孔160.jpg",
-      "type": "image"
-    },
-    {
-      "name": "满天星160",
-      "subcategory": "fabric",
-      "image": "Fabric/满天星160.jpg",
-      "type": "image"
-    },
-    {
-      "name": "牛奶丝230",
-      "subcategory": "fabric",
-      "image": "Fabric/牛奶丝230.jpg",
-      "type": "image"
-    },
-    {
-      "name": "球员格子150",
-      "subcategory": "fabric",
-      "image": "Fabric/球员格子150.jpg",
-      "type": "image"
-    },
-    {
-      "name": "短点空网",
-      "subcategory": "fabric",
-      "image": "Fabric/短点空网.jpg",
-      "type": "image"
-    },
-    {
-      "name": "篮球提花160",
-      "subcategory": "fabric",
-      "image": "Fabric/篮球提花160.jpg",
-      "type": "image"
-    },
-    {
-      "name": "耐克球员160",
-      "subcategory": "fabric",
-      "image": "Fabric/耐克球员160.jpg",
-      "type": "image"
-    },
-    {
-      "name": "菱形布150",
-      "subcategory": "fabric",
-      "image": "Fabric/菱形布150.jpg",
-      "type": "image"
-    },
-    {
-      "name": "蜂窝160",
-      "subcategory": "fabric",
-      "image": "Fabric/蜂窝160.jpg",
-      "type": "image"
-    },
-    {
-      "name": "蝴蝶网160",
-      "subcategory": "fabric",
-      "image": "Fabric/蝴蝶网160.jpg",
-      "type": "image"
-    },
-    {
-      "name": "迷彩提花160",
-      "subcategory": "fabric",
-      "image": "Fabric/迷彩提花160.jpg",
-      "type": "image"
-    },
-    {
-      "name": "针孔布150",
-      "subcategory": "fabric",
-      "image": "Fabric/针孔布150.jpg",
-      "type": "image"
-    },
-    {
-      "name": "阿迪球员160",
-      "subcategory": "fabric",
-      "image": "Fabric/阿迪球员160.jpg",
-      "type": "image"
-    },
-    {
-      "name": "雨点布160",
-      "subcategory": "fabric",
-      "image": "Fabric/雨点布160.jpg",
-      "type": "image"
-    },
     {
       "name": "T恤-1",
       "subcategory": "short-sleeve",
@@ -411,6 +236,12 @@
       "type": "image"
     },
     {
+      "name": "球衣D-2",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/球衣D-2.jpg",
+      "type": "image"
+    },
+    {
       "name": "球衣M-1",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/球衣M-1.jpg",
@@ -426,12 +257,6 @@
       "name": "球衣M-3",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/球衣M-3.jpg",
-      "type": "image"
-    },
-    {
-      "name": "球衣M-4",
-      "subcategory": "short-sleeve",
-      "image": "ShortSleeve/球衣M-4.jpg",
       "type": "image"
     },
     {
@@ -483,9 +308,27 @@
       "type": "image"
     },
     {
-      "name": "球衣j-1",
+      "name": "球衣ef-1",
       "subcategory": "short-sleeve",
-      "image": "ShortSleeve/球衣j-1.jpg",
+      "image": "ShortSleeve/球衣ef-1.jpg",
+      "type": "image"
+    },
+    {
+      "name": "球衣ef-2",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/球衣ef-2.jpg",
+      "type": "image"
+    },
+    {
+      "name": "球衣er-1",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/球衣er-1.jpg",
+      "type": "image"
+    },
+    {
+      "name": "球衣er-2",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/球衣er-2.jpg",
       "type": "image"
     },
     {
@@ -504,6 +347,12 @@
       "name": "球衣j-5",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/球衣j-5.jpg",
+      "type": "image"
+    },
+    {
+      "name": "短裤w-",
+      "subcategory": "short-sleeve",
+      "image": "ShortSleeve/短裤w-.jpg",
       "type": "image"
     },
     {
@@ -570,6 +419,18 @@
       "name": "守门员蓝色-2",
       "subcategory": "long-sleeve",
       "image": "LongSleeve/守门员蓝色-2.jpg",
+      "type": "image"
+    },
+    {
+      "name": "长袖w-1",
+      "subcategory": "long-sleeve",
+      "image": "LongSleeve/长袖w-1.jpg",
+      "type": "image"
+    },
+    {
+      "name": "长袖w-2",
+      "subcategory": "long-sleeve",
+      "image": "LongSleeve/长袖w-2.jpg",
       "type": "image"
     },
     {
@@ -648,6 +509,186 @@
       "name": "socks_size_chart",
       "subcategory": "size",
       "image": "Size/socks_size_chart.jpg",
+      "type": "image"
+    },
+    {
+      "name": "NBA200",
+      "subcategory": "fabric",
+      "image": "Fabric/NBA200.jpg",
+      "type": "image"
+    },
+    {
+      "name": "NBA240",
+      "subcategory": "fabric",
+      "image": "Fabric/NBA240.jpg",
+      "type": "image"
+    },
+    {
+      "name": "NK160",
+      "subcategory": "fabric",
+      "image": "Fabric/NK160.jpg",
+      "type": "image"
+    },
+    {
+      "name": "低弹网150",
+      "subcategory": "fabric",
+      "image": "Fabric/低弹网150.jpg",
+      "type": "image"
+    },
+    {
+      "name": "健康布250",
+      "subcategory": "fabric",
+      "image": "Fabric/健康布250.jpg",
+      "type": "image"
+    },
+    {
+      "name": "健康布280",
+      "subcategory": "fabric",
+      "image": "Fabric/健康布280.jpg",
+      "type": "image"
+    },
+    {
+      "name": "冰感流星雨160",
+      "subcategory": "fabric",
+      "image": "Fabric/冰感流星雨160.jpg",
+      "type": "image"
+    },
+    {
+      "name": "冰感火箭170",
+      "subcategory": "fabric",
+      "image": "Fabric/冰感火箭170.jpg",
+      "type": "image"
+    },
+    {
+      "name": "几何提花170",
+      "subcategory": "fabric",
+      "image": "Fabric/几何提花170.jpg",
+      "type": "image"
+    },
+    {
+      "name": "双枪布160",
+      "subcategory": "fabric",
+      "image": "Fabric/双枪布160.jpg",
+      "type": "image"
+    },
+    {
+      "name": "双面布150",
+      "subcategory": "fabric",
+      "image": "Fabric/双面布150.jpg",
+      "type": "image"
+    },
+    {
+      "name": "小米通160",
+      "subcategory": "fabric",
+      "image": "Fabric/小米通160.jpg",
+      "type": "image"
+    },
+    {
+      "name": "小锋眼160",
+      "subcategory": "fabric",
+      "image": "Fabric/小锋眼160.jpg",
+      "type": "image"
+    },
+    {
+      "name": "方格双面布125",
+      "subcategory": "fabric",
+      "image": "Fabric/方格双面布125.jpg",
+      "type": "image"
+    },
+    {
+      "name": "明盺提花160",
+      "subcategory": "fabric",
+      "image": "Fabric/明盺提花160.jpg",
+      "type": "image"
+    },
+    {
+      "name": "梯形提花170",
+      "subcategory": "fabric",
+      "image": "Fabric/梯形提花170.jpg",
+      "type": "image"
+    },
+    {
+      "name": "涤氨透气孔160",
+      "subcategory": "fabric",
+      "image": "Fabric/涤氨透气孔160.jpg",
+      "type": "image"
+    },
+    {
+      "name": "满天星160",
+      "subcategory": "fabric",
+      "image": "Fabric/满天星160.jpg",
+      "type": "image"
+    },
+    {
+      "name": "牛奶丝230",
+      "subcategory": "fabric",
+      "image": "Fabric/牛奶丝230.jpg",
+      "type": "image"
+    },
+    {
+      "name": "球员格子150",
+      "subcategory": "fabric",
+      "image": "Fabric/球员格子150.jpg",
+      "type": "image"
+    },
+    {
+      "name": "短点空网",
+      "subcategory": "fabric",
+      "image": "Fabric/短点空网.jpg",
+      "type": "image"
+    },
+    {
+      "name": "篮球提花160",
+      "subcategory": "fabric",
+      "image": "Fabric/篮球提花160.jpg",
+      "type": "image"
+    },
+    {
+      "name": "耐克球员160",
+      "subcategory": "fabric",
+      "image": "Fabric/耐克球员160.jpg",
+      "type": "image"
+    },
+    {
+      "name": "菱形布150",
+      "subcategory": "fabric",
+      "image": "Fabric/菱形布150.jpg",
+      "type": "image"
+    },
+    {
+      "name": "蜂窝160",
+      "subcategory": "fabric",
+      "image": "Fabric/蜂窝160.jpg",
+      "type": "image"
+    },
+    {
+      "name": "蝴蝶网160",
+      "subcategory": "fabric",
+      "image": "Fabric/蝴蝶网160.jpg",
+      "type": "image"
+    },
+    {
+      "name": "迷彩提花160",
+      "subcategory": "fabric",
+      "image": "Fabric/迷彩提花160.jpg",
+      "type": "image"
+    },
+    {
+      "name": "针孔布150",
+      "subcategory": "fabric",
+      "image": "Fabric/针孔布150.jpg",
+      "type": "image"
+    },
+    {
+      "name": "阿迪球员160",
+      "subcategory": "fabric",
+      "image": "Fabric/阿迪球员160.jpg",
+      "type": "image"
+    },
+    {
+      "name": "雨点布160",
+      "subcategory": "fabric",
+      "image": "Fabric/雨点布160.jpg",
       "type": "image"
     }
   ]
