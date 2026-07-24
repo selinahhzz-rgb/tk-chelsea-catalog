@@ -743,6 +743,7 @@
         let uploadedImageData = null;
         let isAdmin = false;
         let viewMode = 'catalog';   // 'catalog' | 'custom'  —— 把定制项目单独拉出来
+        let dataReady = false;     // 数据加载完成后才响应 hashchange
 
         // ===== Admin Mode =====
         function toggleAdminModal() {
@@ -1172,8 +1173,8 @@
                     customData = { subcategories: [], items: [] };
                 }
                 document.getElementById('totalCount').textContent = products.length + customCount;
-                renderCategories();
-                applyFilters();
+                dataReady = true;
+                applyStateFromHash();
                 document.getElementById('loadingOverlay').style.display = 'none';
             } catch (err) {
                 console.error('Failed to load products:', err);
@@ -1196,45 +1197,71 @@
                 btn.className = 'cat-btn' + (currentCategory === cat.key ? ' active' : '');
                 btn.innerHTML = `${cat.icon || ''} ${cat.label} <span class="cat-count">${count}</span>`;
                 btn.onclick = () => {
-                    currentCategory = cat.key; currentSubcategory = 'all'; searchQuery = '';
-                    document.getElementById('searchInput').value = '';
-                    document.getElementById('matchResults').classList.remove('active');
-                    const isCustom = !!cat.custom;
-                    document.getElementById('subCategoryNav').style.display = isCustom ? 'block' : 'none';
-                    if (isCustom) renderSubcategories();
-                    renderCategories(); applyFilters();
+                    currentCategory = cat.key; currentSubcategory = 'all';
+                    setHash();
                 };
                 nav.appendChild(btn);
             });
         }
 
-        // ===== View Mode Switch (产品目录 / 定制项目) =====
-        function switchMode(mode) {
-            viewMode = mode;
-            document.querySelectorAll('.mode-toggle-btn').forEach(b => {
-                b.classList.toggle('active', b.dataset.mode === mode);
-            });
+        // ===== URL Hash Routing（每个类目都有可分享/可直达的链接） =====
+        function syncViewUI() {
+            document.querySelectorAll('.mode-toggle-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === viewMode));
             const catNav = document.querySelector('.category-nav');
             const subNav = document.getElementById('subCategoryNav');
             const searchArea = document.getElementById('searchArea');
-            document.getElementById('matchResults').classList.remove('active');
-            document.getElementById('searchInput').value = '';
-            searchQuery = '';
-            if (mode === 'custom') {
-                currentCategory = '__custom__';
-                currentSubcategory = 'all';
+            if (viewMode === 'custom') {
                 catNav.style.display = 'none';
                 subNav.style.display = 'block';
                 searchArea.style.display = 'none';
                 renderSubcategories();
             } else {
-                currentCategory = 'Short training kit';
-                currentSubcategory = 'all';
                 catNav.style.display = '';
                 subNav.style.display = 'none';
                 renderCategories();   // 内部按 currentCategory 控制 searchArea 显隐
             }
             applyFilters();
+        }
+        function setHash() {
+            const params = new URLSearchParams();
+            params.set('mode', viewMode);
+            params.set('cat', viewMode === 'custom'
+                ? (currentSubcategory === 'all' ? '__custom__' : currentSubcategory)
+                : currentCategory);
+            const h = '#' + params.toString();
+            if (location.hash !== h) location.hash = h;  // 触发 hashchange -> applyStateFromHash
+        }
+        function applyStateFromHash() {
+            if (!dataReady) return;
+            const params = new URLSearchParams(location.hash.replace(/^#/, ''));
+            const mode = params.get('mode');
+            const cat = params.get('cat');
+            // 清空搜索，保证分享链接打开的是干净的类目视图
+            searchQuery = '';
+            const si = document.getElementById('searchInput');
+            if (si) si.value = '';
+            const mr = document.getElementById('matchResults');
+            if (mr) mr.classList.remove('active');
+            if (mode === 'custom') {
+                viewMode = 'custom';
+                currentCategory = '__custom__';
+                currentSubcategory = (cat && cat !== '__custom__' && cat !== 'all') ? cat : 'all';
+            } else {
+                viewMode = 'catalog';
+                currentSubcategory = 'all';
+                const valid = CATEGORIES.some(c => c.key === cat);
+                currentCategory = valid ? cat : 'Short training kit';
+            }
+            syncViewUI();
+        }
+        window.addEventListener('hashchange', applyStateFromHash);
+
+        // ===== View Mode Switch (产品目录 / 定制项目) =====
+        function switchMode(mode) {
+            viewMode = mode;
+            if (mode === 'custom') { currentCategory = '__custom__'; currentSubcategory = 'all'; }
+            else { currentCategory = 'Short training kit'; currentSubcategory = 'all'; }
+            setHash();
         }
 
         // ===== Render Subcategory Nav (Custom) =====
@@ -1246,7 +1273,7 @@
             const allBtn = document.createElement('button');
             allBtn.className = 'subcat-btn' + (currentSubcategory === 'all' ? ' active' : '');
             allBtn.innerHTML = `&#128196; All <span class="subcat-count">${customData.items.length}</span>`;
-            allBtn.onclick = () => { currentSubcategory = 'all'; renderSubcategories(); applyFilters(); };
+            allBtn.onclick = () => { currentSubcategory = 'all'; setHash(); };
             nav.appendChild(allBtn);
             customData.subcategories.forEach(sub => {
                 const isProcess = sub.key === 'process';
@@ -1256,7 +1283,7 @@
                 const badge = isProcess ? '<span class="subcat-count">指南</span>' : `<span class="subcat-count">${count}</span>`;
                 btn.innerHTML = `${sub.icon || ''} ${sub.label} ${badge}`;
                 btn.onclick = () => {
-                    currentSubcategory = sub.key; renderSubcategories(); applyFilters();
+                    currentSubcategory = sub.key; setHash();
                 };
                 nav.appendChild(btn);
             });
