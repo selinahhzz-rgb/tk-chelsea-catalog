@@ -331,6 +331,22 @@
         .product-model { font-size: 15px; font-weight: 600; color: var(--text); }
         .product-category { font-size: 12px; color: var(--text-light); margin-top: 4px; }
         .product-spec { font-size: 11px; color: var(--primary); margin-top: 5px; line-height: 1.4; }
+        /* Fabric category badge (Patterned / Solid) — 类型区分，不暗示质量优劣 */
+        .fabric-badge {
+            position: absolute; top: 8px; left: 8px; z-index: 5;
+            font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 999px;
+            letter-spacing: .3px; line-height: 1.4;
+        }
+        .fabric-badge.patterned { background: #e7f1ff; color: #1f6fd1; border: 1px solid #c2dbff; }
+        .fabric-badge.regular   { background: #f1f1f1; color: #6b6b6b; border: 1px solid #dcdcdc; }
+        .fabric-filter { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 4px 0 18px; }
+        .fabric-filter .ff-label { font-size: 12px; color: var(--text-light); margin-right: 4px; }
+        .fabric-filter .ff-btn {
+            font-size: 12px; padding: 6px 14px; border-radius: 999px; cursor: pointer;
+            border: 1px solid #d8d8d8; background: #fff; color: #555; transition: all .15s;
+        }
+        .fabric-filter .ff-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .fabric-filter .ff-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
 
         /* ===== Lightbox ===== */
         .lightbox {
@@ -744,6 +760,12 @@
         let isAdmin = false;
         let viewMode = 'catalog';   // 'catalog' | 'custom'  —— 把定制项目单独拉出来
         let dataReady = false;     // 数据加载完成后才响应 hashchange
+        let fabricFilter = 'all'; // 定制布料筛选：'all' | 'patterned' | 'regular'
+        // 面料两大类别（“高级”=图案多样，不代表质量；英文用 Patterned/Solid 精确描述类型，不暗示优劣）
+        const FABRIC_CAT = {
+            patterned: { en: 'Patterned', cn: '高级面料' },
+            regular:   { en: 'Solid',    cn: '常规面料' },
+        };
 
         // ===== Admin Mode =====
         function toggleAdminModal() {
@@ -1242,6 +1264,7 @@
             if (si) si.value = '';
             const mr = document.getElementById('matchResults');
             if (mr) mr.classList.remove('active');
+            fabricFilter = 'all';   // 切换类目/子类时重置布料筛选
             if (mode === 'custom') {
                 viewMode = 'custom';
                 currentCategory = '__custom__';
@@ -1300,6 +1323,7 @@
                 type: item.type || 'image',
                 link: item.link || '',
                 subcategory: item.subcategory,
+                fabric_category: item.fabric_category || '',
             };
         }
 
@@ -1310,6 +1334,9 @@
                 let list = customData.items.map(customToProduct);
                 if (currentSubcategory !== 'all') {
                     list = list.filter(p => p.subcategory === currentSubcategory);
+                }
+                if (currentSubcategory === 'fabric' && fabricFilter !== 'all') {
+                    list = list.filter(p => p.fabric_category === fabricFilter);
                 }
                 const q = searchQuery.toLowerCase();
                 if (q) list = list.filter(p => p.model.toLowerCase().includes(q));
@@ -1324,6 +1351,11 @@
                 return catMatch && searchMatch;
             });
             renderProducts();
+        }
+
+        function setFabricFilter(v) {
+            fabricFilter = v;
+            applyFilters();
         }
 
         // ===== Product spec line (hoodies etc.) =====
@@ -1342,6 +1374,7 @@
             if (p.fabric) rows.push(['Fabric', p.fabric]);
             if (p.composition) rows.push(['Composition', p.composition]);
             if (p.color) rows.push(['Color', p.color]);
+            if (p.fabric_category) rows.push(['Fabric Type', FABRIC_CAT[p.fabric_category].en + ' · ' + FABRIC_CAT[p.fabric_category].cn]);
             if (p.price_code) rows.push(['Ref', p.price_code]);
             let html = '';
             if (rows.length) html += '<div class="lb-spec">' + rows.map(r => `<span><b>${r[0]}:</b> ${r[1]}</span>`).join('') + '</div>';
@@ -1383,6 +1416,16 @@
             title.className = 'section-title';
             title.innerHTML = `<span class="cat-icon">${catInfo ? catInfo.icon || '&#128196;' : '&#128196;'}</span> ${catLabel} (${filteredProducts.length} items)`;
             section.appendChild(title);
+            // 定制 → 布料 子类目：按面料类别（Patterned / Solid）筛选，方便浏览
+            if (currentCategory === '__custom__' && currentSubcategory === 'fabric') {
+                const fb = document.createElement('div');
+                fb.className = 'fabric-filter';
+                fb.innerHTML = `<span class="ff-label">Fabric Type 面料类别:</span>` + ['all', 'patterned', 'regular'].map(k => {
+                    const lab = k === 'all' ? 'All 全部' : (FABRIC_CAT[k].en + ' · ' + FABRIC_CAT[k].cn);
+                    return `<button class="ff-btn${fabricFilter === k ? ' active' : ''}" onclick="setFabricFilter('${k}')">${lab}</button>`;
+                }).join('');
+                section.appendChild(fb);
+            }
             const grid = document.createElement('div');
             grid.className = 'products-grid';
             filteredProducts.forEach((product, idx) => {
@@ -1396,6 +1439,7 @@
                 card.innerHTML = `
                     <div class="product-image-wrap">
                         <img src="${imgSrc}" alt="${product.model}" loading="lazy" draggable="false">
+                        ${product.fabric_category ? `<span class="fabric-badge ${product.fabric_category}">${FABRIC_CAT[product.fabric_category].en}</span>` : ''}
                         <div class="watermark"></div>
                         ${protectWm}
                         ${needsPriceBlur(product) ? '<div class="price-blur"></div>' : ''}
