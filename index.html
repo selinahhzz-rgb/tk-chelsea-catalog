@@ -1283,7 +1283,7 @@
             if (mode === 'custom') {
                 viewMode = 'custom';
                 currentCategory = '__custom__';
-                currentSubcategory = (cat && cat !== '__custom__' && cat !== 'all') ? cat : 'all';
+                currentSubcategory = (cat && cat !== '__custom__' && cat !== 'all') ? cat : defaultSub();
             } else {
                 viewMode = 'catalog';
                 currentSubcategory = 'all';
@@ -1297,9 +1297,20 @@
         // ===== View Mode Switch (产品目录 / 定制项目) =====
         function switchMode(mode) {
             viewMode = mode;
-            if (mode === 'custom') { currentCategory = '__custom__'; currentSubcategory = 'all'; }
+            if (mode === 'custom') { currentCategory = '__custom__'; currentSubcategory = defaultSub(); }
             else { currentCategory = 'Short training kit'; currentSubcategory = 'all'; }
             setHash();
+        }
+
+        // ===== Default custom subcategory (first with items) =====
+        function defaultSub() {
+            if (!customData || !customData.subcategories) return 'all';
+            for (const sub of customData.subcategories) {
+                if (sub.key === 'process' || sub.key === 'size') continue; // 指南类不作为默认
+                const cnt = customData.items.filter(i => i.subcategory === sub.key).length;
+                if (cnt > 0) return sub.key;
+            }
+            return customData.subcategories[0].key;
         }
 
         // ===== Render Subcategory Nav (Custom) =====
@@ -1307,12 +1318,6 @@
             const nav = document.getElementById('subCategoryNavInner');
             nav.innerHTML = '';
             if (!customData) return;
-            // "All" subcategory
-            const allBtn = document.createElement('button');
-            allBtn.className = 'subcat-btn' + (currentSubcategory === 'all' ? ' active' : '');
-            allBtn.innerHTML = `&#128196; All <span class="subcat-count">${customData.items.length}</span>`;
-            allBtn.onclick = () => { currentSubcategory = 'all'; setHash(); };
-            nav.appendChild(allBtn);
             customData.subcategories.forEach(sub => {
                 const isProcess = sub.key === 'process';
                 const count = isProcess ? null : customData.items.filter(i => i.subcategory === sub.key).length;
