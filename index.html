@@ -556,6 +556,7 @@
         .matrix-table tbody tr:last-child td { border-bottom: none; }
         .matrix-table tbody tr:hover { background: #fafafa; }
         .matrix-table .m-name { font-weight: 600; color: var(--text); }
+        .matrix-cards { display: none; }
         .pill { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; white-space: nowrap; }
         .pill.good { background: #e6f7ee; color: #1a9e5c; }
         .pill.mid { background: #fff4e0; color: #c9760a; }
@@ -563,8 +564,22 @@
 
         @media (max-width: 600px) {
             .process-intro h2 { font-size: 21px; }
-            .matrix-table { font-size: 11px; }
-            .matrix-table th, .matrix-table td { padding: 9px 5px; }
+            .matrix-table { display: none; }
+            .matrix-cards { display: grid; grid-template-columns: 1fr; gap: 14px; }
+            .matrix-card {
+                background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow);
+                padding: 14px 16px; text-align: left;
+            }
+            .matrix-card-title { font-weight: 700; color: var(--primary); font-size: 15px; margin-bottom: 10px; }
+            .matrix-card-metrics { display: flex; flex-direction: column; gap: 0; }
+            .matrix-metric {
+                display: flex; justify-content: space-between; align-items: center;
+                padding: 8px 0; border-bottom: 1px dashed var(--border);
+            }
+            .matrix-metric:last-child { border-bottom: none; }
+            .matrix-metric-name { font-size: 13px; color: var(--text); display: flex; align-items: center; gap: 6px; }
+            .matrix-metric-name .mm-icon { font-size: 15px; }
+            .matrix-metric-name .mm-cn { font-size: 11px; color: var(--text-light); font-weight: 400; }
         }
     </style>
 </head>
@@ -1606,6 +1621,27 @@
                     <td><span class="pill ${r.plate}">${pillText[r.plate]}</span></td>
                 </tr>`).join('');
 
+            const metricMeta = [
+                { key: 'cost', label: 'Cost', cn: '成本', icon: '💰' },
+                { key: 'durability', label: 'Durability', cn: '耐用', icon: '🛡️' },
+                { key: 'wash', label: 'Wash Resistance', cn: '耐洗', icon: '🧼' },
+                { key: 'lead', label: 'Lead Time', cn: '工期', icon: '⏱️' },
+                { key: 'plate', label: 'Plate Fee', cn: '版费', icon: '🎨' },
+            ];
+            const matrixCards = m.rows.map(r => `
+                <div class="matrix-card">
+                    <div class="matrix-card-title">${r.name}</div>
+                    <div class="matrix-card-metrics">
+                        ${metricMeta.map(m => `
+                            <div class="matrix-metric">
+                                <span class="matrix-metric-name"><span class="mm-icon">${m.icon}</span> ${m.label} <span class="mm-cn">${m.cn}</span></span>
+                                <span class="pill ${r[m.key]}">${pillText[r[m.key]]}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+
             section.innerHTML = `
                 <div class="process-section">
                     <div class="matrix-wrap">
@@ -1614,6 +1650,9 @@
                             <thead><tr>${matrixHead}</tr></thead>
                             <tbody>${matrixRows}</tbody>
                         </table>
+                        <div class="matrix-cards">
+                            ${matrixCards}
+                        </div>
                         <p style="text-align:center;color:var(--text-light);font-size:12px;margin-top:12px;">
                             Green = favorable to your order · Amber = medium · Red = unfavorable
                         </p>
