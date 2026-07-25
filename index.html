@@ -1553,11 +1553,11 @@
             matrix: {
                 cols: ['Craft', 'Cost', 'Durability', 'Wash Resistance', 'Lead Time', 'Plate Fee'],
                 rows: [
-                    { name: 'Direct Digital Printing', cost: 'good', durability: 'good', wash: 'good', lead: 'good', plate: 'good' },
-                    { name: 'Heat Transfer Printing', cost: 'good', durability: 'poor', wash: 'poor', lead: 'good', plate: 'good' },
-                    { name: 'Direct Embroidery', cost: 'poor', durability: 'good', wash: 'good', lead: 'poor', plate: 'poor' },
-                    { name: 'Embroidered Patch', cost: 'poor', durability: 'good', wash: 'good', lead: 'poor', plate: 'poor' },
-                    { name: 'Silicone Printing', cost: 'poor', durability: 'poor', wash: 'poor', lead: 'mid', plate: 'good' }
+                    { name: 'Direct Digital Printing', cost: 'good', durability: 'good', wash: 'good', lead: 'good', plate: 'none' },
+                    { name: 'Heat Transfer Printing', cost: 'good', durability: 'poor', wash: 'poor', lead: 'good', plate: 'none' },
+                    { name: 'Direct Embroidery', cost: 'poor', durability: 'good', wash: 'good', lead: 'poor', plate: 'yes' },
+                    { name: 'Embroidered Patch', cost: 'poor', durability: 'good', wash: 'good', lead: 'poor', plate: 'yes' },
+                    { name: 'Silicone Printing', cost: 'poor', durability: 'poor', wash: 'poor', lead: 'mid', plate: 'high' }
                 ]
             }
         };
@@ -1567,6 +1567,9 @@
             const section = document.getElementById('productsSection');
             const d = PROCESS_DATA;
             const pillText = { good: 'Good', mid: 'Medium', poor: 'Poor' };
+            // Plate Fee 用中性表述，不暗示优劣：none=免版费, yes=有版费, high=版费稍高
+            const plateText = { none: 'No', yes: 'Yes', high: 'Higher' };
+            const plateClass = { none: 'good', yes: 'mid', high: 'poor' };
 
             const cardHTML = d.processes.map(p => {
                 if (p.embroidery) {
@@ -1618,7 +1621,7 @@
                     <td><span class="pill ${r.durability}">${pillText[r.durability]}</span></td>
                     <td><span class="pill ${r.wash}">${pillText[r.wash]}</span></td>
                     <td><span class="pill ${r.lead}">${pillText[r.lead]}</span></td>
-                    <td><span class="pill ${r.plate}">${pillText[r.plate]}</span></td>
+                    <td><span class="pill ${plateClass[r.plate]}">${plateText[r.plate]}</span></td>
                 </tr>`).join('');
 
             const metricMeta = [
@@ -1632,12 +1635,16 @@
                 <div class="matrix-card">
                     <div class="matrix-card-title">${r.name}</div>
                     <div class="matrix-card-metrics">
-                        ${metricMeta.map(m => `
+                        ${metricMeta.map(m => {
+                            const isPlate = m.key === 'plate';
+                            const cls = isPlate ? plateClass[r[m.key]] : r[m.key];
+                            const txt = isPlate ? plateText[r[m.key]] : pillText[r[m.key]];
+                            return `
                             <div class="matrix-metric">
                                 <span class="matrix-metric-name"><span class="mm-icon">${m.icon}</span> ${m.label} <span class="mm-cn">${m.cn}</span></span>
-                                <span class="pill ${r[m.key]}">${pillText[r[m.key]]}</span>
-                            </div>
-                        `).join('')}
+                                <span class="pill ${cls}">${txt}</span>
+                            </div>`;
+                        }).join('')}
                     </div>
                 </div>
             `).join('');
