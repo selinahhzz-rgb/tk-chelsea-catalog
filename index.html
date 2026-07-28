@@ -415,6 +415,36 @@
         .lightbox-next { right: 8px; }
         .lightbox-counter { color: rgba(255,255,255,0.5); font-size: 12px; margin-top: 8px; }
 
+        /* ===== Lightbox zoom ===== */
+        .lightbox-img-wrap { user-select: none; cursor: zoom-in; touch-action: none; transition: transform 0.12s ease-out; }
+        .lightbox-img-wrap.lb-zoomed { cursor: grab; }
+        .lightbox-img-wrap.lb-grabbing { cursor: grabbing; transition: none; }
+        .lb-zoom-hint {
+            position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.55); color: #fff; font-size: 12px;
+            padding: 4px 12px; border-radius: 999px; pointer-events: none;
+            display: none; align-items: center; gap: 5px; white-space: nowrap; z-index: 5;
+        }
+        .lightbox.active .lb-zoom-hint { display: flex; }
+        .lb-zoom-bar {
+            display: none; position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%);
+            align-items: center; gap: 4px; z-index: 10002;
+            background: rgba(20,20,20,0.72); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+            border: 1px solid rgba(255,255,255,0.18); border-radius: 999px; padding: 5px 8px;
+        }
+        .lightbox.active .lb-zoom-bar { display: flex; }
+        .lb-zoom-bar button {
+            width: 38px; height: 38px; border: none; border-radius: 50%;
+            background: rgba(255,255,255,0.12); color: #fff; font-size: 20px; line-height: 1;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s;
+        }
+        .lb-zoom-bar button:hover { background: rgba(255,255,255,0.28); }
+        .lb-zoom-bar .lb-zoom-val {
+            color: #fff; font-size: 13px; min-width: 50px; text-align: center;
+            user-select: none; font-variant-numeric: tabular-nums;
+        }
+        .lightbox.lb-zoomed-mode, .lightbox.lb-zoomed-mode .lightbox-scroll { overflow: hidden; }
+
         /* ===== Admin Modal ===== */
         .admin-modal {
             display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -679,9 +709,10 @@
         <div class="lightbox-nav lightbox-next" id="lightboxNext">&#8250;</div>
         <div class="lightbox-scroll">
             <div class="lightbox-img-wrap">
-                <img class="lightbox-img" id="lightboxImg" src="" alt="">
+                <img class="lightbox-img" id="lightboxImg" src="" alt="" draggable="false">
                 <div class="price-blur"></div>
                 <div class="tiled-watermark" id="lightboxWm" style="display:none;"></div>
+                <div class="lb-zoom-hint" id="lbZoomHint">🔍 点击 + 或滚轮放大，拖动查看细节</div>
             </div>
             <div class="lightbox-info">
                 <div class="model-name" id="lightboxModel"></div>
@@ -690,6 +721,12 @@
                 <div class="lightbox-details" id="lightboxDetails"></div>
                 <div class="lightbox-counter" id="lightboxCounter"></div>
             </div>
+        </div>
+        <div class="lb-zoom-bar" id="lbZoomBar">
+            <button id="lbZoomOut" title="缩小">&#8722;</button>
+            <span class="lb-zoom-val" id="lbZoomVal">100%</span>
+            <button id="lbZoomIn" title="放大">+</button>
+            <button id="lbZoomReset" title="复位 1:1">&#10530;</button>
         </div>
     </div>
 
@@ -785,6 +822,11 @@
         let currentSubcategory = 'all';  // for custom view
         let searchQuery = '';
         let lightboxIndex = -1;
+        let lbZoom = 1, lbPanX = 0, lbPanY = 0, lbDragging = false, lbLastX = 0, lbLastY = 0;
+        const lbImgWrap = document.querySelector('.lightbox-img-wrap');
+        const lbZoomVal = document.getElementById('lbZoomVal');
+        const lbZoomHint = document.getElementById('lbZoomHint');
+        const lbLightboxEl = document.getElementById('lightbox');
         let filteredProducts = [];
         let uploadedImageData = null;
         let isAdmin = false;
@@ -1697,6 +1739,7 @@
             // Show tiled brand watermark for protected custom garments
             const lbWm = document.getElementById('lightboxWm');
             if (lbWm) lbWm.style.display = (product.custom && product.subcategory !== 'size' && product.subcategory !== 'fabric') ? 'block' : 'none';
+            lbResetZoom();
             document.getElementById('lightbox').classList.add('active');
             document.body.style.overflow = 'hidden';
         }
@@ -1704,6 +1747,7 @@
             document.getElementById('lightbox').classList.remove('active');
             document.body.style.overflow = '';
             lightboxIndex = -1;
+            lbResetZoom();
         }
         function navigateLightbox(dir) {
             if (lightboxIndex < 0) return;
@@ -1721,6 +1765,57 @@
             if (e.key === 'ArrowRight') navigateLightbox(1);
         });
         document.getElementById('lightbox').addEventListener('click', e => { if (e.target.id === 'lightbox') closeLightbox(); });
+
+        // ===== Lightbox zoom controls =====
+        function lbApplyZoom() {
+            lbImgWrap.style.transform = `translate(${lbPanX}px, ${lbPanY}px) scale(${lbZoom})`;
+            lbZoomVal.textContent = Math.round(lbZoom * 100) + '%';
+            const zoomed = lbZoom > 1.001;
+            lbImgWrap.classList.toggle('lb-zoomed', zoomed);
+            lbLightboxEl.classList.toggle('lb-zoomed-mode', zoomed);
+            if (zoomed && lbZoomHint) lbZoomHint.style.display = 'none';
+        }
+        function lbResetZoom() {
+            lbZoom = 1; lbPanX = 0; lbPanY = 0;
+            lbApplyZoom();
+            if (lbZoomHint) lbZoomHint.style.display = '';
+        }
+        function lbZoomBy(delta) {
+            lbZoom = Math.min(4, Math.max(1, +(lbZoom + delta).toFixed(3)));
+            if (lbZoom <= 1.001) { lbPanX = 0; lbPanY = 0; }
+            lbApplyZoom();
+        }
+        document.getElementById('lbZoomIn').onclick = () => lbZoomBy(0.25);
+        document.getElementById('lbZoomOut').onclick = () => lbZoomBy(-0.25);
+        document.getElementById('lbZoomReset').onclick = lbResetZoom;
+
+        lbImgWrap.addEventListener('wheel', e => {
+            e.preventDefault();
+            lbZoomBy(e.deltaY < 0 ? 0.2 : -0.2);
+        }, { passive: false });
+
+        lbImgWrap.addEventListener('dblclick', () => {
+            if (lbZoom > 1.001) lbResetZoom();
+            else { lbZoom = 2; lbPanX = 0; lbPanY = 0; lbApplyZoom(); }
+        });
+
+        lbImgWrap.addEventListener('pointerdown', e => {
+            if (lbZoom <= 1.001) return;
+            e.preventDefault();
+            lbDragging = true; lbLastX = e.clientX; lbLastY = e.clientY;
+            lbImgWrap.classList.add('lb-grabbing');
+            try { lbImgWrap.setPointerCapture(e.pointerId); } catch (_) {}
+        });
+        lbImgWrap.addEventListener('pointermove', e => {
+            if (!lbDragging) return;
+            lbPanX += e.clientX - lbLastX;
+            lbPanY += e.clientY - lbLastY;
+            lbLastX = e.clientX; lbLastY = e.clientY;
+            lbApplyZoom();
+        });
+        function lbEndDrag() { lbDragging = false; lbImgWrap.classList.remove('lb-grabbing'); }
+        lbImgWrap.addEventListener('pointerup', lbEndDrag);
+        lbImgWrap.addEventListener('pointercancel', lbEndDrag);
 
         // ===== Init =====
         loadProducts();
