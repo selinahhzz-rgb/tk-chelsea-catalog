@@ -1163,7 +1163,7 @@
                     const rightIdx = (y * (hashSize + 1) + x + 1) * 4;
                     const leftGray = data[leftIdx] * 0.299 + data[leftIdx + 1] * 0.587 + data[leftIdx + 2] * 0.114;
                     const rightGray = data[rightIdx] * 0.299 + data[rightIdx + 1] * 0.587 + data[rightIdx + 2] * 0.114;
-                    hashBits.push(leftGray > rightGray ? 1 : 0);
+                    hashBits.push(rightGray > leftGray ? 1 : 0);
                 }
             }
             return hashBits;
