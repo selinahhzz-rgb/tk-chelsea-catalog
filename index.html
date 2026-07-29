@@ -152,6 +152,40 @@
             background: var(--primary); color: #fff; border-color: var(--primary);
             box-shadow: 0 2px 8px rgba(255,107,53,0.25);
         }
+
+        /* ===== Case Marquee ===== */
+        .case-marquee {
+            position: relative; overflow: hidden;
+            background: var(--primary);
+            border-bottom: 1px solid var(--border);
+        }
+        .case-marquee-label {
+            position: absolute; top: 10px; left: 16px; z-index: 5;
+            background: rgba(233,69,96,0.92); color: #fff;
+            font-size: 12px; font-weight: 700; letter-spacing: 0.5px;
+            padding: 4px 12px; border-radius: 999px;
+            pointer-events: none; white-space: nowrap;
+        }
+        .case-marquee-track {
+            display: flex; gap: 0; width: max-content;
+            animation: caseScroll 30s linear infinite;
+        }
+        .case-marquee:hover .case-marquee-track { animation-play-state: paused; }
+        .case-marquee-item {
+            flex: 0 0 auto; width: 480px; height: 200px;
+            overflow: hidden; position: relative;
+        }
+        .case-marquee-item img {
+            width: 100%; height: 100%; object-fit: cover;
+            display: block; pointer-events: none; -webkit-user-drag: none;
+        }
+        @keyframes caseScroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        @media (max-width: 600px) {
+            .case-marquee-item { width: 320px; height: 135px; }
+        }
         .subcat-btn {
             padding: 11px 16px; border: none; background: transparent; cursor: pointer;
             font-size: 13px; font-weight: 500; color: var(--text-light);
@@ -649,6 +683,17 @@
     <div class="mode-toggle" id="modeToggle">
         <button class="mode-toggle-btn active" data-mode="catalog" onclick="switchMode('catalog')">产品目录 · Products</button>
         <button class="mode-toggle-btn" data-mode="custom" onclick="switchMode('custom')">定制项目 · Custom</button>
+    </div>
+
+    <!-- Case Marquee -->
+    <div class="case-marquee">
+        <div class="case-marquee-label">&#9733; Custom Cases &#23450;&#21046;&#26696;&#20363;</div>
+        <div class="case-marquee-track">
+            <div class="case-marquee-item"><img src="custom-images/Cases/case-fullcatalog-p2.jpg" alt="Custom Case - Full Catalog" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/case-footsuit-p1.jpg" alt="Custom Case - Footsuit" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/case-fullcatalog-p2.jpg" alt="Custom Case - Full Catalog" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/case-footsuit-p1.jpg" alt="Custom Case - Footsuit" loading="lazy"></div>
+        </div>
     </div>
 
     <!-- Category Nav -->
