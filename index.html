@@ -1179,11 +1179,11 @@
         }
 
         // ===== Comparison Functions =====
-        // Weighted intersection (IDF-weighted histogram overlap)
-        function weightedIntersection(h1, h2, idf) {
+        // Plain histogram intersection (no IDF weighting)
+        function plainIntersection(h1, h2) {
             let sum = 0;
             for (let i = 0; i < h1.length; i++) {
-                sum += Math.min(h1[i], h2[i]) * idf[i];
+                sum += Math.min(h1[i], h2[i]);
             }
             return sum;
         }
@@ -1196,15 +1196,15 @@
             return diff;
         }
 
-        // ===== Scoring (v4: simple weighted intersection + hashes) =====
-        function computeScore(qFeatures, catFeature, idfColor, idfCenter) {
-            const histScore = weightedIntersection(qFeatures.colorHist, catFeature.color_hist, idfColor);
-            const centerScore = weightedIntersection(qFeatures.centerHist, catFeature.center_hist, idfCenter);
+        // ===== Scoring (v5: plain intersection + higher shape weight) =====
+        function computeScore(qFeatures, catFeature) {
+            const histScore = plainIntersection(qFeatures.colorHist, catFeature.color_hist);
+            const centerScore = plainIntersection(qFeatures.centerHist, catFeature.center_hist);
             const dDist = hammingDist(qFeatures.dhash, catFeature.dhash);
             const aDist = hammingDist(qFeatures.ahash, catFeature.ahash);
             const dhashScore = Math.max(0, 1 - dDist / 256);
             const ahashScore = Math.max(0, 1 - aDist / 64);
-            return histScore * 0.40 + centerScore * 0.45 + dhashScore * 0.10 + ahashScore * 0.05;
+            return histScore * 0.35 + centerScore * 0.30 + dhashScore * 0.25 + ahashScore * 0.10;
         }
 
         // ===== Extract features for a query image =====
@@ -1217,7 +1217,7 @@
             };
         }
 
-        // ===== Search by Image (v4: multi-region matching) =====
+        // ===== Search by Image (v5: 2-region matching, plain intersection) =====
         async function searchByImage() {
             if (!uploadedImageData) return;
 
@@ -1244,7 +1244,7 @@
 
                 spinnerText.textContent = 'Analyzing image...';
 
-                // Generate query regions for multi-region matching
+                // Generate query regions: whole image + center 60% crop only
                 const w = img.naturalWidth || img.width;
                 const h = img.naturalHeight || img.height;
                 const regions = [];
@@ -1252,31 +1252,15 @@
                 // Region 0: whole image
                 regions.push({ name: 'whole', x: 0, y: 0, w: w, h: h });
 
-                // 3x3 grid
-                for (let r = 0; r < 3; r++) {
-                    for (let c = 0; c < 3; c++) {
-                        const left = Math.floor(c * w / 3);
-                        const top = Math.floor(r * h / 3);
-                        const right = Math.floor((c + 1) * w / 3);
-                        const bottom = Math.floor((r + 1) * h / 3);
-                        regions.push({
-                            name: `g${r}${c}`,
-                            x: left, y: top, w: right - left, h: bottom - top
-                        });
-                    }
-                }
-
-                // Center crops at different scales
-                for (const ratio of [0.4, 0.5, 0.6, 0.7]) {
-                    const cropW = Math.floor(w * ratio);
-                    const cropH = Math.floor(h * ratio);
-                    const left = Math.floor((w - cropW) / 2);
-                    const top = Math.floor((h - cropH) / 2);
-                    regions.push({
-                        name: `c${Math.round(ratio * 100)}`,
-                        x: left, y: top, w: cropW, h: cropH
-                    });
-                }
+                // Region 1: center 60% crop
+                const cropW = Math.floor(w * 0.6);
+                const cropH = Math.floor(h * 0.6);
+                regions.push({
+                    name: 'center60',
+                    x: Math.floor((w - cropW) / 2),
+                    y: Math.floor((h - cropH) / 2),
+                    w: cropW, h: cropH
+                });
 
                 // Extract features for each region
                 const regionFeatures = [];
@@ -1293,8 +1277,6 @@
                 }
 
                 // Match each catalog image against all query regions (take best region score)
-                const idfColor = featuresData.idf_color;
-                const idfCenter = featuresData.idf_center;
                 const matchResults = [];
 
                 for (const catFeature of featuresData.features) {
@@ -1302,7 +1284,7 @@
                     let bestRegion = '';
 
                     for (const rf of regionFeatures) {
-                        const s = computeScore(rf.features, catFeature, idfColor, idfCenter);
+                        const s = computeScore(rf.features, catFeature);
                         if (s > bestScore) {
                             bestScore = s;
                             bestRegion = rf.name;
