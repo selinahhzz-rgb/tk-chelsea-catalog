@@ -550,15 +550,42 @@
             .header { top: 0; min-height: 110px; }
             .header-inner {
                 padding: 12px 16px;
-                grid-template-columns: 1fr auto; grid-template-rows: auto auto;
+                grid-template-columns: 1fr auto;
+                grid-template-rows: auto auto;
+                grid-template-areas:
+                    "title admin"
+                    "contact shop";
+                align-items: center;
+                align-content: center;
+                gap: 8px 12px;
             }
-            .brand-sub { font-size: 18px; }
-            .brand-contact { gap: 10px; font-size: 12px; }
-            .brand-contact .phone-number { font-size: 13px; }
+            .brand { display: contents; }
+            .brand-sub {
+                grid-area: title;
+                font-size: 16px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .brand-contact {
+                grid-area: contact;
+                gap: 8px;
+                font-size: 12px;
+            }
+            .brand-contact .phone-number { font-size: 12px; }
+            .brand-contact .wa-icon { width: 20px; height: 20px; }
+            .brand-contact .wa-icon svg { width: 12px; height: 12px; }
             .header-center {
-                grid-column: 1 / -1; justify-self: center; margin-top: 6px;
+                grid-area: shop;
+                justify-self: end;
+                align-self: center;
+                margin-top: 0;
             }
-            .header-center .shop-link { font-size: 12px; padding: 6px 12px; }
+            .header-center .shop-link { font-size: 11px; padding: 5px 10px; }
+            .header-right {
+                grid-area: admin;
+                align-self: center;
+            }
             .header-stats { display: none; }
             .admin-toggle { font-size: 11px; padding: 4px 10px; }
             .category-nav { top: 168px; }
