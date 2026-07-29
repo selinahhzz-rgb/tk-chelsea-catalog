@@ -34,6 +34,11 @@
       "key": "fabric",
       "label": "Fabric / 布料",
       "icon": "🧵"
+    },
+    {
+      "key": "cases",
+      "label": "Custom Cases / 定制案例",
+      "icon": "📸"
     }
   ],
   "items": [
@@ -720,6 +725,18 @@
       "image": "Fabric/雨点布160.jpg",
       "type": "image",
       "fabric_category": "patterned"
+    },
+    {
+      "name": "Custom Case · Full Catalog",
+      "subcategory": "cases",
+      "image": "Cases/case-fullcatalog-p2.jpg",
+      "type": "image"
+    },
+    {
+      "name": "Custom Case · Footsuit",
+      "subcategory": "cases",
+      "image": "Cases/case-footsuit-p1.jpg",
+      "type": "image"
     }
   ]
 }
