@@ -137,6 +137,7 @@
             background: #fff; border-bottom: 1px solid var(--border);
             position: sticky; top: 198px; z-index: 998; box-shadow: var(--shadow);
         }
+        body.custom-mode .subcategory-nav { top: 154px; }
         .subcategory-nav-inner {
             max-width: 1400px; margin: 0 auto; display: flex; align-items: center;
             padding: 0 24px; gap: 0; overflow-x: auto;
@@ -563,6 +564,7 @@
             .category-nav { top: 168px; }
             .mode-toggle { top: 110px; }
             .subcategory-nav { top: 212px; }
+            body.custom-mode .subcategory-nav { top: 168px; }
             .category-nav-inner { flex-wrap: nowrap; padding: 0 12px; gap: 0; }
             .cat-btn { padding: 10px 10px; font-size: 12px; }
             .products-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
@@ -1402,6 +1404,7 @@
         // ===== URL Hash Routing（每个类目都有可分享/可直达的链接） =====
         function syncViewUI() {
             document.querySelectorAll('.mode-toggle-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === viewMode));
+            document.body.classList.toggle('custom-mode', viewMode === 'custom');
             const catNav = document.querySelector('.category-nav');
             const subNav = document.getElementById('subCategoryNav');
             const searchArea = document.getElementById('searchArea');
