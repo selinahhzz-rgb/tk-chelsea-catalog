@@ -32,34 +32,41 @@
             min-height: 100vh;
         }
 
-        /* ===== Contact Bar ===== */
-        .contact-bar {
-            background: #ffffff;
-            color: var(--text);
-            padding: 6px 20px;
-            position: sticky;
-            top: 0;
-            z-index: 1001;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-            font-size: 14px;
-            font-weight: 600;
-            border-bottom: 1px solid var(--border);
-            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+        /* ===== Header ===== */
+        .header {
+            background: var(--primary); color: white; padding: 0;
+            position: sticky; top: 0; z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.15);
         }
-        .contact-bar a {
-            color: var(--text); text-decoration: none;
+        .header-inner {
+            max-width: 1400px; margin: 0 auto;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 24px;
+            gap: 16px;
+        }
+        .brand { display: flex; flex-direction: column; gap: 10px; }
+        .brand-sub {
+            font-size: 26px; font-weight: 800; letter-spacing: 1px;
+            color: white; text-transform: uppercase; line-height: 1.1;
+        }
+        .brand-contact {
+            display: inline-flex; align-items: center; gap: 16px;
+            font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.9);
+            flex-wrap: wrap;
+        }
+        .brand-contact a {
+            color: rgba(255,255,255,0.9); text-decoration: none;
             display: inline-flex; align-items: center; gap: 8px;
             transition: all 0.2s;
         }
-        .contact-bar a:hover { opacity: 0.8; }
-        .contact-bar .wa-icon { width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center;
-            background: var(--whatsapp); border-radius: 50%; flex: 0 0 auto; }
-        .contact-bar .wa-icon svg { width: 14px; height: 14px; fill: #ffffff; }
-        .contact-bar .phone-number { font-size: 14px; font-weight: 700; letter-spacing: 0.3px; color: var(--text); }
-        .contact-bar .shop-link {
+        .brand-contact a:hover { opacity: 0.8; }
+        .brand-contact .wa-icon {
+            width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center;
+            background: var(--whatsapp); border-radius: 50%; flex: 0 0 auto;
+        }
+        .brand-contact .wa-icon svg { width: 14px; height: 14px; fill: #ffffff; }
+        .brand-contact .phone-number { font-size: 14px; font-weight: 700; letter-spacing: 0.3px; }
+        .brand-contact .shop-link {
             background: var(--shop);
             color: #ffffff !important;
             padding: 7px 16px; border-radius: 999px;
@@ -67,22 +74,7 @@
             box-shadow: 0 2px 6px rgba(79,70,229,0.35);
             transition: all 0.2s;
         }
-        .contact-bar .shop-link:hover { background: var(--shop-hover); transform: scale(1.04); }
-
-        /* ===== Header ===== */
-        .header {
-            background: var(--primary); color: white; padding: 0;
-            position: sticky; top: 46px; z-index: 1000;
-            box-shadow: 0 2px 20px rgba(0,0,0,0.15);
-        }
-        .header-inner {
-            max-width: 1400px; margin: 0 auto;
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 14px 24px;
-        }
-        .brand-logo { font-size: 26px; font-weight: 800; letter-spacing: 2px; color: white; }
-        .brand-logo span { color: var(--accent); }
-        .brand-sub { font-size: 11px; color: rgba(255,255,255,0.7); letter-spacing: 1.5px; text-transform: uppercase; }
+        .brand-contact .shop-link:hover { background: var(--shop-hover); transform: scale(1.04); }
         .header-right { display: flex; align-items: center; gap: 16px; }
         .header-stats { display: flex; gap: 20px; font-size: 13px; color: rgba(255,255,255,0.8); }
         .header-stats strong { color: var(--accent-hover); }
@@ -105,7 +97,7 @@
         /* ===== Category Nav ===== */
         .category-nav {
             background: white; border-bottom: 1px solid var(--border);
-            position: sticky; top: 110px; z-index: 999; box-shadow: var(--shadow);
+            position: sticky; top: 96px; z-index: 999; box-shadow: var(--shadow);
         }
         .category-nav-inner {
             max-width: 1400px; margin: 0 auto;
@@ -130,7 +122,7 @@
         /* ===== Subcategory Nav ===== */
         .subcategory-nav {
             background: #fff; border-bottom: 1px solid var(--border);
-            position: sticky; top: 158px; z-index: 998; box-shadow: var(--shadow);
+            position: sticky; top: 144px; z-index: 998; box-shadow: var(--shadow);
         }
         .subcategory-nav-inner {
             max-width: 1400px; margin: 0 auto; display: flex; align-items: center;
@@ -140,7 +132,7 @@
         .mode-toggle {
             display: flex; justify-content: center; gap: 10px;
             background: #fff; border-bottom: 1px solid var(--border);
-            padding: 10px 12px; position: sticky; top: 110px; z-index: 999;
+            padding: 10px 12px; position: sticky; top: 96px; z-index: 999;
             box-shadow: var(--shadow);
         }
         .mode-toggle-btn {
@@ -541,14 +533,17 @@
 
         /* ===== Responsive ===== */
         @media (max-width: 768px) {
-            .contact-bar { font-size: 12px; padding: 6px 12px; gap: 8px; }
-            .contact-bar .phone-number { font-size: 13px; }
-            .contact-bar .shop-link { font-size: 11px; padding: 3px 8px; }
-            .header { top: 42px; }
+            .header { top: 0; }
             .header-inner { padding: 12px 16px; }
-            .brand-logo { font-size: 22px; }
+            .brand-sub { font-size: 20px; }
+            .brand-contact { gap: 10px; font-size: 12px; }
+            .brand-contact .phone-number { font-size: 13px; }
+            .brand-contact .shop-link { font-size: 11px; padding: 5px 10px; }
             .header-stats { display: none; }
             .admin-toggle { font-size: 11px; padding: 4px 10px; }
+            .category-nav { top: 82px; }
+            .mode-toggle { top: 82px; }
+            .subcategory-nav { top: 128px; }
             .category-nav-inner { flex-wrap: nowrap; padding: 0 12px; gap: 0; }
             .cat-btn { padding: 10px 10px; font-size: 12px; }
             .products-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
@@ -705,24 +700,19 @@
         </div>
     </div>
 
-    <!-- Contact Bar -->
-    <div class="contact-bar">
-        <a href="https://wa.me/8618969078738" target="_blank" rel="noopener">
-            <span class="wa-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></span>
-            <span class="phone-number">+86 189 6907 8738</span>
-        </a>
-        <a class="shop-link" href="https://www.mingxin.shop/" target="_blank" rel="noopener">
-            &#128722; Order Online at mingxin.shop
-        </a>
-    </div>
-
     <!-- Header -->
     <header class="header">
         <div class="header-inner">
             <div class="brand">
-                <div>
-                    <div class="brand-logo">TK<span>-</span>Chelsea</div>
-                    <div class="brand-sub">Sports Apparel Catalog</div>
+                <div class="brand-sub">Sports Apparel Catalog</div>
+                <div class="brand-contact">
+                    <a href="https://wa.me/8618969078738" target="_blank" rel="noopener">
+                        <span class="wa-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></span>
+                        <span class="phone-number">+86 189 6907 8738</span>
+                    </a>
+                    <a class="shop-link" href="https://www.mingxin.shop/" target="_blank" rel="noopener">
+                        &#128722; Order Online at mingxin.shop
+                    </a>
                 </div>
             </div>
             <div class="header-right">
