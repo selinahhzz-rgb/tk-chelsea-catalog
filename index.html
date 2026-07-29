@@ -1283,18 +1283,32 @@
                     regionFeatures.push({ name: region.name, features });
                 }
 
-                // Match each catalog image against all query regions (take best region score)
+                // Match each catalog page against all query regions.
+                // v6 features include a 2x2 grid of sub-regions per page, so we
+                // compare the query against every sub-region and keep the best
+                // score for that page. This finds single items/colors even when
+                // the PDF page shows multiple variants.
                 const matchResults = [];
 
                 for (const catFeature of featuresData.features) {
                     let bestScore = -1;
                     let bestRegion = '';
 
+                    // Candidate feature sets for this page: full image + grid cells
+                    const candidateSets = [catFeature.features];
+                    if (catFeature.grid && catFeature.grid.length) {
+                        for (const cell of catFeature.grid) {
+                            candidateSets.push(cell.features);
+                        }
+                    }
+
                     for (const rf of regionFeatures) {
-                        const s = computeScore(rf.features, catFeature);
-                        if (s > bestScore) {
-                            bestScore = s;
-                            bestRegion = rf.name;
+                        for (const cand of candidateSets) {
+                            const s = computeScore(rf.features, cand);
+                            if (s > bestScore) {
+                                bestScore = s;
+                                bestRegion = rf.name;
+                            }
                         }
                     }
 
@@ -1312,7 +1326,7 @@
                 }
 
                 matchResults.sort((a, b) => b.score - a.score);
-                renderMatchResults(matchResults.slice(0, 8));
+                renderMatchResults(matchResults.slice(0, 12));
 
             } catch (err) {
                 console.error('Image search error:', err);
