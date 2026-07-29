@@ -506,6 +506,12 @@
       "type": "image"
     },
     {
+      "name": "Australia Size Chart",
+      "subcategory": "size",
+      "image": "Size/Australia_Size_Chart.png",
+      "type": "image"
+    },
+    {
       "name": "socks_size_chart",
       "subcategory": "size",
       "image": "Size/socks_size_chart.jpg",
