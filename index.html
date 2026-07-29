@@ -34,37 +34,40 @@
 
         /* ===== Contact Bar ===== */
         .contact-bar {
-            background: var(--whatsapp);
-            color: white;
-            padding: 8px 24px;
+            background: #ffffff;
+            color: var(--text);
+            padding: 6px 20px;
             position: sticky;
             top: 0;
             z-index: 1001;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 16px;
+            gap: 20px;
             font-size: 14px;
             font-weight: 600;
-            flex-wrap: wrap;
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
         }
         .contact-bar a {
-            color: white; text-decoration: none;
+            color: var(--text); text-decoration: none;
             display: inline-flex; align-items: center; gap: 8px;
-            transition: opacity 0.2s;
-        }
-        .contact-bar a:hover { opacity: 0.85; }
-        .contact-bar .wa-icon { width: 22px; height: 22px; display: inline-flex; align-items: center; }
-        .contact-bar .wa-icon svg { width: 22px; height: 22px; fill: white; }
-        .contact-bar .phone-number { font-size: 15px; font-weight: 700; letter-spacing: 0.5px; }
-        .contact-bar .shop-link {
-            background: var(--shop);
-            padding: 8px 20px; border-radius: 20px;
-            font-size: 15px; font-weight: 700; letter-spacing: 0.5px;
-            box-shadow: 0 2px 8px rgba(79,70,229,0.4);
             transition: all 0.2s;
         }
-        .contact-bar .shop-link:hover { background: var(--shop-hover); transform: scale(1.05); }
+        .contact-bar a:hover { opacity: 0.8; }
+        .contact-bar .wa-icon { width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center;
+            background: var(--whatsapp); border-radius: 50%; flex: 0 0 auto; }
+        .contact-bar .wa-icon svg { width: 14px; height: 14px; fill: #ffffff; }
+        .contact-bar .phone-number { font-size: 14px; font-weight: 700; letter-spacing: 0.3px; color: var(--text); }
+        .contact-bar .shop-link {
+            background: var(--shop);
+            color: #ffffff !important;
+            padding: 7px 16px; border-radius: 999px;
+            font-size: 13px; font-weight: 700; letter-spacing: 0.3px;
+            box-shadow: 0 2px 6px rgba(79,70,229,0.35);
+            transition: all 0.2s;
+        }
+        .contact-bar .shop-link:hover { background: var(--shop-hover); transform: scale(1.04); }
 
         /* ===== Header ===== */
         .header {
@@ -167,24 +170,30 @@
             pointer-events: none; white-space: nowrap;
         }
         .case-marquee-track {
-            display: flex; gap: 0; width: max-content;
-            animation: caseScroll 30s linear infinite;
+            display: flex; gap: 10px; padding: 8px 0;
+            width: max-content;
+            animation: caseScroll 70s linear infinite;
         }
         .case-marquee:hover .case-marquee-track { animation-play-state: paused; }
         .case-marquee-item {
-            flex: 0 0 auto; width: 480px; height: 200px;
+            flex: 0 0 auto;
+            width: 200px; height: 240px;
+            background: #fff;
+            border-radius: 6px;
             overflow: hidden; position: relative;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
         }
         .case-marquee-item img {
-            width: 100%; height: 100%; object-fit: cover;
+            width: 100%; height: 100%; object-fit: contain;
             display: block; pointer-events: none; -webkit-user-drag: none;
+            background: #fff;
         }
         @keyframes caseScroll {
             0% { transform: translateX(0); }
             100% { transform: translateX(-50%); }
         }
         @media (max-width: 600px) {
-            .case-marquee-item { width: 320px; height: 135px; }
+            .case-marquee-item { width: 140px; height: 170px; }
         }
         .subcat-btn {
             padding: 11px 16px; border: none; background: transparent; cursor: pointer;
@@ -649,6 +658,53 @@
 </head>
 <body>
 
+    <!-- Case Marquee -->
+    <div class="case-marquee">
+        <div class="case-marquee-label">&#9733; Custom Cases &#23450;&#21046;&#26696;&#20363;</div>
+        <div class="case-marquee-track">
+            <div class="case-marquee-item"><img src="custom-images/Cases/fc-1.jpg" alt="Custom Case 1" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/fc-2.jpg" alt="Custom Case 2" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/fc-3.jpg" alt="Custom Case 3" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/fc-4.jpg" alt="Custom Case 4" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/fc-5.jpg" alt="Custom Case 5" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/fc-6.jpg" alt="Custom Case 6" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/fc-7.jpg" alt="Custom Case 7" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/fc-8.jpg" alt="Custom Case 8" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/fc-9.jpg" alt="Custom Case 9" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/fc-10.jpg" alt="Custom Case 10" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/fc-11.jpg" alt="Custom Case 11" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/fc-12.jpg" alt="Custom Case 12" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/fc-13.jpg" alt="Custom Case 13" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/fc-14.jpg" alt="Custom Case 14" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/fc-15.jpg" alt="Custom Case 15" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/fs-1.jpg" alt="Custom Case Footsuit 1" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/fs-2.jpg" alt="Custom Case Footsuit 2" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/fs-3.jpg" alt="Custom Case Footsuit 3" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/fs-4.jpg" alt="Custom Case Footsuit 4" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/fs-5.jpg" alt="Custom Case Footsuit 5" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/fc-1.jpg" alt="Custom Case 1" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/fc-2.jpg" alt="Custom Case 2" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/fc-3.jpg" alt="Custom Case 3" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/fc-4.jpg" alt="Custom Case 4" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/fc-5.jpg" alt="Custom Case 5" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/fc-6.jpg" alt="Custom Case 6" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/fc-7.jpg" alt="Custom Case 7" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/fc-8.jpg" alt="Custom Case 8" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/fc-9.jpg" alt="Custom Case 9" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/fc-10.jpg" alt="Custom Case 10" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/fc-11.jpg" alt="Custom Case 11" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/fc-12.jpg" alt="Custom Case 12" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/fc-13.jpg" alt="Custom Case 13" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/fc-14.jpg" alt="Custom Case 14" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/fc-15.jpg" alt="Custom Case 15" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/fs-1.jpg" alt="Custom Case Footsuit 1" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/fs-2.jpg" alt="Custom Case Footsuit 2" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/fs-3.jpg" alt="Custom Case Footsuit 3" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/fs-4.jpg" alt="Custom Case Footsuit 4" loading="lazy"></div>
+            <div class="case-marquee-item"><img src="custom-images/Cases/fs-5.jpg" alt="Custom Case Footsuit 5" loading="lazy"></div>
+        </div>
+    </div>
+
     <!-- Contact Bar -->
     <div class="contact-bar">
         <a href="https://wa.me/8618969078738" target="_blank" rel="noopener">
@@ -683,17 +739,6 @@
     <div class="mode-toggle" id="modeToggle">
         <button class="mode-toggle-btn active" data-mode="catalog" onclick="switchMode('catalog')">产品目录 · Products</button>
         <button class="mode-toggle-btn" data-mode="custom" onclick="switchMode('custom')">定制项目 · Custom</button>
-    </div>
-
-    <!-- Case Marquee -->
-    <div class="case-marquee">
-        <div class="case-marquee-label">&#9733; Custom Cases &#23450;&#21046;&#26696;&#20363;</div>
-        <div class="case-marquee-track">
-            <div class="case-marquee-item"><img src="custom-images/Cases/case-fullcatalog-p2.jpg" alt="Custom Case - Full Catalog" loading="lazy"></div>
-            <div class="case-marquee-item"><img src="custom-images/Cases/case-footsuit-p1.jpg" alt="Custom Case - Footsuit" loading="lazy"></div>
-            <div class="case-marquee-item"><img src="custom-images/Cases/case-fullcatalog-p2.jpg" alt="Custom Case - Full Catalog" loading="lazy"></div>
-            <div class="case-marquee-item"><img src="custom-images/Cases/case-footsuit-p1.jpg" alt="Custom Case - Footsuit" loading="lazy"></div>
-        </div>
     </div>
 
     <!-- Category Nav -->
