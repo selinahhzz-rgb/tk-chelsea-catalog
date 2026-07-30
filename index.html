@@ -1410,7 +1410,7 @@
                 }
                 // Load OCR-detected price ("$") box positions for per-box blur
                 try {
-                    const pResp = await fetch('price_positions.json');
+                    const pResp = await fetch('price_positions.json?v=2');
                     pricePosData = await pResp.json();
                 } catch (e) {
                     console.error('Failed to load price_positions.json:', e);
@@ -1633,7 +1633,7 @@
         // 根据 OCR 检测到的 "$" 坐标，生成所有价格打码块（每页可能多个）
         function priceBlurHTML(pageNum) {
             if (!pricePosData || !pricePosData.positions) return '';
-            const boxes = pricePosData.positions[pageNum];
+            const boxes = pricePosData.positions[pageNum] || pricePosData.positions['page_' + pageNum];
             if (!boxes || !boxes.length) return '';
             return boxes.map(b =>
                 `<div class="price-blur" style="left:${b.x * 100}%;top:${b.y * 100}%;width:${b.w * 100}%;height:${b.h * 100}%"></div>`
