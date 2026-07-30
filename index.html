@@ -377,11 +377,10 @@
             background-repeat: repeat; background-size: 260px 150px;
         }
         .price-blur {
-            position: absolute; top: 0; left: 0; width: 46%; height: 17%;
-            backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-            background: rgba(255,255,255,0.72); z-index: 3;
-            border-radius: 0 0 12px 0;
-            pointer-events: none; transition: opacity 0.3s;
+            position: absolute; z-index: 3; pointer-events: none; transition: opacity 0.3s;
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.78);
+            border-radius: 6px;
         }
         body.admin-mode .price-blur { opacity: 0; }
         .product-info { padding: 12px 16px; }
@@ -428,7 +427,7 @@
             position: relative; display: inline-block; flex: 0 0 auto;
         }
         .lightbox-img { max-width: 85vw; max-height: 58vh; object-fit: contain; border-radius: 4px; display: block; }
-        .lightbox-img-wrap .price-blur { width: 46%; height: 17%; border-radius: 0 0 12px 0; }
+        .lightbox-img-wrap .price-blur { z-index: 5; }
         .lightbox-info { color: rgba(255,255,255,0.8); font-size: 14px; margin-top: 16px; text-align: center; width: 100%; max-width: 900px; }
         .lightbox-info .model-name { font-size: 18px; font-weight: 600; color: white; }
         .lb-spec { display: flex; flex-wrap: wrap; gap: 6px 14px; justify-content: center; margin-top: 8px; font-size: 13px; }
@@ -848,7 +847,6 @@
         <div class="lightbox-scroll">
             <div class="lightbox-img-wrap">
                 <img class="lightbox-img" id="lightboxImg" src="" alt="" draggable="false">
-                <div class="price-blur"></div>
                 <div class="tiled-watermark" id="lightboxWm" style="display:none;"></div>
                 <div class="lb-zoom-hint" id="lbZoomHint">🔍 点击 + 或滚轮放大，拖动查看细节</div>
             </div>
@@ -956,6 +954,7 @@
         let products = [];
         let customData = null;        // { subcategories, items }
         let featuresData = null;
+        let pricePosData = null;       // { positions: { pageNum: [{x,y,w,h}...] } } — OCR-detected "$" boxes
         let currentCategory = 'Short training kit';
         let currentSubcategory = 'all';  // for custom view
         let searchQuery = '';
@@ -1380,7 +1379,7 @@
                     <div class="match-badge ${badgeClass}">${badgeText}</div>
                     <div class="match-image-wrap">
                         <img src="${cdn('catalog-images/' + match.product.image)}" alt="${match.product.model}" loading="lazy" draggable="false">
-                        ${needsPriceBlur(match.product) ? '<div class="price-blur"></div>' : ''}
+                        ${needsPriceBlur(match.product) ? priceBlurHTML(match.product.page) : ''}
                     </div>
                     <div class="match-info">
                         <div class="match-model">${match.product.model}</div>
@@ -1408,6 +1407,14 @@
                 } catch (e) {
                     console.error('Failed to load custom.json:', e);
                     customData = { subcategories: [], items: [] };
+                }
+                // Load OCR-detected price ("$") box positions for per-box blur
+                try {
+                    const pResp = await fetch('price_positions.json');
+                    pricePosData = await pResp.json();
+                } catch (e) {
+                    console.error('Failed to load price_positions.json:', e);
+                    pricePosData = { positions: {} };
                 }
                 document.getElementById('totalCount').textContent = products.length + customCount;
                 dataReady = true;
@@ -1623,6 +1630,16 @@
             return true;
         }
 
+        // 根据 OCR 检测到的 "$" 坐标，生成所有价格打码块（每页可能多个）
+        function priceBlurHTML(pageNum) {
+            if (!pricePosData || !pricePosData.positions) return '';
+            const boxes = pricePosData.positions[pageNum];
+            if (!boxes || !boxes.length) return '';
+            return boxes.map(b =>
+                `<div class="price-blur" style="left:${b.x * 100}%;top:${b.y * 100}%;width:${b.w * 100}%;height:${b.h * 100}%"></div>`
+            ).join('');
+        }
+
         // ===== Render Products =====
         function renderProducts() {
             const section = document.getElementById('productsSection');
@@ -1663,7 +1680,7 @@
                         ${product.fabric_category ? `<span class="fabric-badge ${product.fabric_category}">${FABRIC_CAT[product.fabric_category].en}</span>` : ''}
                         <div class="watermark"></div>
                         ${protectWm}
-                        ${needsPriceBlur(product) ? '<div class="price-blur"></div>' : ''}
+                        ${needsPriceBlur(product) ? priceBlurHTML(product.page) : ''}
                     </div>
                     <div class="product-info">
                         <div class="product-model">${product.product_model || product.model}</div>
@@ -1877,9 +1894,13 @@
             document.getElementById('lightboxSpec').innerHTML = buildLightboxSpec(product);
             document.getElementById('lightboxDetails').innerHTML = buildLightboxDetails(product);
             document.getElementById('lightboxCounter').textContent = `${idx + 1} / ${filteredProducts.length}`;
-            // Hide price blur for custom items (no price info)
-            const lbPriceBlur = document.querySelector('.lightbox-img-wrap .price-blur');
-            if (lbPriceBlur) lbPriceBlur.style.display = needsPriceBlur(product) ? '' : 'none';
+            // Inject per-box price blurs for this page (admin mode hides via CSS)
+            const lbWrap = document.querySelector('.lightbox-img-wrap');
+            lbWrap.querySelectorAll('.price-blur').forEach(n => n.remove());
+            if (needsPriceBlur(product)) {
+                const html = priceBlurHTML(product.page);
+                if (html) lbWrap.insertAdjacentHTML('beforeend', html);
+            }
             // Show tiled brand watermark for protected custom garments
             const lbWm = document.getElementById('lightboxWm');
             if (lbWm) lbWm.style.display = (product.custom && product.subcategory !== 'size' && product.subcategory !== 'fabric') ? 'block' : 'none';
