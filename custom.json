@@ -494,6 +494,12 @@
       "type": "image"
     },
     {
+      "name": "Socks-10",
+      "subcategory": "socks",
+      "image": "Socks/socks-10.jpg",
+      "type": "image"
+    },
+    {
       "name": "Tracksuit-1",
       "subcategory": "tracksuit",
       "image": "Tracksuit/训练服-1.jpg",
