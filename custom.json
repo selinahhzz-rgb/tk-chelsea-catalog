@@ -2,55 +2,55 @@
   "subcategories": [
     {
       "key": "short-sleeve",
-      "label": "Short Sleeve / 短袖",
+      "label": "Short Sleeve",
       "icon": "👕"
     },
     {
       "key": "long-sleeve",
-      "label": "Long Sleeve / 长袖",
+      "label": "Long Sleeve",
       "icon": "🧥"
     },
     {
       "key": "socks",
-      "label": "Socks / 袜子",
+      "label": "Socks",
       "icon": "🧦"
     },
     {
       "key": "tracksuit",
-      "label": "Tracksuit / 训练服",
+      "label": "Tracksuit",
       "icon": "🏃"
     },
     {
       "key": "size",
-      "label": "Size Guide / 尺码参考",
+      "label": "Size Guide",
       "icon": "📏"
     },
     {
       "key": "process",
-      "label": "Craft & Printing / 工艺",
+      "label": "Craft & Printing",
       "icon": "🎨"
     },
     {
       "key": "fabric",
-      "label": "Fabric / 布料",
+      "label": "Fabric",
       "icon": "🧵"
     }
   ],
   "items": [
     {
-      "name": "T恤-1",
+      "name": "T-Shirt-1",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/T恤-1.jpg",
       "type": "image"
     },
     {
-      "name": "T恤-2",
+      "name": "T-Shirt-2",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/T恤-2.jpg",
       "type": "image"
     },
     {
-      "name": "polo衫-1",
+      "name": "Polo Shirt-1",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/polo衫-1.jpg",
       "type": "image"
@@ -68,427 +68,427 @@
       "type": "image"
     },
     {
-      "name": "儿童款式-1-红色",
+      "name": "Kids Style-1-Red",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/儿童款式-1-红色.jpg",
       "type": "image"
     },
     {
-      "name": "儿童款式-2-红色",
+      "name": "Kids Style-2-Red",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/儿童款式-2-红色.jpg",
       "type": "image"
     },
     {
-      "name": "儿童款式1-黄色",
+      "name": "Kids Style1-Yellow",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/儿童款式1-黄色.jpg",
       "type": "image"
     },
     {
-      "name": "儿童款式2-黄色",
+      "name": "Kids Style2-Yellow",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/儿童款式2-黄色.jpg",
       "type": "image"
     },
     {
-      "name": "定制球衣-10",
+      "name": "Custom Jersey-10",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/定制球衣-10.jpg",
       "type": "image"
     },
     {
-      "name": "定制球衣-11",
+      "name": "Custom Jersey-11",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/定制球衣-11.jpg",
       "type": "image"
     },
     {
-      "name": "定制球衣-3",
+      "name": "Custom Jersey-3",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/定制球衣-3.jpg",
       "type": "image"
     },
     {
-      "name": "定制球衣-5",
+      "name": "Custom Jersey-5",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/定制球衣-5.jpg",
       "type": "image"
     },
     {
-      "name": "定制球衣-6",
+      "name": "Custom Jersey-6",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/定制球衣-6.jpg",
       "type": "image"
     },
     {
-      "name": "定制球衣-7",
+      "name": "Custom Jersey-7",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/定制球衣-7.jpg",
       "type": "image"
     },
     {
-      "name": "定制球衣-8",
+      "name": "Custom Jersey-8",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/定制球衣-8.jpg",
       "type": "image"
     },
     {
-      "name": "定制球衣-9",
+      "name": "Custom Jersey-9",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/定制球衣-9.jpg",
       "type": "image"
     },
     {
-      "name": "定制球衣1",
+      "name": "Custom Jersey1",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/定制球衣1.jpg",
       "type": "image"
     },
     {
-      "name": "定制球衣12",
+      "name": "Custom Jersey12",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/定制球衣12.jpg",
       "type": "image"
     },
     {
-      "name": "定制球衣13",
+      "name": "Custom Jersey13",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/定制球衣13.jpg",
       "type": "image"
     },
     {
-      "name": "定制球衣2",
+      "name": "Custom Jersey2",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/定制球衣2.jpg",
       "type": "image"
     },
     {
-      "name": "定制球衣3",
+      "name": "Custom Jersey3",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/定制球衣3.jpg",
       "type": "image"
     },
     {
-      "name": "定制球衣4",
+      "name": "Custom Jersey4",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/定制球衣4.jpg",
       "type": "image"
     },
     {
-      "name": "球衣2",
+      "name": "Jersey2",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/球衣2.jpg",
       "type": "image"
     },
     {
-      "name": "球衣A-1",
+      "name": "JerseyA-1",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/球衣A-1.jpg",
       "type": "image"
     },
     {
-      "name": "球衣A-2",
+      "name": "JerseyA-2",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/球衣A-2.jpg",
       "type": "image"
     },
     {
-      "name": "球衣AB-1",
+      "name": "JerseyAB-1",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/球衣AB-1.jpg",
       "type": "image"
     },
     {
-      "name": "球衣AB-2",
+      "name": "JerseyAB-2",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/球衣AB-2.jpg",
       "type": "image"
     },
     {
-      "name": "球衣B-1",
+      "name": "JerseyB-1",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/球衣B-1.jpg",
       "type": "image"
     },
     {
-      "name": "球衣B-2",
+      "name": "JerseyB-2",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/球衣B-2.jpg",
       "type": "image"
     },
     {
-      "name": "球衣CD-1",
+      "name": "JerseyCD-1",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/球衣CD-1.jpg",
       "type": "image"
     },
     {
-      "name": "球衣CD-2",
+      "name": "JerseyCD-2",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/球衣CD-2.jpg",
       "type": "image"
     },
     {
-      "name": "球衣D-1",
+      "name": "JerseyD-1",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/球衣D-1.jpg",
       "type": "image"
     },
     {
-      "name": "球衣D-2",
+      "name": "JerseyD-2",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/球衣D-2.jpg",
       "type": "image"
     },
     {
-      "name": "球衣M-1",
+      "name": "JerseyM-1",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/球衣M-1.jpg",
       "type": "image"
     },
     {
-      "name": "球衣M-2",
+      "name": "JerseyM-2",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/球衣M-2.jpg",
       "type": "image"
     },
     {
-      "name": "球衣M-3",
+      "name": "JerseyM-3",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/球衣M-3.jpg",
       "type": "image"
     },
     {
-      "name": "球衣R-1",
+      "name": "JerseyR-1",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/球衣R-1.jpg",
       "type": "image"
     },
     {
-      "name": "球衣R-2",
+      "name": "JerseyR-2",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/球衣R-2.jpg",
       "type": "image"
     },
     {
-      "name": "球衣R-3",
+      "name": "JerseyR-3",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/球衣R-3.jpg",
       "type": "image"
     },
     {
-      "name": "球衣R-4",
+      "name": "JerseyR-4",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/球衣R-4.jpg",
       "type": "image"
     },
     {
-      "name": "球衣RD-1",
+      "name": "JerseyRD-1",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/球衣RD-1.jpg",
       "type": "image"
     },
     {
-      "name": "球衣RD-2",
+      "name": "JerseyRD-2",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/球衣RD-2.jpg",
       "type": "image"
     },
     {
-      "name": "球衣Z-1",
+      "name": "JerseyZ-1",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/球衣Z-1.jpg",
       "type": "image"
     },
     {
-      "name": "球衣Z-2",
+      "name": "JerseyZ-2",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/球衣Z-2.jpg",
       "type": "image"
     },
     {
-      "name": "球衣ef-1",
+      "name": "Jerseyef-1",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/球衣ef-1.jpg",
       "type": "image"
     },
     {
-      "name": "球衣ef-2",
+      "name": "Jerseyef-2",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/球衣ef-2.jpg",
       "type": "image"
     },
     {
-      "name": "球衣er-1",
+      "name": "Jerseyer-1",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/球衣er-1.jpg",
       "type": "image"
     },
     {
-      "name": "球衣er-2",
+      "name": "Jerseyer-2",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/球衣er-2.jpg",
       "type": "image"
     },
     {
-      "name": "球衣j-3",
+      "name": "Jerseyj-3",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/球衣j-3.jpg",
       "type": "image"
     },
     {
-      "name": "球衣j-4",
+      "name": "Jerseyj-4",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/球衣j-4.jpg",
       "type": "image"
     },
     {
-      "name": "球衣j-5",
+      "name": "Jerseyj-5",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/球衣j-5.jpg",
       "type": "image"
     },
     {
-      "name": "短裤w-",
+      "name": "Shorts w-",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/短裤w-.jpg",
       "type": "image"
     },
     {
-      "name": "衣服-米色",
+      "name": "Apparel-Beige",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/衣服-米色.jpg",
       "type": "image"
     },
     {
-      "name": "衣服-黑色",
+      "name": "Apparel-Black",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/衣服-黑色.jpg",
       "type": "image"
     },
     {
-      "name": "衣服款-1",
+      "name": "Apparel Style-1",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/衣服款-1.jpg",
       "type": "image"
     },
     {
-      "name": "裤子-白色-2",
+      "name": "Pants-White-2",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/裤子-白色-2.jpg",
       "type": "image"
     },
     {
-      "name": "裤子-黑色-1",
+      "name": "Pants-Black-1",
       "subcategory": "short-sleeve",
       "image": "ShortSleeve/裤子-黑色-1.jpg",
       "type": "image"
     },
     {
-      "name": "守门员红色-1",
+      "name": "GoalkeeperRed-1",
       "subcategory": "long-sleeve",
       "image": "LongSleeve/守门员红色-1.jpg",
       "type": "image"
     },
     {
-      "name": "守门员红色-2",
+      "name": "GoalkeeperRed-2",
       "subcategory": "long-sleeve",
       "image": "LongSleeve/守门员红色-2.jpg",
       "type": "image"
     },
     {
-      "name": "守门员绿色-1",
+      "name": "GoalkeeperGreen-1",
       "subcategory": "long-sleeve",
       "image": "LongSleeve/守门员绿色-1.jpg",
       "type": "image"
     },
     {
-      "name": "守门员绿色-2",
+      "name": "GoalkeeperGreen-2",
       "subcategory": "long-sleeve",
       "image": "LongSleeve/守门员绿色-2.jpg",
       "type": "image"
     },
     {
-      "name": "守门员蓝色-1",
+      "name": "GoalkeeperBlue-1",
       "subcategory": "long-sleeve",
       "image": "LongSleeve/守门员蓝色-1.jpg",
       "type": "image"
     },
     {
-      "name": "守门员蓝色-2",
+      "name": "GoalkeeperBlue-2",
       "subcategory": "long-sleeve",
       "image": "LongSleeve/守门员蓝色-2.jpg",
       "type": "image"
     },
     {
-      "name": "长袖w-1",
+      "name": "Long Sleevew-1",
       "subcategory": "long-sleeve",
       "image": "LongSleeve/长袖w-1.jpg",
       "type": "image"
     },
     {
-      "name": "长袖w-2",
+      "name": "Long Sleevew-2",
       "subcategory": "long-sleeve",
       "image": "LongSleeve/长袖w-2.jpg",
       "type": "image"
     },
     {
-      "name": "袜子-1",
+      "name": "Socks-1",
       "subcategory": "socks",
       "image": "Socks/袜子-1.jpg",
       "type": "image"
     },
     {
-      "name": "袜子-2",
+      "name": "Socks-2",
       "subcategory": "socks",
       "image": "Socks/袜子-2.jpg",
       "type": "image"
     },
     {
-      "name": "袜子-3",
+      "name": "Socks-3",
       "subcategory": "socks",
       "image": "Socks/袜子-3.jpg",
       "type": "image"
     },
     {
-      "name": "袜子-4-1",
+      "name": "Socks-4-1",
       "subcategory": "socks",
       "image": "Socks/袜子-4-1.jpg",
       "type": "image"
     },
     {
-      "name": "袜子-4-2",
+      "name": "Socks-4-2",
       "subcategory": "socks",
       "image": "Socks/袜子-4-2.jpg",
       "type": "image"
     },
     {
-      "name": "训练服-1",
+      "name": "Tracksuit-1",
       "subcategory": "tracksuit",
       "image": "Tracksuit/训练服-1.jpg",
       "type": "image"
     },
     {
-      "name": "训练服1",
+      "name": "Tracksuit1",
       "subcategory": "tracksuit",
       "image": "Tracksuit/训练服1.jpg",
       "type": "image"
     },
     {
-      "name": "训练服2",
+      "name": "Tracksuit2",
       "subcategory": "tracksuit",
       "image": "Tracksuit/训练服2.jpg",
       "type": "image"
     },
     {
-      "name": "训练服3",
+      "name": "Tracksuit3",
       "subcategory": "tracksuit",
       "image": "Tracksuit/训练服3.jpg",
       "type": "image"
     },
     {
-      "name": "训练服4",
+      "name": "Tracksuit4",
       "subcategory": "tracksuit",
       "image": "Tracksuit/训练服4.jpg",
       "type": "image"
@@ -539,189 +539,189 @@
       "fabric_category": "regular"
     },
     {
-      "name": "低弹网150",
+      "name": "Low-Elastic Mesh150",
       "subcategory": "fabric",
       "image": "Fabric/低弹网150.jpg",
       "type": "image",
       "fabric_category": "regular"
     },
     {
-      "name": "健康布250",
+      "name": "Pique Fabric250",
       "subcategory": "fabric",
       "image": "Fabric/健康布250.jpg",
       "type": "image",
       "fabric_category": "regular"
     },
     {
-      "name": "健康布280",
+      "name": "Pique Fabric280",
       "subcategory": "fabric",
       "image": "Fabric/健康布280.jpg",
       "type": "image",
       "fabric_category": "regular"
     },
     {
-      "name": "冰感流星雨160",
+      "name": "Cooling Meteor160",
       "subcategory": "fabric",
       "image": "Fabric/冰感流星雨160.jpg",
       "type": "image",
       "fabric_category": "patterned"
     },
     {
-      "name": "冰感火箭170",
+      "name": "Cooling Rocket170",
       "subcategory": "fabric",
       "image": "Fabric/冰感火箭170.jpg",
       "type": "image",
       "fabric_category": "patterned"
     },
     {
-      "name": "几何提花170",
+      "name": "Geometric Jacquard170",
       "subcategory": "fabric",
       "image": "Fabric/几何提花170.jpg",
       "type": "image",
       "fabric_category": "patterned"
     },
     {
-      "name": "双枪布160",
+      "name": "Double-Bar Fabric160",
       "subcategory": "fabric",
       "image": "Fabric/双枪布160.jpg",
       "type": "image",
       "fabric_category": "regular"
     },
     {
-      "name": "双面布150",
+      "name": "Double-Face Fabric150",
       "subcategory": "fabric",
       "image": "Fabric/双面布150.jpg",
       "type": "image",
       "fabric_category": "regular"
     },
     {
-      "name": "小米通160",
+      "name": "Mini Mesh160",
       "subcategory": "fabric",
       "image": "Fabric/小米通160.jpg",
       "type": "image",
       "fabric_category": "regular"
     },
     {
-      "name": "小锋眼160",
+      "name": "Micro Eyelet160",
       "subcategory": "fabric",
       "image": "Fabric/小锋眼160.jpg",
       "type": "image",
       "fabric_category": "regular"
     },
     {
-      "name": "方格双面布125",
+      "name": "Grid Double-Face Fabric125",
       "subcategory": "fabric",
       "image": "Fabric/方格双面布125.jpg",
       "type": "image",
       "fabric_category": "regular"
     },
     {
-      "name": "明盺提花160",
+      "name": "Mingxin Jacquard160",
       "subcategory": "fabric",
       "image": "Fabric/明盺提花160.jpg",
       "type": "image",
       "fabric_category": "patterned"
     },
     {
-      "name": "梯形提花170",
+      "name": "Trapezoid Jacquard170",
       "subcategory": "fabric",
       "image": "Fabric/梯形提花170.jpg",
       "type": "image",
       "fabric_category": "patterned"
     },
     {
-      "name": "涤氨透气孔160",
+      "name": "Poly-Spandex Ventilated160",
       "subcategory": "fabric",
       "image": "Fabric/涤氨透气孔160.jpg",
       "type": "image",
       "fabric_category": "patterned"
     },
     {
-      "name": "满天星160",
+      "name": "Starry160",
       "subcategory": "fabric",
       "image": "Fabric/满天星160.jpg",
       "type": "image",
       "fabric_category": "patterned"
     },
     {
-      "name": "牛奶丝230",
+      "name": "Milk Silk230",
       "subcategory": "fabric",
       "image": "Fabric/牛奶丝230.jpg",
       "type": "image",
       "fabric_category": "patterned"
     },
     {
-      "name": "球员格子150",
+      "name": "Player Grid150",
       "subcategory": "fabric",
       "image": "Fabric/球员格子150.jpg",
       "type": "image",
       "fabric_category": "regular"
     },
     {
-      "name": "短点空网",
+      "name": "Dot Mesh",
       "subcategory": "fabric",
       "image": "Fabric/短点空网.jpg",
       "type": "image",
       "fabric_category": "patterned"
     },
     {
-      "name": "篮球提花160",
+      "name": "Basketball Jacquard160",
       "subcategory": "fabric",
       "image": "Fabric/篮球提花160.jpg",
       "type": "image",
       "fabric_category": "regular"
     },
     {
-      "name": "耐克球员160",
+      "name": "Nike Player160",
       "subcategory": "fabric",
       "image": "Fabric/耐克球员160.jpg",
       "type": "image",
       "fabric_category": "patterned"
     },
     {
-      "name": "菱形布150",
+      "name": "Diamond Fabric150",
       "subcategory": "fabric",
       "image": "Fabric/菱形布150.jpg",
       "type": "image",
       "fabric_category": "regular"
     },
     {
-      "name": "蜂窝160",
+      "name": "Honeycomb160",
       "subcategory": "fabric",
       "image": "Fabric/蜂窝160.jpg",
       "type": "image",
       "fabric_category": "regular"
     },
     {
-      "name": "蝴蝶网160",
+      "name": "Butterfly Mesh160",
       "subcategory": "fabric",
       "image": "Fabric/蝴蝶网160.jpg",
       "type": "image",
       "fabric_category": "patterned"
     },
     {
-      "name": "迷彩提花160",
+      "name": "Camo Jacquard160",
       "subcategory": "fabric",
       "image": "Fabric/迷彩提花160.jpg",
       "type": "image",
       "fabric_category": "patterned"
     },
     {
-      "name": "针孔布150",
+      "name": "Pin-hole Fabric150",
       "subcategory": "fabric",
       "image": "Fabric/针孔布150.jpg",
       "type": "image",
       "fabric_category": "regular"
     },
     {
-      "name": "阿迪球员160",
+      "name": "Adidas Player160",
       "subcategory": "fabric",
       "image": "Fabric/阿迪球员160.jpg",
       "type": "image",
       "fabric_category": "patterned"
     },
     {
-      "name": "雨点布160",
+      "name": "Raindrop Fabric160",
       "subcategory": "fabric",
       "image": "Fabric/雨点布160.jpg",
       "type": "image",
