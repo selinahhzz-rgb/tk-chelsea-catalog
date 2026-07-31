@@ -784,8 +784,8 @@
 
     <!-- 视图模式切换：把定制项目单独拉出来，不再埋在类目末尾 -->
     <div class="mode-toggle" id="modeToggle">
-        <button class="mode-toggle-btn active" data-mode="catalog" onclick="switchMode('catalog')">产品目录 · Products</button>
-        <button class="mode-toggle-btn" data-mode="custom" onclick="switchMode('custom')">定制项目 · Custom</button>
+        <button class="mode-toggle-btn active" data-mode="catalog" onclick="switchMode('catalog')">Products</button>
+        <button class="mode-toggle-btn" data-mode="custom" onclick="switchMode('custom')">Custom Project</button>
     </div>
 
     <!-- Category Nav -->
@@ -848,7 +848,7 @@
             <div class="lightbox-img-wrap">
                 <img class="lightbox-img" id="lightboxImg" src="" alt="" draggable="false">
                 <div class="tiled-watermark" id="lightboxWm" style="display:none;"></div>
-                <div class="lb-zoom-hint" id="lbZoomHint">🔍 点击 + 或滚轮放大，拖动查看细节</div>
+                <div class="lb-zoom-hint" id="lbZoomHint">🔍 Click + or scroll to zoom, drag to pan</div>
             </div>
             <div class="lightbox-info">
                 <div class="model-name" id="lightboxModel"></div>
@@ -859,10 +859,10 @@
             </div>
         </div>
         <div class="lb-zoom-bar" id="lbZoomBar">
-            <button id="lbZoomOut" title="缩小">&#8722;</button>
+            <button id="lbZoomOut" title="Zoom out">&#8722;</button>
             <span class="lb-zoom-val" id="lbZoomVal">100%</span>
-            <button id="lbZoomIn" title="放大">+</button>
-            <button id="lbZoomReset" title="复位 1:1">&#10530;</button>
+            <button id="lbZoomIn" title="Zoom in">+</button>
+            <button id="lbZoomReset" title="Reset 1:1">&#10530;</button>
         </div>
     </div>
 
@@ -972,8 +972,8 @@
         let fabricFilter = 'all'; // 定制布料筛选：'all' | 'patterned' | 'regular'
         // 面料两大类别（“高级”=图案多样，不代表质量；英文用 Patterned/Solid 精确描述类型，不暗示优劣）
         const FABRIC_CAT = {
-            patterned: { en: 'Patterned', cn: '高级面料' },
-            regular:   { en: 'Solid',    cn: '常规面料' },
+            patterned: { en: 'Patterned' },
+            regular:   { en: 'Solid' },
         };
 
         // ===== Admin Mode =====
@@ -1531,7 +1531,7 @@
                 const count = isProcess ? null : customData.items.filter(i => i.subcategory === sub.key).length;
                 const btn = document.createElement('button');
                 btn.className = 'subcat-btn' + (currentSubcategory === sub.key ? ' active' : '');
-                const badge = isProcess ? '<span class="subcat-count">指南</span>' : `<span class="subcat-count">${count}</span>`;
+                const badge = isProcess ? '<span class="subcat-count">Guide</span>' : `<span class="subcat-count">${count}</span>`;
                 btn.innerHTML = `${sub.icon || ''} ${sub.label} ${badge}`;
                 btn.onclick = () => {
                     currentSubcategory = sub.key; setHash();
@@ -1545,7 +1545,7 @@
             return {
                 model: item.name,
                 category: 'Custom Project',
-                category_cn: '定制项目',
+                category_cn: 'Custom Project',
                 image: item.image,
                 custom: true,
                 type: item.type || 'image',
@@ -1592,7 +1592,7 @@
             if (p.gsm) parts.push(p.gsm + ' GSM');
             if (p.fabric) parts.push(p.fabric);
             if (p.composition) parts.push(p.composition);
-            if (p.color) parts.push('色号 ' + p.color);
+            if (p.color) parts.push('Color ' + p.color);
             if (!parts.length) return '';
             return `<div class="product-spec">${parts.join(' · ')}</div>`;
         }
@@ -1658,8 +1658,8 @@
             if (currentCategory === '__custom__' && currentSubcategory === 'fabric') {
                 const fb = document.createElement('div');
                 fb.className = 'fabric-filter';
-                fb.innerHTML = `<span class="ff-label">Fabric Type 面料类别:</span>` + ['all', 'patterned', 'regular'].map(k => {
-                    const lab = k === 'all' ? 'All 全部' : (FABRIC_CAT[k].en + ' · ' + FABRIC_CAT[k].cn);
+                fb.innerHTML = `<span class="ff-label">Fabric Type:</span>` + ['all', 'patterned', 'regular'].map(k => {
+                    const lab = k === 'all' ? 'All' : FABRIC_CAT[k].en;
                     return `<button class="ff-btn${fabricFilter === k ? ' active' : ''}" onclick="setFabricFilter('${k}')">${lab}</button>`;
                 }).join('');
                 section.appendChild(fb);
@@ -1667,7 +1667,7 @@
             const grid = document.createElement('div');
             grid.className = 'products-grid';
             filteredProducts.forEach((product, idx) => {
-                const catEn = product.custom ? (product.category_cn || '定制项目') : (CATEGORY_EN[product.category] || product.category);
+                const catEn = product.custom ? (product.category_cn || 'Custom Project') : (CATEGORY_EN[product.category] || product.category);
                 const base = product.custom ? 'custom-images/' : 'catalog-images/';
                 const imgSrc = cdn(base + product.image);
                 const card = document.createElement('div');
@@ -1698,7 +1698,7 @@
             subtitle: 'Choose the right craft for your custom jersey. Four craft families — Embroidery includes Direct Embroidery (3.1) and Embroidered Patch (3.2).',
             processes: [
                 {
-                    num: '1', icon: '🖨️', en: 'Direct Digital Printing', cn: '数码直喷',
+                    num: '1', icon: '🖨️', en: 'Direct Digital Printing',
                     tag: 'Print the pattern straight onto the fabric — no plate required.',
                     pros: [
                         'No extra plate cost',
@@ -1708,11 +1708,11 @@
                     cons: [ 'No obvious drawbacks among the four crafts' ]
                 },
                 {
-                    num: '2', icon: '🔥', en: 'Heat Transfer Printing', cn: '热转印',
+                    num: '2', icon: '🔥', en: 'Heat Transfer Printing',
                     tag: 'Transfer a pre-printed film onto the garment with heat.',
                     image: 'custom-images/Process/heat-transfer.jpg',
                     foilImage: 'custom-images/Process/hot-foil.jpg',
-                    foilNote: 'Hot Stamping Foil (烫金) is a special type of heat transfer using metallic foil. Customers who want a gold, shiny, eye-catching effect can choose this option.',
+                    foilNote: 'Hot Stamping Foil is a special type of heat transfer using metallic foil. Customers who want a gold, shiny, eye-catching effect can choose this option.',
                     pros: [ 'Free of plate charge', 'Simple process, low technical threshold' ],
                     cons: [
                         'Hard to guarantee unified & accurate logo positioning in mass production',
@@ -1720,11 +1720,11 @@
                     ]
                 },
                 {
-                    num: '3', icon: '🧵', en: 'Embroidery', cn: '刺绣',
+                    num: '3', icon: '🧵', en: 'Embroidery',
                     tag: 'Stitch the design into the fabric — the most durable option.',
                     embroidery: [
                         {
-                            sub: '3.1', title: 'Direct Embroidery', cn: '直接刺绣',
+                            sub: '3.1', title: 'Direct Embroidery',
                             image: 'custom-images/Process/direct-embroidery.jpg',
                             pros: [
                                 'Extremely durable, never falls off',
@@ -1733,7 +1733,7 @@
                             cons: [ 'High unit production cost', 'Longer manufacturing cycle', 'Plate making fee required' ]
                         },
                         {
-                            sub: '3.2', title: 'Embroidered Patch', cn: '刺绣贴',
+                            sub: '3.2', title: 'Embroidered Patch',
                             note: 'Embroider patterns onto the base fabric first, then sew the finished woven label onto garments.',
                             image: 'custom-images/Process/embroidered-patch.jpg',
                             pros: [
@@ -1746,7 +1746,7 @@
                     ]
                 },
                 {
-                    num: '4', icon: '💎', en: 'Silicone Printing', cn: '硅胶印花',
+                    num: '4', icon: '💎', en: 'Silicone Printing',
                     tag: 'Raised, premium-textured print that stands out on the garment.',
                     image: 'custom-images/Process/silicone.jpg',
                     pros: [ 'Presents a premium, high-grade visual texture on clothes' ],
@@ -1778,18 +1778,18 @@
                 if (p.embroidery) {
                     const subs = p.embroidery.map(s => `
                         <div class="pc-sub">
-                            <div class="sub-h">${s.sub} ${s.title} <span class="sub-cn">${s.cn}</span></div>
+                            <div class="sub-h">${s.sub} ${s.title}</div>
                             ${s.image ? `<img class="pc-img" src="${cdn(s.image)}" alt="${s.title}">` : ''}
                             ${s.note ? `<div class="pc-process-note">${s.note}</div>` : ''}
-                            <div class="pc-block-title pros">✓ Advantages / 优点</div>
+                            <div class="pc-block-title pros">✓ Advantages</div>
                             <ul class="pc-list pros">${s.pros.map(x => `<li><span class="ic">✓</span><span>${x}</span></li>`).join('')}</ul>
-                            <div class="pc-block-title cons">⚠ Disadvantages / 缺点</div>
+                            <div class="pc-block-title cons">⚠ Disadvantages</div>
                             <ul class="pc-list cons">${s.cons.map(x => `<li><span class="ic">⚠</span><span>${x}</span></li>`).join('')}</ul>
                         </div>`).join('');
                     return `
                     <div class="process-card">
                         <div class="pc-head"><div class="pc-num">${p.num}</div><div class="pc-icon">${p.icon}</div>
-                            <div class="pc-title"><div class="en">${p.en}</div><div class="cn">${p.cn}</div></div></div>
+                            <div class="pc-title"><div class="en">${p.en}</div></div></div>
                         <div class="pc-tag">${p.tag}</div>
                         <div class="pc-body">${subs}</div>
                     </div>`;
@@ -1797,19 +1797,19 @@
                 return `
                 <div class="process-card">
                     <div class="pc-head"><div class="pc-num">${p.num}</div><div class="pc-icon">${p.icon}</div>
-                        <div class="pc-title"><div class="en">${p.en}</div><div class="cn">${p.cn}</div></div></div>
+                        <div class="pc-title"><div class="en">${p.en}</div></div></div>
                     <div class="pc-tag">${p.tag}</div>
                     ${p.image ? `<img class="pc-img" src="${cdn(p.image)}" alt="${p.en}">` : ''}
                     ${p.foilImage ? `
                     <div class="pc-foil">
-                        <div class="foil-h">✨ Hot Stamping Foil / 烫金 <span class="foil-tag">a special heat-transfer variant</span></div>
+                        <div class="foil-h">✨ Hot Stamping Foil <span class="foil-tag">a special heat-transfer variant</span></div>
                         <img class="pc-img" src="${cdn(p.foilImage)}" alt="Hot Stamping Foil">
                         <div class="foil-note">${p.foilNote}</div>
                     </div>` : ''}
                     <div class="pc-body">
-                        <div class="pc-block-title pros">✓ Advantages / 优点</div>
+                        <div class="pc-block-title pros">✓ Advantages</div>
                         <ul class="pc-list pros">${p.pros.map(x => `<li><span class="ic">✓</span><span>${x}</span></li>`).join('')}</ul>
-                        <div class="pc-block-title cons">⚠ Disadvantages / 缺点</div>
+                        <div class="pc-block-title cons">⚠ Disadvantages</div>
                         <ul class="pc-list cons">${p.cons.map(x => `<li><span class="ic">⚠</span><span>${x}</span></li>`).join('')}</ul>
                     </div>
                 </div>`;
@@ -1828,11 +1828,11 @@
                 </tr>`).join('');
 
             const metricMeta = [
-                { key: 'cost', label: 'Cost', cn: '成本', icon: '💰' },
-                { key: 'durability', label: 'Durability', cn: '耐用', icon: '🛡️' },
-                { key: 'wash', label: 'Wash Resistance', cn: '耐洗', icon: '🧼' },
-                { key: 'lead', label: 'Lead Time', cn: '工期', icon: '⏱️' },
-                { key: 'plate', label: 'Plate Fee', cn: '版费', icon: '🎨' },
+                { key: 'cost', label: 'Cost', icon: '💰' },
+                { key: 'durability', label: 'Durability', icon: '🛡️' },
+                { key: 'wash', label: 'Wash Resistance', icon: '🧼' },
+                { key: 'lead', label: 'Lead Time', icon: '⏱️' },
+                { key: 'plate', label: 'Plate Fee', icon: '🎨' },
             ];
             const matrixCards = m.rows.map(r => `
                 <div class="matrix-card">
@@ -1844,7 +1844,7 @@
                             const txt = isPlate ? plateText[r[m.key]] : pillText[r[m.key]];
                             return `
                             <div class="matrix-metric">
-                                <span class="matrix-metric-name"><span class="mm-icon">${m.icon}</span> ${m.label} <span class="mm-cn">${m.cn}</span></span>
+                                <span class="matrix-metric-name"><span class="mm-icon">${m.icon}</span> ${m.label}</span>
                                 <span class="pill ${cls}">${txt}</span>
                             </div>`;
                         }).join('')}
@@ -1886,7 +1886,7 @@
         function openLightbox(idx) {
             lightboxIndex = idx;
             const product = filteredProducts[idx];
-            const catEn = product.custom ? (product.category_cn || '定制项目') : (CATEGORY_EN[product.category] || product.category);
+            const catEn = product.custom ? (product.category_cn || 'Custom Project') : (CATEGORY_EN[product.category] || product.category);
             const base = product.custom ? 'custom-images/' : 'catalog-images/';
             document.getElementById('lightboxImg').src = cdn(base + product.image);
             document.getElementById('lightboxModel').textContent = product.model;
