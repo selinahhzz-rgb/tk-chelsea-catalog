@@ -1457,7 +1457,7 @@
                 }
                 // Load Pantone color card data for the color module
                 try {
-                    const ptResp = await fetch('pantone_colors.json?v=1');
+                    const ptResp = await fetch('pantone_colors.json?v=2');
                     pantoneColorsData = await ptResp.json();
                 } catch (e) {
                     console.error('Failed to load pantone_colors.json:', e);
