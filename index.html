@@ -1044,6 +1044,8 @@
             document.getElementById('adminToggle').innerHTML = '&#128275; Exit Admin';
             document.getElementById('adminToggle').classList.add('active');
             document.getElementById('adminBadge').classList.add('active');
+            renderSubcategories(); // 刷新导航，显示仅管理员可见的子类别
+            applyFilters();         // 重新渲染当前视图
         }
         function exitAdmin() {
             isAdmin = false;
@@ -1051,6 +1053,8 @@
             document.getElementById('adminToggle').innerHTML = '&#128274; Admin';
             document.getElementById('adminToggle').classList.remove('active');
             document.getElementById('adminBadge').classList.remove('active');
+            renderSubcategories(); // 刷新导航，隐藏仅管理员可见的子类别
+            applyFilters();         // 若正在查看该类，自动切回默认子类别
         }
 
         // ===== Search Tab Switch =====
@@ -1562,6 +1566,7 @@
             if (!customData || !customData.subcategories) return 'all';
             for (const sub of customData.subcategories) {
                 if (sub.key === 'process' || sub.key === 'size') continue; // 指南类不作为默认
+                if (sub.adminOnly && !isAdmin) continue; // 仅管理员可见
                 const cnt = customData.items.filter(i => i.subcategory === sub.key).length;
                 if (cnt > 0) return sub.key;
             }
@@ -1574,6 +1579,7 @@
             nav.innerHTML = '';
             if (!customData) return;
             customData.subcategories.forEach(sub => {
+                if (sub.adminOnly && !isAdmin) return; // 仅管理员可见，不渲染导航按钮
                 const isProcess = sub.key === 'process';
                 const isColors = sub.key === 'pantone-colors';
                 let count;
@@ -1609,6 +1615,11 @@
         // ===== Apply Filters =====
         function applyFilters() {
             if (currentCategory === '__custom__' && customData) {
+                // 非管理员不能访问仅管理员可见的子类别（如 Pantone 颜色）
+                const subDef = customData.subcategories.find(s => s.key === currentSubcategory);
+                if (subDef && subDef.adminOnly && !isAdmin) {
+                    currentSubcategory = defaultSub();
+                }
                 if (currentSubcategory === 'process') { renderProcessPage(); return; }
                 if (currentSubcategory === 'pantone-colors') { renderPantoneColors(); return; }
                 let list = customData.items.map(customToProduct);
