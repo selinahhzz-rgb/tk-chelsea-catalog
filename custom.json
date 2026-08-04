@@ -34,6 +34,13 @@
       "key": "fabric",
       "label": "Fabric",
       "icon": "🧵"
+    },
+    {
+      "key": "pantone-colors",
+      "label": "Pantone Colors",
+      "icon": "🎨",
+      "type": "colors",
+      "data": "pantone_colors.json"
     }
   ],
   "items": [
