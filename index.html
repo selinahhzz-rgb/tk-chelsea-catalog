@@ -218,6 +218,44 @@
             font-size: 11px; padding: 1px 6px; border-radius: 10px; margin-left: 2px;
         }
 
+        /* ===== Pantone Color Module ===== */
+        .pantone-header { margin-bottom: 16px; }
+        .pantone-search { display: flex; gap: 10px; margin: 12px 0; max-width: 520px; }
+        .pantone-search input {
+            flex: 1; padding: 10px 14px; border: 2px solid var(--border); border-radius: var(--radius);
+            font-size: 14px; outline: none;
+        }
+        .pantone-search input:focus { border-color: var(--shop); }
+        .pantone-search button {
+            padding: 10px 18px; border: none; border-radius: var(--radius); background: var(--shop);
+            color: white; font-weight: 600; cursor: pointer;
+        }
+        .pantone-families { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+        .pantone-family-btn {
+            padding: 5px 12px; border: 1px solid var(--border); border-radius: 16px;
+            background: white; font-size: 12px; cursor: pointer; transition: all 0.15s;
+        }
+        .pantone-family-btn:hover { border-color: var(--shop); color: var(--shop); }
+        .pantone-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(82px, 1fr));
+            gap: 10px;
+        }
+        .pantone-swatch {
+            background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+            overflow: hidden; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .pantone-swatch:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .pantone-chip { width: 100%; aspect-ratio: 1; }
+        .pantone-code { font-size: 11px; font-weight: 600; padding: 5px 5px 0; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .pantone-cmyk { font-size: 9px; color: var(--text-light); padding: 0 5px 5px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        @media (max-width: 640px) {
+            .pantone-grid { grid-template-columns: repeat(auto-fill, minmax(62px, 1fr)); gap: 6px; }
+            .pantone-code { font-size: 9px; }
+            .pantone-cmyk { font-size: 8px; }
+            .pantone-search { flex-direction: column; }
+        }
+
         /* ===== Search Area ===== */
         .search-area { max-width: 1400px; margin: 20px auto 0; padding: 0 24px; }
         .search-tabs { display: flex; gap: 0; margin-bottom: 12px; }
@@ -953,6 +991,7 @@
         // ===== State =====
         let products = [];
         let customData = null;        // { subcategories, items }
+        let pantoneColorsData = null; // { total, colors: [...] }
         let featuresData = null;
         let pricePosData = null;       // { positions: { pageNum: [{x,y,w,h}...] } } — OCR-detected "$" boxes
         let currentCategory = 'Short training kit';
@@ -1416,6 +1455,14 @@
                     console.error('Failed to load price_positions.json:', e);
                     pricePosData = { positions: {} };
                 }
+                // Load Pantone color card data for the color module
+                try {
+                    const ptResp = await fetch('pantone_colors.json?v=1');
+                    pantoneColorsData = await ptResp.json();
+                } catch (e) {
+                    console.error('Failed to load pantone_colors.json:', e);
+                    pantoneColorsData = null;
+                }
                 document.getElementById('totalCount').textContent = products.length + customCount;
                 dataReady = true;
                 applyStateFromHash();
@@ -1528,7 +1575,11 @@
             if (!customData) return;
             customData.subcategories.forEach(sub => {
                 const isProcess = sub.key === 'process';
-                const count = isProcess ? null : customData.items.filter(i => i.subcategory === sub.key).length;
+                const isColors = sub.key === 'pantone-colors';
+                let count;
+                if (isProcess) count = null;
+                else if (isColors) count = pantoneColorsData ? pantoneColorsData.total : 0;
+                else count = customData.items.filter(i => i.subcategory === sub.key).length;
                 const btn = document.createElement('button');
                 btn.className = 'subcat-btn' + (currentSubcategory === sub.key ? ' active' : '');
                 const badge = isProcess ? '<span class="subcat-count">Guide</span>' : `<span class="subcat-count">${count}</span>`;
@@ -1559,6 +1610,7 @@
         function applyFilters() {
             if (currentCategory === '__custom__' && customData) {
                 if (currentSubcategory === 'process') { renderProcessPage(); return; }
+                if (currentSubcategory === 'pantone-colors') { renderPantoneColors(); return; }
                 let list = customData.items.map(customToProduct);
                 if (currentSubcategory !== 'all') {
                     list = list.filter(p => p.subcategory === currentSubcategory);
@@ -1584,6 +1636,76 @@
         function setFabricFilter(v) {
             fabricFilter = v;
             applyFilters();
+        }
+
+        // ===== Pantone Color Module (searchable color swatch grid) =====
+        let pantoneSearchQuery = '';
+        function renderPantoneColors() {
+            const section = document.getElementById('productsSection');
+            section.innerHTML = '';
+            if (!pantoneColorsData || !pantoneColorsData.colors) {
+                section.innerHTML = '<div class="empty-state"><p>Color data not loaded</p></div>';
+                return;
+            }
+            const colors = pantoneColorsData.colors;
+            const q = pantoneSearchQuery.toLowerCase().trim();
+            const matches = q ? colors.filter(c => c.search_text.includes(q)) : colors;
+
+            const header = document.createElement('div');
+            header.className = 'pantone-header';
+            header.innerHTML = `
+                <div class="section-title"><span class="cat-icon">&#127912;</span> Pantone Colors (${matches.length})</div>
+                <div class="pantone-search">
+                    <input type="text" id="pantoneSearchInput" placeholder="Search color code or family, e.g. 100, Black, Blue..." value="${escapeHtml(pantoneSearchQuery)}">
+                    <button id="pantoneSearchBtn">Locate</button>
+                </div>
+                <div class="pantone-families">
+                    ${['Yellow','Orange','Red','Pink','Purple','Blue','Cyan','Green','Brown','Gray','Black'].map(f =>
+                        `<button class="pantone-family-btn" data-family="${f.toLowerCase()}">${f}</button>`
+                    ).join('')}
+                </div>
+            `;
+            section.appendChild(header);
+
+            const grid = document.createElement('div');
+            grid.className = 'pantone-grid';
+            grid.id = 'pantoneGrid';
+            if (matches.length === 0) {
+                grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><p>No matching colors</p></div>';
+            } else {
+                grid.innerHTML = matches.map((c, idx) => `
+                    <div class="pantone-swatch" data-code="${escapeHtml(c.code)}" data-idx="${idx}" title="${escapeHtml(c.code)} ${escapeHtml(c.cmyk)}">
+                        <div class="pantone-chip" style="background-color:${c.hex}"></div>
+                        <div class="pantone-code">${escapeHtml(c.code.replace('PANTONE ', ''))}</div>
+                        <div class="pantone-cmyk">${escapeHtml(c.cmyk)}</div>
+                    </div>
+                `).join('');
+            }
+            section.appendChild(grid);
+
+            // wire search
+            const input = document.getElementById('pantoneSearchInput');
+            const btn = document.getElementById('pantoneSearchBtn');
+            const doSearch = () => {
+                pantoneSearchQuery = input.value;
+                renderPantoneColors();
+                setTimeout(() => {
+                    const first = grid.querySelector('.pantone-swatch');
+                    if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 50);
+            };
+            input.addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
+            btn.addEventListener('click', doSearch);
+            header.querySelectorAll('.pantone-family-btn').forEach(b => {
+                b.addEventListener('click', () => {
+                    input.value = b.dataset.family;
+                    doSearch();
+                });
+            });
+        }
+
+        function escapeHtml(str) {
+            return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
         }
 
         // ===== Product spec line (hoodies etc.) =====
