@@ -256,6 +256,56 @@
             .pantone-search { flex-direction: column; }
         }
 
+        /* ===== CMYK <-> HEX Converter Tool ===== */
+        .cmyk-tool {
+            margin: 14px 0 4px; padding: 14px 16px; background: #f7f8fa;
+            border: 1px solid var(--border); border-radius: var(--radius);
+            max-width: 640px;
+        }
+        .cmyk-tool-title {
+            font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 10px;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .cmyk-inputs { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+        .cmyk-field {
+            display: flex; flex-direction: column; align-items: center; gap: 3px;
+            background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 5px 8px;
+        }
+        .cmyk-field label { font-size: 11px; font-weight: 700; color: var(--text-light); }
+        .cmyk-field input {
+            width: 56px; padding: 5px 4px; border: 1px solid var(--border); border-radius: 6px;
+            font-size: 13px; text-align: center; outline: none; -moz-appearance: textfield;
+        }
+        .cmyk-field input:focus { border-color: var(--shop); }
+        .cmyk-field input::-webkit-outer-spin-button,
+        .cmyk-field input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .cmyk-mid { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; }
+        .cmyk-hex-input {
+            flex: 1; min-width: 150px; padding: 8px 12px; border: 2px solid var(--border);
+            border-radius: var(--radius); font-size: 14px; outline: none; text-transform: uppercase;
+            font-family: monospace;
+        }
+        .cmyk-hex-input:focus { border-color: var(--shop); }
+        .cmyk-copy-btn {
+            padding: 8px 14px; border: 1px solid var(--border); border-radius: var(--radius);
+            background: #fff; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text);
+        }
+        .cmyk-copy-btn:hover { border-color: var(--shop); color: var(--shop); }
+        .cmyk-preview {
+            width: 100%; height: 38px; border-radius: 8px; margin-top: 10px;
+            border: 1px solid rgba(0,0,0,0.12); background: #fff;
+        }
+        .cmyk-values {
+            margin-top: 8px; font-size: 12px; color: var(--text-light); line-height: 1.6;
+            font-family: monospace;
+        }
+        .cmyk-values b { color: var(--text); }
+        .cmyk-swap {
+            font-size: 11px; color: var(--text-light); margin-top: 8px; cursor: pointer;
+            text-decoration: underline; user-select: none;
+        }
+        .cmyk-swap:hover { color: var(--shop); }
+
         /* ===== Search Area ===== */
         .search-area { max-width: 1400px; margin: 20px auto 0; padding: 0 24px; }
         .search-tabs { display: flex; gap: 0; margin-bottom: 12px; }
@@ -1664,6 +1714,22 @@
                         `<button class="pantone-family-btn" data-family="${f.toLowerCase()}">${f}</button>`
                     ).join('')}
                 </div>
+                <div class="cmyk-tool">
+                    <div class="cmyk-tool-title">&#127912; CMYK &#8644; HEX Converter</div>
+                    <div class="cmyk-inputs">
+                        <div class="cmyk-field"><label>C</label><input type="number" id="cmykC" min="0" max="100" placeholder="0"></div>
+                        <div class="cmyk-field"><label>M</label><input type="number" id="cmykM" min="0" max="100" placeholder="0"></div>
+                        <div class="cmyk-field"><label>Y</label><input type="number" id="cmykY" min="0" max="100" placeholder="0"></div>
+                        <div class="cmyk-field"><label>K</label><input type="number" id="cmykK" min="0" max="100" placeholder="0"></div>
+                    </div>
+                    <div class="cmyk-mid">
+                        <input type="text" id="cmykHex" class="cmyk-hex-input" placeholder="#000000" maxlength="7">
+                        <button class="cmyk-copy-btn" id="cmykCopyBtn">Copy HEX</button>
+                    </div>
+                    <div class="cmyk-preview" id="cmykPreview"></div>
+                    <div class="cmyk-values" id="cmykValues">Enter CMYK (0-100) or a HEX code above.</div>
+                    <div class="cmyk-swap" id="cmykSwap">Tip: click any color swatch below to load its real HEX &amp; CMYK</div>
+                </div>
             `;
             section.appendChild(header);
 
@@ -1702,10 +1768,103 @@
                     doSearch();
                 });
             });
+
+            // wire CMYK <-> HEX converter
+            renderCmykTool();
         }
 
         function escapeHtml(str) {
             return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+        }
+
+        // ===== CMYK <-> HEX conversion helpers =====
+        const _clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+        function cmykToRgb(c, m, y, k) {
+            c = _clamp(+c || 0, 0, 100) / 100;
+            m = _clamp(+m || 0, 0, 100) / 100;
+            y = _clamp(+y || 0, 0, 100) / 100;
+            k = _clamp(+k || 0, 0, 100) / 100;
+            return [
+                Math.round(255 * (1 - c) * (1 - k)),
+                Math.round(255 * (1 - m) * (1 - k)),
+                Math.round(255 * (1 - y) * (1 - k))
+            ];
+        }
+        function rgbToHex(r, g, b) {
+            return '#' + [r, g, b].map(x => _clamp(Math.round(x), 0, 255).toString(16).padStart(2, '0')).join('').toUpperCase();
+        }
+        function hexToRgb(hex) {
+            if (!hex) return null;
+            hex = hex.trim().replace(/^#/, '');
+            if (/^[0-9a-fA-F]{3}$/.test(hex)) hex = hex.split('').map(c => c + c).join('');
+            if (!/^[0-9a-fA-F]{6}$/.test(hex)) return null;
+            const num = parseInt(hex, 16);
+            return [(num >> 16) & 255, (num >> 8) & 255, num & 255];
+        }
+        function rgbToCmyk(r, g, b) {
+            r /= 255; g /= 255; b /= 255;
+            const k = 1 - Math.max(r, g, b);
+            if (k >= 1) return [0, 0, 0, 100];
+            const c = (1 - r - k) / (1 - k);
+            const m = (1 - g - k) / (1 - k);
+            const y = (1 - b - k) / (1 - k);
+            return [Math.round(c * 100), Math.round(m * 100), Math.round(y * 100), Math.round(k * 100)];
+        }
+        function renderCmykTool() {
+            const cmykInputs = ['cmykC', 'cmykM', 'cmykY', 'cmykK'].map(id => document.getElementById(id));
+            const hexInput = document.getElementById('cmykHex');
+            const preview = document.getElementById('cmykPreview');
+            const values = document.getElementById('cmykValues');
+            const copyBtn = document.getElementById('cmykCopyBtn');
+            if (!cmykInputs[0] || !hexInput || !preview || !values) return;
+
+            function updateFromCmyk() {
+                const [r, g, b] = cmykToRgb(cmykInputs[0].value, cmykInputs[1].value, cmykInputs[2].value, cmykInputs[3].value);
+                const hex = rgbToHex(r, g, b);
+                const [c, m, y, k] = rgbToCmyk(r, g, b);
+                hexInput.value = hex;
+                preview.style.backgroundColor = hex;
+                values.innerHTML = `<b>HEX:</b> ${hex} &nbsp;|&nbsp; <b>RGB:</b> ${r}, ${g}, ${b} &nbsp;|&nbsp; <b>CMYK:</b> ${c}, ${m}, ${y}, ${k}`;
+            }
+            function updateFromHex() {
+                const rgb = hexToRgb(hexInput.value);
+                if (!rgb) return;
+                const [r, g, b] = rgb;
+                const [c, m, y, k] = rgbToCmyk(r, g, b);
+                cmykInputs.forEach((inp, idx) => inp.value = [c, m, y, k][idx]);
+                const hex = rgbToHex(r, g, b);
+                preview.style.backgroundColor = hex;
+                values.innerHTML = `<b>HEX:</b> ${hex} &nbsp;|&nbsp; <b>RGB:</b> ${r}, ${g}, ${b} &nbsp;|&nbsp; <b>CMYK:</b> ${c}, ${m}, ${y}, ${k}`;
+            }
+            cmykInputs.forEach(i => i.addEventListener('input', updateFromCmyk));
+            hexInput.addEventListener('input', updateFromHex);
+            copyBtn.addEventListener('click', () => {
+                const txt = hexInput.value.trim();
+                if (!txt) return;
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(txt);
+                }
+                copyBtn.textContent = 'Copied!';
+                setTimeout(() => copyBtn.textContent = 'Copy HEX', 1200);
+            });
+            // clicking a swatch loads that color's REAL values (HEX from PDF swatch, plus CMYK)
+            const grid = document.getElementById('pantoneGrid');
+            if (grid) {
+                grid.addEventListener('click', e => {
+                    const sw = e.target.closest('.pantone-swatch');
+                    if (!sw) return;
+                    const colors = pantoneColorsData ? pantoneColorsData.colors : [];
+                    const c = colors[+sw.dataset.idx];
+                    if (!c) return;
+                    const parts = (c.cmyk || '').split(',').map(Number);
+                    cmykInputs.forEach((inp, idx) => inp.value = parts[idx] != null ? parts[idx] : 0);
+                    const hex = c.hex || (hexToRgb(c.hex) ? c.hex : '');
+                    hexInput.value = hex;
+                    preview.style.backgroundColor = hex;
+                    const rgb = c.rgb || hexToRgb(hex) || [0, 0, 0];
+                    values.innerHTML = `<b>HEX:</b> ${hex} &nbsp;|&nbsp; <b>RGB:</b> ${rgb[0]}, ${rgb[1]}, ${rgb[2]} &nbsp;|&nbsp; <b>CMYK:</b> ${c.cmyk}`;
+                });
+            }
         }
 
         // ===== Product spec line (hoodies etc.) =====
