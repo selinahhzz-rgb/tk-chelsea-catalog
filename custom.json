@@ -40,7 +40,8 @@
       "label": "Pantone Colors",
       "icon": "🎨",
       "type": "colors",
-      "data": "pantone_colors.json"
+      "data": "pantone_colors.json",
+      "adminOnly": true
     }
   ],
   "items": [
