@@ -1044,8 +1044,11 @@
             document.getElementById('adminToggle').innerHTML = '&#128275; Exit Admin';
             document.getElementById('adminToggle').classList.add('active');
             document.getElementById('adminBadge').classList.add('active');
-            renderSubcategories(); // 刷新导航，显示仅管理员可见的子类别
-            applyFilters();         // 重新渲染当前视图
+            // 解密并加载 Pantone 等仅管理员数据，完成后再刷新导航与视图
+            Promise.resolve(loadPantoneColors()).finally(() => {
+                renderSubcategories(); // 刷新导航，显示仅管理员可见的子类别
+                applyFilters();         // 重新渲染当前视图
+            });
         }
         function exitAdmin() {
             isAdmin = false;
@@ -1055,6 +1058,49 @@
             document.getElementById('adminBadge').classList.remove('active');
             renderSubcategories(); // 刷新导航，隐藏仅管理员可见的子类别
             applyFilters();         // 若正在查看该类，自动切回默认子类别
+        }
+
+        // ===== Decrypt Pantone color data (AES-256-GCM + PBKDF2, same password as admin) =====
+        // Encrypted file format: salt.iv.authTag.ciphertext (all base64)
+        function b64ToBytes(b64) {
+            const bin = atob(b64);
+            const arr = new Uint8Array(bin.length);
+            for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+            return arr;
+        }
+        async function decryptPantone(encrypted, password) {
+            const [saltB64, ivB64, tagB64, dataB64] = encrypted.split('.');
+            if (!saltB64 || !ivB64 || !tagB64 || !dataB64) throw new Error('Invalid encrypted format');
+            const salt = b64ToBytes(saltB64);
+            const iv = b64ToBytes(ivB64);
+            const tag = b64ToBytes(tagB64);
+            const data = b64ToBytes(dataB64);
+            const enc = new TextEncoder();
+            const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
+            const key = await crypto.subtle.deriveKey(
+                { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' },
+                keyMaterial,
+                { name: 'AES-GCM', length: 256 },
+                false,
+                ['decrypt']
+            );
+            // Web Crypto expects the authTag appended to the ciphertext
+            const cipherWithTag = new Uint8Array(data.length + tag.length);
+            cipherWithTag.set(data, 0);
+            cipherWithTag.set(tag, data.length);
+            const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, cipherWithTag);
+            return JSON.parse(new TextDecoder().decode(decrypted));
+        }
+        async function loadPantoneColors() {
+            if (pantoneColorsData) return; // already decrypted
+            try {
+                const resp = await fetch('pantone_colors.json?v=5');
+                const text = await resp.text();
+                pantoneColorsData = await decryptPantone(text, ADMIN_PASSWORD);
+            } catch (e) {
+                console.error('Failed to decrypt pantone_colors.json:', e);
+                pantoneColorsData = null;
+            }
         }
 
         // ===== Search Tab Switch =====
@@ -1459,14 +1505,8 @@
                     console.error('Failed to load price_positions.json:', e);
                     pricePosData = { positions: {} };
                 }
-                // Load Pantone color card data for the color module
-                try {
-                    const ptResp = await fetch('pantone_colors.json?v=4');
-                    pantoneColorsData = await ptResp.json();
-                } catch (e) {
-                    console.error('Failed to load pantone_colors.json:', e);
-                    pantoneColorsData = null;
-                }
+                // Pantone color data is encrypted; loaded + decrypted only after admin login (see loadPantoneColors)
+                pantoneColorsData = null;
                 document.getElementById('totalCount').textContent = products.length + customCount;
                 dataReady = true;
                 applyStateFromHash();
@@ -1584,7 +1624,7 @@
                 const isColors = sub.key === 'pantone-colors';
                 let count;
                 if (isProcess) count = null;
-                else if (isColors) count = pantoneColorsData ? pantoneColorsData.total : 0;
+                else if (isColors) count = pantoneColorsData ? pantoneColorsData.colors.length : 0;
                 else count = customData.items.filter(i => i.subcategory === sub.key).length;
                 const btn = document.createElement('button');
                 btn.className = 'subcat-btn' + (currentSubcategory === sub.key ? ' active' : '');
