@@ -2053,5 +2053,14 @@
     "fabric_image": "hoodies/hoodie_child_07_fabric.jpg",
     "color_image": "hoodies/hoodie_child_07_color.jpg",
     "model_full": "36% cotton SH-WY779 Ultra- sofT P9.6"
+  },
+  {
+    "page": 1001,
+    "model": "DN1005",
+    "category": "Wind jacket",
+    "category_cn": "风衣/夹克",
+    "image": "DN1005.png",
+    "size_text": "S-3XL",
+    "size_image": "DN1005_sizechart.png"
   }
 ]
