@@ -256,6 +256,51 @@
             .pantone-search { flex-direction: column; }
         }
 
+        /* ===== Quote Calculator (admin only) ===== */
+        .qc-wrap { max-width: 920px; margin: 0 auto; padding: 4px 0 40px; }
+        .qc-row { display: flex; align-items: flex-start; gap: 16px; padding: 12px 0; border-bottom: 1px dashed var(--border); }
+        .qc-label { flex: 0 0 110px; font-size: 13px; font-weight: 700; color: var(--text); padding-top: 7px; }
+        .qc-opts { display: flex; flex-wrap: wrap; gap: 8px; }
+        .qc-opt {
+            padding: 7px 14px; border: 1px solid var(--border); border-radius: var(--radius);
+            background: #fff; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--text);
+            transition: all .12s;
+        }
+        .qc-opt:hover { border-color: var(--shop); color: var(--shop); }
+        .qc-opt.active { background: var(--shop); border-color: var(--shop); color: #fff; }
+        .qc-qty {
+            width: 110px; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius);
+            font-size: 15px; outline: none;
+        }
+        .qc-qty:focus { border-color: var(--shop); }
+        .qc-hidden { display: none; }
+        .qc-warn { color: #c0392b; font-size: 12px; font-weight: 600; margin-left: 8px; }
+        .qc-acc { margin-top: 6px; }
+        .qc-acc-item { display: flex; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 8px; }
+        .qc-acc-item:nth-child(odd) { background: #fafbfc; }
+        .qc-acc-item input[type=checkbox] { width: 16px; height: 16px; cursor: pointer; }
+        .qc-acc-name { flex: 1; font-size: 13px; color: var(--text); }
+        .qc-acc-note { font-size: 11px; color: var(--text-light); margin-left: 6px; }
+        .qc-acc-price, .qc-acc-qty {
+            width: 64px; padding: 5px 6px; border: 1px solid var(--border); border-radius: 6px;
+            font-size: 13px; text-align: center; outline: none;
+        }
+        .qc-acc-unit { font-size: 12px; color: var(--text-light); width: 34px; }
+        .qc-result {
+            margin-top: 22px; background: #f7f8fa; border: 1px solid var(--border); border-radius: var(--radius);
+            padding: 20px 22px;
+        }
+        .qc-result h3 { margin: 0 0 14px; font-size: 16px; color: var(--text); }
+        .qc-line { display: flex; justify-content: space-between; font-size: 14px; padding: 5px 0; color: var(--text); }
+        .qc-line .qc-sub { color: var(--text-light); font-size: 12px; }
+        .qc-line.acc { font-size: 13px; color: var(--text-light); }
+        .qc-total {
+            display: flex; justify-content: space-between; align-items: center; margin-top: 14px;
+            padding-top: 14px; border-top: 2px solid var(--border); font-size: 20px; font-weight: 800; color: var(--shop);
+        }
+        .qc-total .qc-num { font-size: 26px; }
+        .qc-tip { margin-top: 12px; font-size: 12px; color: var(--text-light); line-height: 1.7; }
+
         /* ===== Search Area ===== */
         .search-area { max-width: 1400px; margin: 20px auto 0; padding: 0 24px; }
         .search-tabs { display: flex; gap: 0; margin-bottom: 12px; }
@@ -1662,6 +1707,7 @@
                 }
                 if (currentSubcategory === 'process') { renderProcessPage(); return; }
                 if (currentSubcategory === 'pantone-colors') { renderPantoneColors(); return; }
+                if (currentSubcategory === 'quote-calculator') { renderQuoteCalculator(); return; }
                 let list = customData.items.map(customToProduct);
                 if (currentSubcategory !== 'all') {
                     list = list.filter(p => p.subcategory === currentSubcategory);
@@ -1753,6 +1799,229 @@
                     doSearch();
                 });
             });
+        }
+
+        // ===== Quote Calculator (admin only) =====
+        const PRICING = {
+            short: {
+                label: '短袖球服',
+                fabrics: {
+                    regular: { label: '常规布料', fabrics: '针孔布 / NBA布 / 小米通 / 篮球提花 / 双面涂布 / 足球格布', single: [27, 26], set: [36, 35] },
+                    premium: { label: '高端布料', fabrics: '蝴蝶网 / 雨点布 / 短孔网 / 阿迪球员布 / 几何提花布', single: [32, 31], set: [42, 41] }
+                },
+                doubleAdd: { single: 10, set: 20 },
+                zipper: null
+            },
+            long: {
+                label: '长袖秋冬装',
+                fabrics: {
+                    under230: { label: '230g内', fabrics: '涤盖涤205g / NBA230g / 涤盖涤220g', single: [40, 38], set: [70, 68] },
+                    above250: { label: '250g以上', fabrics: '健康布250g / 健康布280g / 多宝条280g / 马蹄布280g', single: [62, 60], set: [95, 93] }
+                },
+                zipper: { half: 5, full: 10 },
+                doubleAdd: null
+            }
+        };
+        const ACCESSORIES = [
+            { id: 'a1', name: '胶印 / 水印', price: 2, unit: '位置', min: 0, note: '2元 / 位置' },
+            { id: 'a2', name: '精标烫印', price: 1.5, unit: '位置', min: 0, note: '1.5元 / 位置' },
+            { id: 'a3', name: '现货螺纹', price: 3, unit: '件', min: 0, note: '转印' },
+            { id: 'a4', name: '机织罗纹', price: 5, unit: '件', min: 200, note: '起订200件' },
+            { id: 'a5', name: 'polo螺纹 + 锁扣', price: 5, unit: '件', min: 0, note: '只做翻领 3元/件' },
+            { id: 'a6', name: '开衩 / 口袋 / 拉链', price: 2, unit: '件', min: 0, note: '' },
+            { id: 'a7', name: '双边织带', price: 6, unit: '套', min: 100, note: '起订100套' },
+            { id: 'a8', name: '开版 / 改版定制尺码', price: 8, unit: '条', min: 0, note: '约5个码' },
+            { id: 'a9', name: '前后破开接（前幅/后幅）', price: 2, unit: '件', min: 0, note: '复杂拼接 +4元/件' },
+            { id: 'a10', name: '织章', price: 8, unit: '个', min: 1000, note: '打版100元；起订1000个' },
+            { id: 'a11', name: '实绣 / 包边绣', price: 3, unit: '个', min: 0, note: '3元/个起' },
+            { id: 'a12', name: '硅胶标', price: 3, unit: '个', min: 300, note: '单价3-6元；打版300元起（此处按3元计）' },
+            { id: 'a13', name: '常规面料拼高端面料', price: 4, unit: '件', min: 0, note: '' },
+            { id: 'a14', name: '压线（领/肩/侧面）', price: 2, unit: '件', min: 50, note: '款单要备注；起订50件' },
+            { id: 'a15', name: '织唛领标 / 角章', price: 2, unit: '个', min: 0, note: '版费50' },
+            { id: 'a16', name: '纸箱（55×45×35）', price: 7, unit: '个', min: 1, note: '' }
+        ];
+
+        function renderQuoteCalculator() {
+            const section = document.getElementById('productsSection');
+            const accRows = ACCESSORIES.map(a => `
+                <div class="qc-acc-item">
+                    <input type="checkbox" id="acc_${a.id}">
+                    <span class="qc-acc-name">${escapeHtml(a.name)}<span class="qc-acc-note">${escapeHtml(a.note || '')}</span></span>
+                    <input type="number" class="qc-acc-price" id="accp_${a.id}" value="${a.price}" min="0" step="0.5">
+                    <span class="qc-acc-unit">元/${a.unit}</span>
+                    <input type="number" class="qc-acc-qty" id="accq_${a.id}" value="0" min="0">
+                </div>`).join('');
+
+            section.innerHTML = `
+                <div class="qc-wrap">
+                    <div class="section-title"><span class="cat-icon">&#129514;</span> Quote Calculator <span style="font-size:12px;color:var(--text-light);font-weight:400;">(Admin only)</span></div>
+
+                    <div class="qc-row">
+                        <label class="qc-label">球服类型</label>
+                        <div class="qc-opts" id="qcType">
+                            <button type="button" class="qc-opt active" data-v="short">短袖球服</button>
+                            <button type="button" class="qc-opt" data-v="long">长袖秋冬装</button>
+                        </div>
+                    </div>
+
+                    <div class="qc-row">
+                        <label class="qc-label">布料等级</label>
+                        <div class="qc-opts" id="qcFabricShort">
+                            <button type="button" class="qc-opt active" data-v="regular" data-type="short">常规布料</button>
+                            <button type="button" class="qc-opt" data-v="premium" data-type="short">高端布料</button>
+                        </div>
+                        <div class="qc-opts qc-hidden" id="qcFabricLong">
+                            <button type="button" class="qc-opt active" data-v="under230" data-type="long">230g内</button>
+                            <button type="button" class="qc-opt" data-v="above250" data-type="long">250g以上</button>
+                        </div>
+                        <span id="qcFabNote" style="font-size:12px;color:var(--text-light);align-self:center;"></span>
+                    </div>
+
+                    <div class="qc-row">
+                        <label class="qc-label">单件 / 套装</label>
+                        <div class="qc-opts" id="qcForm">
+                            <button type="button" class="qc-opt active" data-v="single">单件</button>
+                            <button type="button" class="qc-opt" data-v="set">套装（短裤+上衣）</button>
+                        </div>
+                    </div>
+
+                    <div class="qc-row">
+                        <label class="qc-label">定制数量</label>
+                        <input type="number" class="qc-qty" id="qcQty" value="50" min="1">
+                        <span class="qc-warn" id="qcQtyWarn"></span>
+                    </div>
+
+                    <div class="qc-row" id="qcDoubleRow">
+                        <label class="qc-label">双面</label>
+                        <label style="font-size:13px;color:var(--text);"><input type="checkbox" id="qcDouble"> 双面（套装+20元 / 单件+10元）</label>
+                    </div>
+
+                    <div class="qc-row qc-hidden" id="qcZipperRow">
+                        <label class="qc-label">拉链</label>
+                        <div class="qc-opts" id="qcZipper">
+                            <button type="button" class="qc-opt active" data-v="none">无</button>
+                            <button type="button" class="qc-opt" data-v="half">半拉 +5元</button>
+                            <button type="button" class="qc-opt" data-v="full">长拉 +10元</button>
+                        </div>
+                    </div>
+
+                    <div class="qc-row" style="flex-direction:column;align-items:stretch;">
+                        <label class="qc-label" style="padding-top:0;margin-bottom:6px;">配件（单独计算）</label>
+                        <div class="qc-acc" id="qcAcc">${accRows}</div>
+                    </div>
+
+                    <div class="qc-result" id="qcResult"></div>
+                </div>
+            `;
+
+            // option toggles within each group
+            section.querySelectorAll('.qc-opts').forEach(group => {
+                group.addEventListener('click', e => {
+                    const btn = e.target.closest('.qc-opt');
+                    if (!btn) return;
+                    group.querySelectorAll('.qc-opt').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    if (group.id === 'qcType') {
+                        const t = btn.dataset.v;
+                        document.getElementById('qcFabricShort').classList.toggle('qc-hidden', t !== 'short');
+                        document.getElementById('qcFabricLong').classList.toggle('qc-hidden', t !== 'long');
+                        document.getElementById('qcDoubleRow').classList.toggle('qc-hidden', t !== 'short');
+                        document.getElementById('qcZipperRow').classList.toggle('qc-hidden', t !== 'long');
+                    }
+                    quoteCompute();
+                });
+            });
+
+            // quantity -> auto-sync 件/套 accessory qtys
+            const qtyInput = document.getElementById('qcQty');
+            qtyInput.addEventListener('input', () => {
+                const q = parseInt(qtyInput.value) || 0;
+                ACCESSORIES.forEach(a => {
+                    if (a.unit === '件' || a.unit === '套') {
+                        const qe = document.getElementById('accq_' + a.id);
+                        if (qe.dataset.auto !== '0') { qe.value = q; qe.dataset.auto = '1'; }
+                    }
+                });
+                quoteCompute();
+            });
+
+            // accessory inputs
+            section.querySelectorAll('.qc-acc-item input[type=checkbox]').forEach(cb => cb.addEventListener('change', quoteCompute));
+            section.querySelectorAll('.qc-acc-item input[type=number]').forEach(inp => inp.addEventListener('input', () => {
+                if (inp.classList.contains('qc-acc-qty')) inp.dataset.auto = '0';
+                quoteCompute();
+            }));
+
+            document.getElementById('qcDouble').addEventListener('change', quoteCompute);
+
+            // init: 件/套 accessories default to qty 50
+            ACCESSORIES.forEach(a => {
+                if (a.unit === '件' || a.unit === '套') {
+                    const qe = document.getElementById('accq_' + a.id);
+                    qe.value = 50; qe.dataset.auto = '1';
+                }
+            });
+
+            quoteCompute();
+        }
+
+        function quoteCompute() {
+            const res = document.getElementById('qcResult');
+            if (!res) return;
+            const type = document.querySelector('#qcType .qc-opt.active').dataset.v;
+            const fabric = document.querySelector('#qcFabric' + (type === 'short' ? 'Short' : 'Long') + ' .qc-opt.active').dataset.v;
+            const isSet = document.querySelector('#qcForm .qc-opt.active').dataset.v === 'set';
+            const qty = parseInt(document.getElementById('qcQty').value) || 0;
+            const P = PRICING[type];
+            const tier = qty >= 101 ? 1 : 0;
+            const tierLabel = qty >= 101 ? '101–300 件' : '10–100 件';
+            const base = isSet ? P.fabrics[fabric].set[tier] : P.fabrics[fabric].single[tier];
+            let addon = 0; const addonLines = [];
+            if (type === 'short') {
+                if (document.getElementById('qcDouble').checked) {
+                    const a = isSet ? P.doubleAdd.set : P.doubleAdd.single;
+                    addon += a; addonLines.push(`双面加价 +${a}元`);
+                }
+            } else {
+                const z = document.querySelector('#qcZipper .qc-opt.active').dataset.v;
+                if (z === 'half') { addon += P.zipper.half; addonLines.push(`半拉链 +${P.zipper.half}元`); }
+                else if (z === 'full') { addon += P.zipper.full; addonLines.push(`长拉链 +${P.zipper.full}元`); }
+            }
+            const unit = base + addon;
+            const jerseySub = unit * qty;
+
+            let accTotal = 0; const accLines = []; const warns = [];
+            ACCESSORIES.forEach(a => {
+                const cb = document.getElementById('acc_' + a.id);
+                if (!cb.checked) return;
+                const price = parseFloat(document.getElementById('accp_' + a.id).value) || 0;
+                const aq = parseInt(document.getElementById('accq_' + a.id).value) || 0;
+                const cost = price * aq;
+                accTotal += cost;
+                accLines.push(`${escapeHtml(a.name)}：${price}元/${a.unit} × ${aq} = <b>¥${cost.toFixed(2)}</b>`);
+                if (a.min && aq > 0 && aq < a.min) warns.push(`⚠ ${a.name} 起订量 ${a.min}${a.unit}，当前 ${aq}${a.unit}`);
+            });
+
+            const grand = jerseySub + accTotal;
+            document.getElementById('qcQtyWarn').textContent = qty < 10 ? '起订量 10 件' : '';
+            document.getElementById('qcFabNote').textContent = P.fabrics[fabric].fabrics;
+
+            res.innerHTML = `
+                <h3>报价明细</h3>
+                <div class="qc-line"><span>${P.label} · ${P.fabrics[fabric].label} · ${isSet ? '套装' : '单件'} · ${qty}件（${tierLabel}）</span><span></span></div>
+                <div class="qc-line"><span>基础单价</span><span>¥${base.toFixed(2)} / 件</span></div>
+                ${addonLines.map(l => {
+                    const m = l.match(/\+(\d+)元/);
+                    const v = m ? m[1] : '0';
+                    return `<div class="qc-line"><span class="qc-sub">${l}</span><span>+¥${v}.00 / 件</span></div>`;
+                }).join('')}
+                <div class="qc-line"><span>合计单价</span><span><b>¥${unit.toFixed(2)} / 件</b></span></div>
+                <div class="qc-line"><span>球服小计（${unit.toFixed(2)} × ${qty}）</span><span><b>¥${jerseySub.toFixed(2)}</b></span></div>
+                ${accLines.length ? `<div class="qc-line acc" style="margin-top:8px;"><span><b>配件明细</b></span><span></span></div>` + accLines.map(l => `<div class="qc-line acc"><span>${l}</span></div>`).join('') : ''}
+                <div class="qc-total"><span>总计（不含税/运）</span><span class="qc-num">¥${grand.toFixed(2)}</span></div>
+                ${warns.length ? `<div class="qc-tip" style="color:#c0392b;">${warns.join('<br>')}</div>` : ''}
+                <div class="qc-tip">说明：价格为出厂基准价，未含税费、运费及打版费；套装 = 上衣 + 短裤；数量阶梯按 10–100 / 101–300 计，超出按 101–300 档。</div>
+            `;
         }
 
         function escapeHtml(str) {
