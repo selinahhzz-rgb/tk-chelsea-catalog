@@ -1686,7 +1686,12 @@
                 const badge = isProcess ? '<span class="subcat-count">Guide</span>' : `<span class="subcat-count">${count}</span>`;
                 btn.innerHTML = `${sub.icon || ''} ${sub.label} ${badge}`;
                 btn.onclick = () => {
-                    currentSubcategory = sub.key; setHash();
+                    const prev = currentSubcategory;
+                    currentSubcategory = sub.key;
+                    setHash();
+                    // setHash 仅在哈希变化时触发 hashchange→重渲染；
+                    // 若本次哈希与之前相同（如重复点击/初始态），手动强制重渲染，避免“点了没反应”
+                    if (prev === sub.key) syncViewUI();
                 };
                 nav.appendChild(btn);
             });
