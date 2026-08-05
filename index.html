@@ -499,12 +499,12 @@
         .product-spec { font-size: 11px; color: var(--primary); margin-top: 5px; line-height: 1.4; }
         .product-size { font-size: 12px; color: var(--text); margin-top: 6px; }
         .product-size .ps-label { font-weight: 600; color: var(--text-light); margin-right: 4px; }
-        .product-sizechart-btn {
-            display: inline-block; margin-top: 8px; padding: 5px 12px; border: 1px solid var(--primary);
-            background: #fff; color: var(--primary); border-radius: 16px; font-size: 12px; font-weight: 600;
-            cursor: pointer; transition: background .15s, color .15s;
+        .product-sizechart { margin-top: 8px; }
+        .product-sizechart .psc-label { display: block; font-size: 11px; font-weight: 600; color: var(--text-light); margin-bottom: 4px; }
+        .product-sizechart-img {
+            width: 100%; max-height: 130px; object-fit: contain; border: 1px solid #eee;
+            border-radius: 6px; background: #fff; cursor: pointer;
         }
-        .product-sizechart-btn:hover { background: var(--primary); color: #fff; }
         .product-price { font-size: 15px; font-weight: 700; color: #0f7b5a; margin-top: 8px; }
         body:not(.admin-mode) .product-price { display: none; }
         /* Fabric category badge (Patterned / Solid) — 类型区分，不暗示质量优劣 */
@@ -1789,6 +1789,11 @@
                 const searchMatch = !searchQuery || p.model.toLowerCase().includes(searchQuery.toLowerCase()) || catEn.toLowerCase().includes(searchQuery.toLowerCase());
                 return catMatch && searchMatch;
             });
+            // Featured pin: DN1005 always sits at 2nd position in Wind Jacket (first row, 2nd card)
+            if (currentCategory === 'Wind jacket') {
+                const di = filteredProducts.findIndex(p => p.model === 'DN1005');
+                if (di > 1) { const [d] = filteredProducts.splice(di, 1); filteredProducts.splice(1, 0, d); }
+            }
             renderProducts();
         }
 
@@ -2202,7 +2207,7 @@
                         <div class="product-category">${catEn}</div>
                         ${productSpecLine(product)}
                         ${product.size_text ? `<div class="product-size"><span class="ps-label">Size</span>${product.size_text}</div>` : ''}
-                        ${product.size_image ? `<button class="product-sizechart-btn" onclick="event.stopPropagation();window.open('${cdn(base + product.size_image)}','_blank')">📏 Size Chart</button>` : ''}
+                        ${product.size_image ? `<div class="product-sizechart"><span class="psc-label">Size Chart</span><img class="product-sizechart-img" src="${cdn(base + product.size_image)}" alt="Size Chart" loading="lazy"></div>` : ''}
                         ${product.price != null ? `<div class="product-price">$${Number(product.price)}</div>` : ''}
                     </div>`;
                 grid.appendChild(card);
