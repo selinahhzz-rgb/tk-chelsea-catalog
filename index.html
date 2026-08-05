@@ -519,6 +519,10 @@
         .pd-title .pd-cat { font-size: 14px; font-weight: 500; color: var(--text-light); margin-left: 10px; }
         .pd-main-image { width: 100%; border-radius: var(--radius); overflow: hidden; background: #f8f9fa; margin-bottom: 22px; }
         .pd-main-image img { width: 100%; height: auto; display: block; }
+        .pd-gallery { display: flex; flex-wrap: nowrap; gap: 12px; overflow-x: auto; padding: 4px 2px 12px; margin-bottom: 22px;
+            scrollbar-width: thin; -webkit-overflow-scrolling: touch; }
+        .pd-color { flex: 0 0 auto; width: 200px; background: #f8f9fa; border: 1px solid #eee; border-radius: 8px; overflow: hidden; }
+        .pd-color img { width: 100%; height: auto; display: block; }
         .pd-section { margin-top: 20px; }
         .pd-label { display: block; font-size: 13px; font-weight: 600; color: var(--text-light); margin-bottom: 8px; }
         .pd-sizes { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -2256,6 +2260,11 @@
             const base = product.custom ? 'custom-images/' : 'catalog-images/';
             const catEn = product.custom ? (product.category_cn || 'Custom Project') : (CATEGORY_EN[product.category] || product.category);
             const sizes = product.size_text ? sizeButtonsFromText(product.size_text) : [];
+            const galleryImgs = product.gallery && product.gallery.length ? product.gallery : [product.image];
+            const galleryHTML = `
+                <div class="pd-gallery">
+                    ${galleryImgs.map((g, i) => `<div class="pd-color"><img src="${cdn(base + g)}" alt="${product.model} color ${i + 1}" loading="lazy" draggable="false"></div>`).join('')}
+                </div>`;
             const sizeChart = product.size_image ? `
                 <div class="pd-section">
                     <span class="pd-label">Size Chart</span>
@@ -2265,7 +2274,7 @@
                 <div class="product-detail">
                     <button class="pd-back" onclick="applyFilters()">&#8592; Back to ${catEn}</button>
                     <h1 class="pd-title">${product.product_model || product.model}<span class="pd-cat">${catEn}</span></h1>
-                    <div class="pd-main-image"><img src="${cdn(base + product.image)}" alt="${product.model}" draggable="false"></div>
+                    ${galleryHTML}
                     ${sizes.length ? `
                     <div class="pd-section">
                         <span class="pd-label">Size</span>
