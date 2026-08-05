@@ -1947,35 +1947,15 @@
                 });
             });
 
-            // quantity -> auto-sync 件/套 accessory qtys
+            // quantity change -> recompute only (accessory qtys entered manually, default 0)
             const qtyInput = document.getElementById('qcQty');
-            qtyInput.addEventListener('input', () => {
-                const q = parseInt(qtyInput.value) || 0;
-                ACCESSORIES.forEach(a => {
-                    if (a.unit === '件' || a.unit === '套') {
-                        const qe = document.getElementById('accq_' + a.id);
-                        if (qe.dataset.auto !== '0') { qe.value = q; qe.dataset.auto = '1'; }
-                    }
-                });
-                quoteCompute();
-            });
+            qtyInput.addEventListener('input', quoteCompute);
 
-            // accessory inputs
+            // accessory inputs (price & qty entered manually; prices keep their defaults)
+            section.querySelectorAll('.qc-acc-item input').forEach(inp => inp.addEventListener('input', quoteCompute));
             section.querySelectorAll('.qc-acc-item input[type=checkbox]').forEach(cb => cb.addEventListener('change', quoteCompute));
-            section.querySelectorAll('.qc-acc-item input[type=number]').forEach(inp => inp.addEventListener('input', () => {
-                if (inp.classList.contains('qc-acc-qty')) inp.dataset.auto = '0';
-                quoteCompute();
-            }));
 
             document.getElementById('qcDouble').addEventListener('change', quoteCompute);
-
-            // init: 件/套 accessories default to qty 50
-            ACCESSORIES.forEach(a => {
-                if (a.unit === '件' || a.unit === '套') {
-                    const qe = document.getElementById('accq_' + a.id);
-                    qe.value = 50; qe.dataset.auto = '1';
-                }
-            });
 
             quoteCompute();
         }
