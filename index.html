@@ -2032,6 +2032,7 @@
             ACCESSORIES.forEach(a => {
                 const price = parseFloat(document.getElementById('accp_' + a.id).value) || 0;
                 const aq = parseInt(document.getElementById('accq_' + a.id).value) || 0;
+                if (aq <= 0) return;
                 const cost = price * aq;
                 accTotal += cost;
                 accLines.push(`${escapeHtml(a.name)}：${price}元/${a.unit} × ${aq} = <b>¥${cost.toFixed(2)}</b>`);
