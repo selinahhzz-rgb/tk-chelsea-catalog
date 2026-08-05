@@ -42,6 +42,13 @@
       "type": "colors",
       "data": "pantone_colors.json",
       "adminOnly": true
+    },
+    {
+      "key": "quote-calculator",
+      "label": "Quote Calculator",
+      "icon": "🧮",
+      "type": "quote",
+      "adminOnly": true
     }
   ],
   "items": [
