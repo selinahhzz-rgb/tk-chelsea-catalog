@@ -639,6 +639,11 @@
             background: transparent; color: var(--text-light); margin-top: 8px;
         }
         .admin-modal-box .cancel:hover { background: rgba(0,0,0,0.05); color: var(--text); }
+        .admin-remember {
+            display: flex; align-items: center; gap: 6px; font-size: 12px;
+            color: var(--text-light); margin: 2px 0 14px; cursor: pointer; user-select: none;
+        }
+        .admin-remember input { width: 14px; height: 14px; cursor: pointer; }
 
         /* ===== Footer ===== */
         .footer {
@@ -982,6 +987,7 @@
             <h3>Admin Mode</h3>
             <p>Enter password to view prices and full product details.</p>
             <input type="password" id="adminPassword" placeholder="Password" onkeydown="if(event.key==='Enter')confirmAdmin()">
+            <label class="admin-remember"><input type="checkbox" id="adminRemember"> Remember me on this device</label>
             <div class="error" id="adminError"></div>
             <button onclick="confirmAdmin()">Confirm</button>
             <button class="cancel" onclick="closeAdminModal()">Cancel</button>
@@ -1099,6 +1105,9 @@
         function confirmAdmin() {
             const input = document.getElementById('adminPassword').value.trim();
             if (input === ADMIN_PASSWORD) {
+                if (document.getElementById('adminRemember').checked) {
+                    try { localStorage.setItem('tk_admin_pwd', input); } catch (e) {}
+                }
                 enterAdmin();
                 closeAdminModal();
             } else {
@@ -1713,8 +1722,8 @@
             tog.className = 'subcat-btn marquee-toggle';
             const syncTogLabel = () => {
                 const on = document.body.classList.contains('cases-on');
-                tog.innerHTML = on ? '&#9733; 隐藏案例条' : '&#9733; 显示案例条';
-                tog.title = on ? '收起顶部定制案例跑马灯' : '展开顶部定制案例跑马灯';
+                tog.innerHTML = on ? '&#9733; Hide Case Gallery' : '&#9733; Show Case Gallery';
+                tog.title = on ? 'Hide top case gallery' : 'Show top case gallery';
             };
             syncTogLabel();
             tog.onclick = () => {
@@ -2480,6 +2489,15 @@
 
         // ===== Init =====
         loadProducts();
+
+        // Auto-login if "Remember me" was used on this device
+        try {
+            const saved = localStorage.getItem('tk_admin_pwd');
+            if (saved && saved === ADMIN_PASSWORD) {
+                document.getElementById('adminPassword').value = saved;
+                enterAdmin();
+            }
+        } catch (e) {}
     </script>
 </body>
 </html>
