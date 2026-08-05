@@ -309,6 +309,23 @@
             padding-top: 14px; border-top: 2px solid var(--border); font-size: 20px; font-weight: 800; color: var(--shop);
         }
         .qc-total .qc-num { font-size: 26px; }
+        .qc-fx {
+            display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
+            background: #fff; border: 1px solid var(--border); border-radius: 8px;
+            padding: 9px 12px; margin-top: 14px;
+        }
+        .qc-fx label { font-size: 12px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 6px; }
+        .qc-fx input {
+            width: 74px; padding: 5px 8px; border: 1px solid var(--border); border-radius: 6px;
+            font-size: 13px; text-align: center; outline: none;
+        }
+        .qc-fx input:focus { border-color: var(--shop); }
+        .qc-usd { margin-top: 10px; padding-top: 10px; border-top: 2px dashed var(--border); }
+        .qc-usd-row {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 18px; font-weight: 800; color: #0f7b5a; padding: 4px 0;
+        }
+        .qc-usd-row .qc-num { font-size: 26px; }
         .qc-tip { margin-top: 12px; font-size: 12px; color: var(--text-light); line-height: 1.7; }
 
         /* ===== Search Area ===== */
@@ -1928,7 +1945,15 @@
                             <div class="qc-acc-title">配件（单独计算）</div>
                             <div class="qc-acc-box" id="qcAcc">${accRows}</div>
                         </div>
-                        <div class="qc-result" id="qcResult"></div>
+                        <div class="qc-result">
+                            <div id="qcResult"></div>
+                            <div class="qc-fx">
+                                <label>报价倍率 <input type="number" id="qcMarkup" value="1.5" min="0" step="0.05"></label>
+                                <label>美元汇率 <input type="number" id="qcRate" value="6.8" min="0.01" step="0.01"></label>
+                            </div>
+                            <div class="qc-usd" id="qcUsd"></div>
+                            <div class="qc-tip">说明：价格为出厂基准价，未含税费、运费及打版费；套装 = 上衣 + 短裤；数量阶梯按 10–100 / 101–300 计，超出按 101–300 档。美元报价 = 人民币总计 × 倍率 ÷ 汇率。</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1961,6 +1986,10 @@
             section.querySelectorAll('.qc-acc-item input[type=checkbox]').forEach(cb => cb.addEventListener('change', quoteCompute));
 
             document.getElementById('qcDouble').addEventListener('change', quoteCompute);
+
+            // markup & FX rate
+            document.getElementById('qcMarkup').addEventListener('input', quoteCompute);
+            document.getElementById('qcRate').addEventListener('input', quoteCompute);
 
             quoteCompute();
         }
@@ -2018,10 +2047,27 @@
                 <div class="qc-line"><span>合计单价</span><span><b>¥${unit.toFixed(2)} / 件</b></span></div>
                 <div class="qc-line"><span>球服小计（${unit.toFixed(2)} × ${qty}）</span><span><b>¥${jerseySub.toFixed(2)}</b></span></div>
                 ${accLines.length ? `<div class="qc-line acc" style="margin-top:8px;"><span><b>配件明细</b></span><span></span></div>` + accLines.map(l => `<div class="qc-line acc"><span>${l}</span></div>`).join('') : ''}
-                <div class="qc-total"><span>总计（不含税/运）</span><span class="qc-num">¥${grand.toFixed(2)}</span></div>
+                <div class="qc-total"><span>成本总计（不含税/运）</span><span class="qc-num">¥${grand.toFixed(2)}</span></div>
                 ${warns.length ? `<div class="qc-tip" style="color:#c0392b;">${warns.join('<br>')}</div>` : ''}
-                <div class="qc-tip">说明：价格为出厂基准价，未含税费、运费及打版费；套装 = 上衣 + 短裤；数量阶梯按 10–100 / 101–300 计，超出按 101–300 档。</div>
             `;
+
+            // ===== USD quote: RMB total x markup / FX rate =====
+            const usdBox = document.getElementById('qcUsd');
+            if (usdBox) {
+                const markupEl = document.getElementById('qcMarkup');
+                const rateEl = document.getElementById('qcRate');
+                const markup = parseFloat(markupEl && markupEl.value) || 0;
+                const rate = parseFloat(rateEl && rateEl.value) || 0;
+                const rmbQuote = grand * markup;
+                const usdTotal = rate > 0 ? rmbQuote / rate : 0;
+                const usdUnit = qty > 0 ? usdTotal / qty : 0;
+                usdBox.innerHTML = `
+                    <div class="qc-line"><span>报价（¥${grand.toFixed(2)} × ${markup}）</span><span><b>¥${rmbQuote.toFixed(2)}</b></span></div>
+                    <div class="qc-usd-row"><span>USD 报价总额</span><span class="qc-num">$${usdTotal.toFixed(2)}</span></div>
+                    <div class="qc-line"><span>USD 单价（÷ ${qty} 件）</span><span><b>$${usdUnit.toFixed(2)} / 件</b></span></div>
+                    ${rate <= 0 ? '<div class="qc-tip" style="color:#c0392b;">⚠ 请输入有效汇率</div>' : ''}
+                `;
+            }
         }
 
         function escapeHtml(str) {
