@@ -507,6 +507,29 @@
         }
         .product-price { font-size: 15px; font-weight: 700; color: #0f7b5a; margin-top: 8px; }
         body:not(.admin-mode) .product-price { display: none; }
+        /* ===== Product Detail Page ===== */
+        .product-detail { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px; }
+        .pd-back {
+            display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border: 1px solid #e0e0e0;
+            background: #f8f9fa; color: var(--text); border-radius: 20px; font-size: 13px; cursor: pointer;
+            margin-bottom: 18px; transition: background .15s;
+        }
+        .pd-back:hover { background: #eef0f2; }
+        .pd-title { font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 16px; }
+        .pd-title .pd-cat { font-size: 14px; font-weight: 500; color: var(--text-light); margin-left: 10px; }
+        .pd-main-image { width: 100%; border-radius: var(--radius); overflow: hidden; background: #f8f9fa; margin-bottom: 22px; }
+        .pd-main-image img { width: 100%; height: auto; display: block; }
+        .pd-section { margin-top: 20px; }
+        .pd-label { display: block; font-size: 13px; font-weight: 600; color: var(--text-light); margin-bottom: 8px; }
+        .pd-sizes { display: flex; flex-wrap: wrap; gap: 8px; }
+        .pd-size-btn {
+            min-width: 42px; padding: 7px 12px; border: 1px solid #ddd; background: #fff; color: var(--text);
+            border-radius: 6px; font-size: 13px; font-weight: 500; cursor: default;
+        }
+        .pd-size-btn.active { border-color: var(--primary); color: var(--primary); background: #f0f9f6; }
+        .pd-chart img { width: 100%; height: auto; border: 1px solid #eee; border-radius: var(--radius); background: #fff; }
+        .pd-price { font-size: 20px; font-weight: 700; color: #0f7b5a; margin-top: 18px; }
+        body:not(.admin-mode) .pd-price { display: none; }
         /* Fabric category badge (Patterned / Solid) — 类型区分，不暗示质量优劣 */
         .fabric-badge {
             position: absolute; top: 8px; left: 8px; z-index: 5;
@@ -2192,7 +2215,10 @@
                 const imgSrc = cdn(base + product.image);
                 const card = document.createElement('div');
                 card.className = 'product-card';
-                card.onclick = () => openLightbox(idx);
+                card.onclick = () => {
+                    if (product.detail_view) renderProductDetail(product);
+                    else openLightbox(idx);
+                };
                 const protectWm = (product.custom && product.subcategory !== 'size' && product.subcategory !== 'fabric') ? '<div class="tiled-watermark"></div>' : '';
                 card.innerHTML = `
                     <div class="product-image-wrap">
@@ -2213,6 +2239,42 @@
                 grid.appendChild(card);
             });
             section.appendChild(grid);
+        }
+        function sizeButtonsFromText(text) {
+            const common = {
+                'S-3XL': ['S','M','L','XL','2XL','3XL'],
+                'S-5XL': ['S','M','L','XL','2XL','3XL','4XL','5XL'],
+                'XS-3XL': ['XS','S','M','L','XL','2XL','3XL'],
+                'S-4XL': ['S','M','L','XL','2XL','3XL','4XL']
+            };
+            if (common[text]) return common[text];
+            return text.split(/[\s,]+/).filter(Boolean);
+        }
+        function renderProductDetail(product) {
+            const section = document.getElementById('productsSection');
+            section.innerHTML = '';
+            const base = product.custom ? 'custom-images/' : 'catalog-images/';
+            const catEn = product.custom ? (product.category_cn || 'Custom Project') : (CATEGORY_EN[product.category] || product.category);
+            const sizes = product.size_text ? sizeButtonsFromText(product.size_text) : [];
+            const sizeChart = product.size_image ? `
+                <div class="pd-section">
+                    <span class="pd-label">Size Chart</span>
+                    <div class="pd-chart"><img src="${cdn(base + product.size_image)}" alt="Size Chart" loading="lazy"></div>
+                </div>` : '';
+            section.innerHTML = `
+                <div class="product-detail">
+                    <button class="pd-back" onclick="applyFilters()">&#8592; Back to ${catEn}</button>
+                    <h1 class="pd-title">${product.product_model || product.model}<span class="pd-cat">${catEn}</span></h1>
+                    <div class="pd-main-image"><img src="${cdn(base + product.image)}" alt="${product.model}" draggable="false"></div>
+                    ${sizes.length ? `
+                    <div class="pd-section">
+                        <span class="pd-label">Size</span>
+                        <div class="pd-sizes">${sizes.map(s => `<span class="pd-size-btn">${s}</span>`).join('')}</div>
+                    </div>` : ''}
+                    ${sizeChart}
+                    ${product.price != null ? `<div class="pd-price">$${Number(product.price)}</div>` : ''}
+                </div>`;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         // ===== Craft / Process Comparison Data =====
