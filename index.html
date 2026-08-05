@@ -288,7 +288,6 @@
         }
         .qc-acc-item { display: flex; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 8px; }
         .qc-acc-item:nth-child(odd) { background: #fafbfc; }
-        .qc-acc-item input[type=checkbox] { width: 16px; height: 16px; cursor: pointer; }
         .qc-acc-name { flex: 1; font-size: 13px; color: var(--text); }
         .qc-acc-note { font-size: 11px; color: var(--text-light); margin-left: 6px; }
         .qc-acc-price, .qc-acc-qty {
@@ -1889,7 +1888,6 @@
             const section = document.getElementById('productsSection');
             const accRows = ACCESSORIES.map(a => `
                 <div class="qc-acc-item">
-                    <input type="checkbox" id="acc_${a.id}">
                     <span class="qc-acc-name">${escapeHtml(a.name)}<span class="qc-acc-note">${escapeHtml(a.note || '')}</span></span>
                     <input type="number" class="qc-acc-price" id="accp_${a.id}" value="${a.price}" min="0" step="0.5">
                     <span class="qc-acc-unit">元/${a.unit}</span>
@@ -1995,7 +1993,6 @@
 
             // accessory inputs (price & qty entered manually; prices keep their defaults)
             section.querySelectorAll('.qc-acc-item input').forEach(inp => inp.addEventListener('input', quoteCompute));
-            section.querySelectorAll('.qc-acc-item input[type=checkbox]').forEach(cb => cb.addEventListener('change', quoteCompute));
 
             document.getElementById('qcDouble').addEventListener('change', quoteCompute);
 
@@ -2033,8 +2030,6 @@
 
             let accTotal = 0; const accLines = []; const warns = [];
             ACCESSORIES.forEach(a => {
-                const cb = document.getElementById('acc_' + a.id);
-                if (!cb.checked) return;
                 const price = parseFloat(document.getElementById('accp_' + a.id).value) || 0;
                 const aq = parseInt(document.getElementById('accq_' + a.id).value) || 0;
                 const cost = price * aq;
