@@ -201,6 +201,14 @@
         @media (max-width: 600px) {
             .case-marquee-item { width: 140px; height: 170px; }
         }
+        /* 定制项目视图下默认隐藏跑马灯（腾出屏幕空间），可用导航右侧按钮临时展开 */
+        body.custom-mode .case-marquee { display: none; }
+        body.custom-mode.cases-on .case-marquee { display: block; }
+        .marquee-toggle {
+            margin-left: auto; flex: 0 0 auto; font-size: 12px !important;
+            color: var(--text-light); opacity: .8;
+        }
+        .marquee-toggle:hover { opacity: 1; color: var(--accent); }
         .subcat-btn {
             padding: 11px 16px; border: none; background: transparent; cursor: pointer;
             font-size: 13px; font-weight: 500; color: var(--text-light);
@@ -298,8 +306,9 @@
         .qc-acc-unit { font-size: 12px; color: var(--text-light); width: 34px; }
         .qc-result {
             margin-top: 0; background: #f7f8fa; border: 1px solid var(--border); border-radius: var(--radius);
-            padding: 20px 22px; position: sticky; top: 70px;
+            padding: 20px 22px; position: sticky; top: 208px;
         }
+        @media (max-width: 820px) { .qc-result { position: static; } }
         .qc-result h3 { margin: 0 0 14px; font-size: 16px; color: var(--text); }
         .qc-line { display: flex; justify-content: space-between; font-size: 14px; padding: 5px 0; color: var(--text); }
         .qc-line .qc-sub { color: var(--text-light); font-size: 12px; }
@@ -819,7 +828,7 @@
 <body>
 
     <!-- Case Marquee -->
-    <div class="case-marquee">
+    <div class="case-marquee" id="caseMarquee">
         <div class="case-marquee-label">&#9733; Custom Cases &#23450;&#21046;&#26696;&#20363;</div>
         <div class="case-marquee-track">
             <div class="case-marquee-item"><img src="custom-images/Cases/fc-1.jpg" alt="Custom Case 1" loading="lazy"></div>
@@ -1622,6 +1631,8 @@
                 catNav.style.display = 'none';
                 subNav.style.display = 'block';
                 searchArea.style.display = 'none';
+                // 计算器等子类下跑马灯占屏幕，进入定制视图默认收起案例条
+                if (currentSubcategory === 'quote-calculator') document.body.classList.remove('cases-on');
                 renderSubcategories();
             } else {
                 catNav.style.display = '';
@@ -1712,6 +1723,22 @@
                 };
                 nav.appendChild(btn);
             });
+
+            // 跑马灯显示 / 隐藏切换（定制视图下默认隐藏）
+            const tog = document.createElement('button');
+            tog.className = 'subcat-btn marquee-toggle';
+            const syncTogLabel = () => {
+                const on = document.body.classList.contains('cases-on');
+                tog.innerHTML = on ? '&#9733; 隐藏案例条' : '&#9733; 显示案例条';
+                tog.title = on ? '收起顶部定制案例跑马灯' : '展开顶部定制案例跑马灯';
+            };
+            syncTogLabel();
+            tog.onclick = () => {
+                document.body.classList.toggle('cases-on');
+                syncTogLabel();
+                if (!document.body.classList.contains('cases-on')) window.scrollTo({ top: 0 });
+            };
+            nav.appendChild(tog);
         }
 
         // ===== Normalize custom item into product-like shape =====
