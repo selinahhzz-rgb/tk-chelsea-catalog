@@ -1816,10 +1816,10 @@
                 const searchMatch = !searchQuery || p.model.toLowerCase().includes(searchQuery.toLowerCase()) || catEn.toLowerCase().includes(searchQuery.toLowerCase());
                 return catMatch && searchMatch;
             });
-            // Featured pin: DN1005 always sits at 2nd position in Wind Jacket (first row, 2nd card)
+            // Featured pin: DN1005 always sits at 3rd position in Wind Jacket (first row, 3rd card)
             if (currentCategory === 'Wind jacket') {
                 const di = filteredProducts.findIndex(p => p.model === 'DN1005');
-                if (di > 1) { const [d] = filteredProducts.splice(di, 1); filteredProducts.splice(1, 0, d); }
+                if (di !== -1 && di !== 2) { const [d] = filteredProducts.splice(di, 1); filteredProducts.splice(2, 0, d); }
             }
             renderProducts();
         }
@@ -2219,10 +2219,7 @@
                 const imgSrc = cdn(base + product.image);
                 const card = document.createElement('div');
                 card.className = 'product-card';
-                card.onclick = () => {
-                    if (product.detail_view) renderProductDetail(product);
-                    else openLightbox(idx);
-                };
+                card.onclick = () => openLightbox(idx);
                 const protectWm = (product.custom && product.subcategory !== 'size' && product.subcategory !== 'fabric') ? '<div class="tiled-watermark"></div>' : '';
                 card.innerHTML = `
                     <div class="product-image-wrap">
