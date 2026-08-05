@@ -2062,6 +2062,7 @@
     "image": "DN1005.png",
     "size_text": "S-3XL",
     "size_image": "DN1005_sizechart.png",
-    "price": 14.5
+    "price": 14.5,
+    "detail_view": true
   }
 ]
