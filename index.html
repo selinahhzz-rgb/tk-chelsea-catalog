@@ -99,14 +99,6 @@
         }
         .admin-toggle:hover { background: rgba(255,255,255,0.2); }
         .admin-toggle.active { background: var(--accent); border-color: var(--accent); }
-        .admin-badge {
-            display: none; position: fixed; bottom: 20px; right: 20px;
-            background: var(--accent); color: white; padding: 8px 16px;
-            border-radius: 20px; font-size: 12px; font-weight: 600; z-index: 1002;
-            box-shadow: var(--shadow); align-items: center; gap: 8px;
-        }
-        .admin-badge.active { display: inline-flex; }
-
         /* ===== Category Nav ===== */
         .category-nav {
             background: white; border-bottom: 1px solid var(--border);
@@ -997,11 +989,6 @@
         </div>
     </div>
 
-    <!-- Admin Badge -->
-    <div class="admin-badge" id="adminBadge">
-        <span>&#128275;</span> Admin Mode Active
-    </div>
-
     <!-- Footer -->
     <footer class="footer">
         <p>TK-Chelsea &copy; 2026 &mdash; This catalog is for authorized viewing only. Do not redistribute.</p>
@@ -1124,7 +1111,6 @@
             document.body.classList.add('admin-mode');
             document.getElementById('adminToggle').innerHTML = '&#128275; Exit Admin';
             document.getElementById('adminToggle').classList.add('active');
-            document.getElementById('adminBadge').classList.add('active');
             // 解密并加载 Pantone 等仅管理员数据，完成后再刷新导航与视图
             Promise.resolve(loadPantoneColors()).finally(() => {
                 renderSubcategories(); // 刷新导航，显示仅管理员可见的子类别
@@ -1136,7 +1122,6 @@
             document.body.classList.remove('admin-mode');
             document.getElementById('adminToggle').innerHTML = '&#128274; Admin';
             document.getElementById('adminToggle').classList.remove('active');
-            document.getElementById('adminBadge').classList.remove('active');
             renderSubcategories(); // 刷新导航，隐藏仅管理员可见的子类别
             applyFilters();         // 若正在查看该类，自动切回默认子类别
         }
