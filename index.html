@@ -497,6 +497,16 @@
         .product-model { font-size: 15px; font-weight: 600; color: var(--text); }
         .product-category { font-size: 12px; color: var(--text-light); margin-top: 4px; }
         .product-spec { font-size: 11px; color: var(--primary); margin-top: 5px; line-height: 1.4; }
+        .product-size { font-size: 12px; color: var(--text); margin-top: 6px; }
+        .product-size .ps-label { font-weight: 600; color: var(--text-light); margin-right: 4px; }
+        .product-sizechart-btn {
+            display: inline-block; margin-top: 8px; padding: 5px 12px; border: 1px solid var(--primary);
+            background: #fff; color: var(--primary); border-radius: 16px; font-size: 12px; font-weight: 600;
+            cursor: pointer; transition: background .15s, color .15s;
+        }
+        .product-sizechart-btn:hover { background: var(--primary); color: #fff; }
+        .product-price { font-size: 15px; font-weight: 700; color: #0f7b5a; margin-top: 8px; }
+        body:not(.admin-mode) .product-price { display: none; }
         /* Fabric category badge (Patterned / Solid) — 类型区分，不暗示质量优劣 */
         .fabric-badge {
             position: absolute; top: 8px; left: 8px; z-index: 5;
@@ -2191,6 +2201,9 @@
                         <div class="product-model">${product.product_model || product.model}</div>
                         <div class="product-category">${catEn}</div>
                         ${productSpecLine(product)}
+                        ${product.size_text ? `<div class="product-size"><span class="ps-label">Size</span>${product.size_text}</div>` : ''}
+                        ${product.size_image ? `<button class="product-sizechart-btn" onclick="event.stopPropagation();window.open('${cdn(base + product.size_image)}','_blank')">📏 Size Chart</button>` : ''}
+                        ${product.price != null ? `<div class="product-price">$${Number(product.price)}</div>` : ''}
                     </div>`;
                 grid.appendChild(card);
             });
