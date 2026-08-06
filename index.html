@@ -2749,6 +2749,7 @@
             document.querySelectorAll('.ap-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
             document.getElementById('apOrders').classList.toggle('active', tab === 'orders');
             document.getElementById('apFollowups').classList.toggle('active', tab === 'followups');
+            document.getElementById('apSync').classList.toggle('active', tab === 'sync');
         }
 
         // ---- Orders ----
