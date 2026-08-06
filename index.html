@@ -728,7 +728,9 @@
         .ap-phase-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
         .ap-phase-row select { padding: 8px 10px; border: 2px solid var(--border); border-radius: var(--radius); font-size: 13px; }
         .ap-timeline { margin-top: 10px; border-top: 1px dashed var(--border); padding-top: 10px; }
-        .ap-timeline .tl-item { font-size: 12px; color: var(--text-light); display: flex; gap: 8px; padding: 2px 0; }
+        .ap-timeline .tl-item { font-size: 12px; color: var(--text-light); display: flex; gap: 8px; padding: 2px 0; align-items: center; }
+        .ap-timeline .tl-del { margin-left: auto; background: #fff; border: 1px solid #e6c2c2; color: #c0392b; border-radius: 6px; width: 22px; height: 22px; line-height: 1; cursor: pointer; font-size: 14px; padding: 0; flex: none; }
+        .ap-timeline .tl-del:hover { background: #fdeaea; }
         .ap-timeline .tl-phase { font-weight: 600; color: var(--text); min-width: 72px; }
         .ap-note { margin-top: 8px; font-size: 13px; color: var(--text); white-space: pre-wrap; word-break: break-word; }
         .ap-fu-time { font-size: 12px; color: var(--text-light); }
@@ -2779,8 +2781,24 @@
             const orders = apLoadOrders();
             const o = orders.find(x => x.id === id); if (!o) return;
             idx = parseInt(idx, 10);
+            if (idx === o.phaseIdx) return; // 选回当前阶段不重复记节点
             o.phaseIdx = idx;
             o.phaseHistory.push({ phase: ORDER_PHASES[idx], ts: apNowISO() });
+            apSaveOrders(orders); renderOrders();
+        }
+        function deleteOrderPhaseNode(id, ts) {
+            const orders = apLoadOrders();
+            const o = orders.find(x => x.id === id); if (!o) return;
+            const target = o.phaseHistory.find(h => h.ts === ts);
+            o.phaseHistory = o.phaseHistory.filter(h => h.ts !== ts);
+            if (!o.phaseHistory.length) {
+                // 不允许清空，至少保留当前阶段节点
+                o.phaseHistory = [{ phase: ORDER_PHASES[o.phaseIdx], ts: apNowISO() }];
+            } else if (target && target.phase === ORDER_PHASES[o.phaseIdx]) {
+                // 删掉的正是当前阶段节点 → 当前阶段回退到时间线最后一条
+                const lastPhase = o.phaseHistory[o.phaseHistory.length - 1].phase;
+                o.phaseIdx = ORDER_PHASES.indexOf(lastPhase);
+            }
             apSaveOrders(orders); renderOrders();
         }
         function deleteOrder(id) {
@@ -2794,7 +2812,7 @@
             if (!orders.length) { box.innerHTML = '<div class="ap-empty">还没有订单记录，使用上方表单添加。</div>'; return; }
             box.innerHTML = orders.map(o => {
                 const opts = ORDER_PHASES.map((p, i) => `<option value="${i}" ${i === o.phaseIdx ? 'selected' : ''}>${p}</option>`).join('');
-                const tl = o.phaseHistory.map(h => `<div class="tl-item"><span class="tl-phase">${apEsc(h.phase)}</span><span>${apFmtTime(h.ts)}</span></div>`).join('');
+                const tl = o.phaseHistory.map(h => `<div class="tl-item"><span class="tl-phase">${apEsc(h.phase)}</span><span>${apFmtTime(h.ts)}</span><button class="tl-del" title="删除该阶段节点" onclick="deleteOrderPhaseNode('${o.id}','${h.ts}')">×</button></div>`).join('');
                 const cur = ORDER_PHASES[o.phaseIdx];
                 return `<div class="ap-card">
                     <div class="ap-card-top">
