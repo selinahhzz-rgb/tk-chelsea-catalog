@@ -734,6 +734,14 @@
         .ap-fu-time { font-size: 12px; color: var(--text-light); }
         .ap-empty { text-align: center; color: var(--text-light); padding: 26px; font-size: 14px; }
 
+        .ap-pane h4 { margin: 6px 0 12px; font-size: 14px; color: var(--text); font-weight: 600; }
+        .ap-sync-status { padding: 10px 13px; border-radius: var(--radius); font-size: 13px; margin: 4px 0 12px; display: none; }
+        .ap-sync-status.ok { background: #e8f6ef; color: #1e7d4f; display: block; }
+        .ap-sync-status.err { background: #fdeaea; color: #c0392b; display: block; }
+        .ap-sync-status.busy { background: #eef3ff; color: #2d6cdf; display: block; }
+        .ap-tip { font-size: 12.5px; color: var(--text-light); line-height: 1.65; margin: 8px 0; }
+        .ap-tip b { color: var(--text); }
+
         /* ===== Footer ===== */
         .footer {
             background: var(--primary); color: rgba(255,255,255,0.6);
@@ -1094,6 +1102,7 @@
             <div class="ap-tabs">
                 <button class="ap-tab active" data-tab="orders" onclick="switchApTab('orders')">&#128221; 订单跟踪</button>
                 <button class="ap-tab" data-tab="followups" onclick="switchApTab('followups')">&#128172; 待跟进客户</button>
+                <button class="ap-tab" data-tab="sync" onclick="switchApTab('sync')">&#9729; 云端同步</button>
             </div>
             <div class="ap-body">
                 <!-- Orders -->
@@ -1119,6 +1128,22 @@
                         <button onclick="exportFollowupsCSV()">&#11015; 导出跟进客户 (CSV)</button>
                     </div>
                     <div class="ap-list" id="followupList"></div>
+                </div>
+                <!-- Cloud Sync -->
+                <div class="ap-pane" id="apSync">
+                    <h4>&#9729; 云端同步设置（数据存到你自己的私有仓库，可跨设备 / 换浏览器使用）</h4>
+                    <div class="ap-form">
+                        <input id="syncRepo" placeholder="仓库 owner/repo（如 yourname/tk-chelsea-data）">
+                        <input id="syncToken" type="password" placeholder="GitHub PAT（需 repo 权限）">
+                        <button onclick="saveSyncConfig()">测试并保存</button>
+                    </div>
+                    <div id="syncStatus" class="ap-sync-status"></div>
+                    <div class="ap-actions">
+                        <button onclick="pushToCloud()">&#9729; 上传到云端（本机 &#8594; 仓库）</button>
+                        <button onclick="pullFromCloud()">&#9729; 从云端下载（仓库 &#8594; 本机）</button>
+                    </div>
+                    <p class="ap-tip">配置后，所有增删改会<b>自动上传</b>到你的私有仓库。换设备 / 换浏览器时，进入 Admin &#8594; 管理面板 &#8594; 此页，点“从云端下载”即可获取最新数据。Token 仅保存在本机浏览器，不会公开。</p>
+                    <p class="ap-tip"><b>首次使用请先点一次“上传到云端”</b>，把本机已有的记录推上去。建议同时导出一份 CSV 备份。</p>
                 </div>
             </div>
         </div>
@@ -2683,11 +2708,15 @@
         const ORDER_PHASES = ['框架', '设计图', '颜色测试', '印染', '缝纫'];
         const LS_ORDERS = 'tk_orders_v1';
         const LS_FOLLOWUPS = 'tk_followups_v1';
+        const LS_SYNC = 'tk_sync_cfg_v1';
+        const LS_LASTSYNC = 'tk_sync_last_v1';
 
         function apLoadOrders() { try { return JSON.parse(localStorage.getItem(LS_ORDERS)) || []; } catch (e) { return []; } }
-        function apSaveOrders(o) { localStorage.setItem(LS_ORDERS, JSON.stringify(o)); }
+        function apSaveOrders(o) { localStorage.setItem(LS_ORDERS, JSON.stringify(o)); scheduleCloudPush(); }
         function apLoadFollowups() { try { return JSON.parse(localStorage.getItem(LS_FOLLOWUPS)) || []; } catch (e) { return []; } }
-        function apSaveFollowups(f) { localStorage.setItem(LS_FOLLOWUPS, JSON.stringify(f)); }
+        function apSaveFollowups(f) { localStorage.setItem(LS_FOLLOWUPS, JSON.stringify(f)); scheduleCloudPush(); }
+        function apSaveOrdersRaw(o) { localStorage.setItem(LS_ORDERS, JSON.stringify(o)); }
+        function apSaveFollowupsRaw(f) { localStorage.setItem(LS_FOLLOWUPS, JSON.stringify(f)); }
         function apNowISO() { return new Date().toISOString(); }
         function apFmtTime(iso) {
             const d = new Date(iso); if (isNaN(d.getTime())) return '';
@@ -2713,7 +2742,7 @@
         function openAdminPanel() {
             if (!isAdmin) { alert('请先进入 Admin 模式'); return; }
             document.getElementById('adminPanelModal').classList.add('active');
-            renderOrders(); renderFollowups();
+            renderOrders(); renderFollowups(); renderSyncStatus();
         }
         function closeAdminPanel() { document.getElementById('adminPanelModal').classList.remove('active'); }
         function switchApTab(tab) {
@@ -2830,6 +2859,112 @@
             const header = ['客户名称', '备注', '最近跟进时间', '创建时间'];
             const rows = f.map(x => [x.customer, x.note, apFmtTime(x.lastFollowUp), apFmtTime(x.createdAt)]);
             apDownloadCSV('待跟进客户_' + apDateStamp() + '.csv', [header].concat(rows));
+        }
+
+        // ===== Cloud sync (private GitHub repo) =====
+        function getSyncCfg() { try { return JSON.parse(localStorage.getItem(LS_SYNC)) || {}; } catch (e) { return {}; } }
+        function setSyncCfg(c) { localStorage.setItem(LS_SYNC, JSON.stringify(c)); }
+        function getLastSync() { const v = localStorage.getItem(LS_LASTSYNC); return v ? parseInt(v, 10) : 0; }
+        function setLastSync(t) { localStorage.setItem(LS_LASTSYNC, String(t || 0)); }
+        function isCloudReady() { const c = getSyncCfg(); return !!(c.token && c.repo); }
+        let _pushTimer = null;
+        function scheduleCloudPush() {
+            if (!isCloudReady()) return;
+            if (_pushTimer) clearTimeout(_pushTimer);
+            _pushTimer = setTimeout(() => { pushToCloud(); }, 700);
+        }
+        async function ghGetFile(repo, path, token) {
+            const url = `https://api.github.com/repos/${repo}/contents/${path}`;
+            const res = await fetch(url, { headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' } });
+            if (res.status === 404) return null;
+            if (!res.ok) throw new Error('读取云端失败 (' + res.status + ')');
+            const data = await res.json();
+            const txt = decodeURIComponent(escape(atob((data.content || '').replace(/\s/g, ''))));
+            return JSON.parse(txt);
+        }
+        async function ghPutFile(repo, path, text, token) {
+            const url = `https://api.github.com/repos/${repo}/contents/${path}`;
+            let sha = null;
+            try {
+                const r = await fetch(url, { headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' } });
+                if (r.ok) { const d = await r.json(); sha = d.sha; }
+            } catch (e) {}
+            const content = btoa(unescape(encodeURIComponent(text)));
+            const body = { message: 'sync TK admin data', content };
+            if (sha) body.sha = sha;
+            const res = await fetch(url, {
+                method: 'PUT',
+                headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json', Accept: 'application/vnd.github.v3+json' },
+                body: JSON.stringify(body)
+            });
+            if (!res.ok) { const t = await res.text(); throw new Error('上传云端失败 (' + res.status + ') ' + t.slice(0, 100)); }
+            return true;
+        }
+        async function pushToCloud() {
+            if (!isCloudReady()) { renderSyncStatus('err', '尚未配置云端同步，请先填写仓库与 Token 并保存'); return; }
+            const c = getSyncCfg();
+            renderSyncStatus('busy', '正在上传到云端…');
+            try {
+                await ghPutFile(c.repo, 'data/orders.json', JSON.stringify(apLoadOrders(), null, 2), c.token);
+                await ghPutFile(c.repo, 'data/followups.json', JSON.stringify(apLoadFollowups(), null, 2), c.token);
+                setLastSync(Date.now());
+                renderSyncStatus('ok', '已上传到云端 · ' + apFmtTime(new Date().toISOString()));
+            } catch (e) { renderSyncStatus('err', e.message); }
+        }
+        async function pullFromCloud() {
+            if (!isCloudReady()) { renderSyncStatus('err', '尚未配置云端同步，请先填写仓库与 Token 并保存'); return; }
+            const c = getSyncCfg();
+            renderSyncStatus('busy', '正在从云端下载…');
+            try {
+                const o = await ghGetFile(c.repo, 'data/orders.json', c.token);
+                const f = await ghGetFile(c.repo, 'data/followups.json', c.token);
+                if ((!o || !Array.isArray(o)) && (!f || !Array.isArray(f))) {
+                    renderSyncStatus('ok', '云端暂无数据，请点“上传到云端”先推送一次');
+                    return;
+                }
+                if (o && Array.isArray(o)) apSaveOrdersRaw(o);
+                if (f && Array.isArray(f)) apSaveFollowupsRaw(f);
+                setLastSync(Date.now());
+                renderOrders(); renderFollowups();
+                renderSyncStatus('ok', '已从云端下载 · ' + apFmtTime(new Date().toISOString()));
+            } catch (e) { renderSyncStatus('err', e.message); }
+        }
+        async function saveSyncConfig() {
+            const repo = document.getElementById('syncRepo').value.trim();
+            const token = document.getElementById('syncToken').value.trim();
+            if (!repo || !token) { renderSyncStatus('err', '请填写仓库名和 Token'); return; }
+            if (!/^[\w.-]+\/[\w.-]+$/.test(repo)) { renderSyncStatus('err', '仓库格式应为 owner/repo，例如 yourname/tk-chelsea-data'); return; }
+            renderSyncStatus('busy', '连接测试中…');
+            try {
+                const res = await fetch(`https://api.github.com/repos/${repo}`, { headers: { Authorization: `token ${token}` } });
+                if (res.status === 401) throw new Error('Token 无效或无权限');
+                if (res.status === 404) throw new Error('仓库不存在，请确认仓库名或 Token 权限');
+                if (!res.ok) throw new Error('GitHub 返回状态 ' + res.status);
+                setSyncCfg({ repo, token });
+                renderSyncStatus('ok', '连接成功并已保存 · 建议点“上传到云端”推送本机现有记录');
+            } catch (e) { renderSyncStatus('err', e.message); }
+        }
+        function renderSyncStatus(state, msg) {
+            const el = document.getElementById('syncStatus');
+            if (!el) return;
+            const repoEl = document.getElementById('syncRepo');
+            const tokEl = document.getElementById('syncToken');
+            if (!state) {
+                const c = getSyncCfg();
+                if (repoEl) repoEl.value = c.repo || '';
+                if (tokEl && c.token) tokEl.value = c.token; // 本机回填,password 框不显示明文
+                if (c.repo && c.token) {
+                    const ls = getLastSync();
+                    el.className = 'ap-sync-status ok';
+                    el.textContent = '已连接：' + c.repo + (ls ? ' ｜ 上次同步 ' + apFmtTime(new Date(ls).toISOString()) : ' ｜ 尚未同步');
+                } else {
+                    el.className = 'ap-sync-status';
+                    el.textContent = '';
+                }
+                return;
+            }
+            el.className = 'ap-sync-status ' + state;
+            el.textContent = msg || '';
         }
 
         // close admin panel when clicking the dimmed background
