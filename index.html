@@ -682,6 +682,58 @@
         }
         .admin-remember input { width: 14px; height: 14px; cursor: pointer; }
 
+        /* ===== Admin Panel (订单跟踪 & 待跟进客户) ===== */
+        .admin-panel-btn {
+            display: none; margin-left: 10px; padding: 9px 14px; border: 2px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.1); color: #fff; border-radius: var(--radius);
+            font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap;
+        }
+        body.admin-mode .admin-panel-btn { display: inline-block; }
+        .admin-panel-btn:hover { background: rgba(255,255,255,0.22); }
+
+        .ap-modal {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6); z-index: 10001; justify-content: flex-start; align-items: flex-start;
+            padding: 40px 20px; overflow-y: auto;
+        }
+        .ap-modal.active { display: flex; }
+        .ap-box {
+            background: #fff; border-radius: 14px; width: 100%; max-width: 840px; margin: 0 auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.35); overflow: hidden;
+        }
+        .ap-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 22px; background: var(--primary); color: #fff; }
+        .ap-header h3 { font-size: 17px; margin: 0; }
+        .ap-header button { background: transparent; border: none; color: #fff; font-size: 24px; cursor: pointer; line-height: 1; }
+        .ap-tabs { display: flex; border-bottom: 1px solid var(--border); }
+        .ap-tab { flex: 1; padding: 13px; background: #f5f6fa; border: none; cursor: pointer; font-size: 14px; font-weight: 600; color: var(--text-light); }
+        .ap-tab.active { background: #fff; color: var(--accent); border-bottom: 2px solid var(--accent); }
+        .ap-body { padding: 20px 22px; }
+        .ap-pane { display: none; }
+        .ap-pane.active { display: block; }
+        .ap-form { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+        .ap-form input { flex: 1; min-width: 130px; padding: 10px 12px; border: 2px solid var(--border); border-radius: var(--radius); font-size: 14px; outline: none; }
+        .ap-form input:focus { border-color: var(--accent); }
+        .ap-form button { padding: 10px 16px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius); font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+        .ap-actions { margin-bottom: 14px; }
+        .ap-actions button { padding: 9px 14px; background: #2d6cdf; color: #fff; border: none; border-radius: var(--radius); font-size: 13px; font-weight: 600; cursor: pointer; }
+        .ap-list { display: flex; flex-direction: column; gap: 12px; }
+        .ap-card { border: 1px solid var(--border); border-radius: 10px; padding: 14px; background: #fafbfc; }
+        .ap-card-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .ap-card-title { font-size: 15px; font-weight: 700; color: var(--text); }
+        .ap-card-sub { font-size: 12px; color: var(--text-light); margin-top: 3px; }
+        .ap-card-actions { display: flex; gap: 8px; align-items: center; }
+        .ap-del { background: #fff; border: 1px solid #f0c2c2; color: #c0392b; padding: 6px 12px; border-radius: var(--radius); font-size: 13px; cursor: pointer; }
+        .ap-del:hover { background: #fdeaea; }
+        .ap-btn-sm { padding: 6px 12px; background: #2d6cdf; color: #fff; border: none; border-radius: var(--radius); font-size: 13px; cursor: pointer; }
+        .ap-phase-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+        .ap-phase-row select { padding: 8px 10px; border: 2px solid var(--border); border-radius: var(--radius); font-size: 13px; }
+        .ap-timeline { margin-top: 10px; border-top: 1px dashed var(--border); padding-top: 10px; }
+        .ap-timeline .tl-item { font-size: 12px; color: var(--text-light); display: flex; gap: 8px; padding: 2px 0; }
+        .ap-timeline .tl-phase { font-weight: 600; color: var(--text); min-width: 72px; }
+        .ap-note { margin-top: 8px; font-size: 13px; color: var(--text); white-space: pre-wrap; word-break: break-word; }
+        .ap-fu-time { font-size: 12px; color: var(--text-light); }
+        .ap-empty { text-align: center; color: var(--text-light); padding: 26px; font-size: 14px; }
+
         /* ===== Footer ===== */
         .footer {
             background: var(--primary); color: rgba(255,255,255,0.6);
@@ -930,6 +982,7 @@
                     <span><strong id="catCount">8</strong> Categories</span>
                 </div>
                 <button class="admin-toggle" id="adminToggle" onclick="toggleAdminModal()">&#128274; Admin</button>
+                <button class="admin-panel-btn" id="adminPanelBtn" onclick="openAdminPanel()">&#128203; 管理面板</button>
             </div>
         </div>
     </header>
@@ -1028,6 +1081,46 @@
             <div class="error" id="adminError"></div>
             <button onclick="confirmAdmin()">Confirm</button>
             <button class="cancel" onclick="closeAdminModal()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Admin Panel Modal (orders & follow-ups, admin-only) -->
+    <div class="ap-modal" id="adminPanelModal">
+        <div class="ap-box">
+            <div class="ap-header">
+                <h3>&#128203; 管理面板（仅 Admin 可见）</h3>
+                <button onclick="closeAdminPanel()">&times;</button>
+            </div>
+            <div class="ap-tabs">
+                <button class="ap-tab active" data-tab="orders" onclick="switchApTab('orders')">&#128221; 订单跟踪</button>
+                <button class="ap-tab" data-tab="followups" onclick="switchApTab('followups')">&#128172; 待跟进客户</button>
+            </div>
+            <div class="ap-body">
+                <!-- Orders -->
+                <div class="ap-pane active" id="apOrders">
+                    <div class="ap-form">
+                        <input id="ordCustomer" placeholder="客户名称">
+                        <input id="ordNo" placeholder="订单号">
+                        <button onclick="addOrder()">+ 添加订单</button>
+                    </div>
+                    <div class="ap-actions">
+                        <button onclick="exportOrdersCSV()">&#11015; 导出订单时间节点 (CSV)</button>
+                    </div>
+                    <div class="ap-list" id="orderList"></div>
+                </div>
+                <!-- Follow-ups -->
+                <div class="ap-pane" id="apFollowups">
+                    <div class="ap-form">
+                        <input id="fuCustomer" placeholder="客户名称">
+                        <input id="fuNote" placeholder="备注">
+                        <button onclick="addFollowup()">+ 添加客户</button>
+                    </div>
+                    <div class="ap-actions">
+                        <button onclick="exportFollowupsCSV()">&#11015; 导出跟进客户 (CSV)</button>
+                    </div>
+                    <div class="ap-list" id="followupList"></div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1167,6 +1260,7 @@
             document.body.classList.remove('admin-mode');
             document.getElementById('adminToggle').innerHTML = '&#128274; Admin';
             document.getElementById('adminToggle').classList.remove('active');
+            closeAdminPanel();      // 退出 Admin 时一并关闭管理面板
             renderSubcategories(); // 刷新导航，隐藏仅管理员可见的子类别
             applyFilters();         // 若正在查看该类，自动切回默认子类别
         }
@@ -2584,6 +2678,162 @@
                 enterAdmin();
             }
         } catch (e) {}
+
+        // ===== Admin Panel: 订单跟踪 & 待跟进客户 (localStorage) =====
+        const ORDER_PHASES = ['框架', '设计图', '颜色测试', '印染', '缝纫'];
+        const LS_ORDERS = 'tk_orders_v1';
+        const LS_FOLLOWUPS = 'tk_followups_v1';
+
+        function apLoadOrders() { try { return JSON.parse(localStorage.getItem(LS_ORDERS)) || []; } catch (e) { return []; } }
+        function apSaveOrders(o) { localStorage.setItem(LS_ORDERS, JSON.stringify(o)); }
+        function apLoadFollowups() { try { return JSON.parse(localStorage.getItem(LS_FOLLOWUPS)) || []; } catch (e) { return []; } }
+        function apSaveFollowups(f) { localStorage.setItem(LS_FOLLOWUPS, JSON.stringify(f)); }
+        function apNowISO() { return new Date().toISOString(); }
+        function apFmtTime(iso) {
+            const d = new Date(iso); if (isNaN(d.getTime())) return '';
+            const p = n => String(n).padStart(2, '0');
+            return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+        }
+        function apEsc(s) {
+            return String(s == null ? '' : s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+        }
+        function apDateStamp() { const d = new Date(); const p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}`; }
+        function apDownloadCSV(filename, rows) {
+            const csv = '﻿' + rows.map(r => r.map(c => {
+                const s = String(c == null ? '' : c);
+                return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+            }).join(',')).join('\r\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob); a.download = filename;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+        }
+
+        function openAdminPanel() {
+            if (!isAdmin) { alert('请先进入 Admin 模式'); return; }
+            document.getElementById('adminPanelModal').classList.add('active');
+            renderOrders(); renderFollowups();
+        }
+        function closeAdminPanel() { document.getElementById('adminPanelModal').classList.remove('active'); }
+        function switchApTab(tab) {
+            document.querySelectorAll('.ap-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+            document.getElementById('apOrders').classList.toggle('active', tab === 'orders');
+            document.getElementById('apFollowups').classList.toggle('active', tab === 'followups');
+        }
+
+        // ---- Orders ----
+        function addOrder() {
+            const c = document.getElementById('ordCustomer').value.trim();
+            const n = document.getElementById('ordNo').value.trim();
+            if (!c && !n) { alert('请至少填写客户名称或订单号'); return; }
+            const orders = apLoadOrders();
+            const t = apNowISO();
+            orders.unshift({ id: 'o' + Date.now(), customer: c, orderNo: n, phaseIdx: 0, createdAt: t, phaseHistory: [{ phase: ORDER_PHASES[0], ts: t }] });
+            apSaveOrders(orders);
+            document.getElementById('ordCustomer').value = '';
+            document.getElementById('ordNo').value = '';
+            renderOrders();
+        }
+        function setOrderPhase(id, idx) {
+            const orders = apLoadOrders();
+            const o = orders.find(x => x.id === id); if (!o) return;
+            idx = parseInt(idx, 10);
+            o.phaseIdx = idx;
+            o.phaseHistory.push({ phase: ORDER_PHASES[idx], ts: apNowISO() });
+            apSaveOrders(orders); renderOrders();
+        }
+        function deleteOrder(id) {
+            if (!confirm('确定删除该订单记录？')) return;
+            apSaveOrders(apLoadOrders().filter(x => x.id !== id));
+            renderOrders();
+        }
+        function renderOrders() {
+            const orders = apLoadOrders();
+            const box = document.getElementById('orderList');
+            if (!orders.length) { box.innerHTML = '<div class="ap-empty">还没有订单记录，使用上方表单添加。</div>'; return; }
+            box.innerHTML = orders.map(o => {
+                const opts = ORDER_PHASES.map((p, i) => `<option value="${i}" ${i === o.phaseIdx ? 'selected' : ''}>${p}</option>`).join('');
+                const tl = o.phaseHistory.map(h => `<div class="tl-item"><span class="tl-phase">${apEsc(h.phase)}</span><span>${apFmtTime(h.ts)}</span></div>`).join('');
+                const cur = ORDER_PHASES[o.phaseIdx];
+                return `<div class="ap-card">
+                    <div class="ap-card-top">
+                        <div>
+                            <div class="ap-card-title">${apEsc(o.customer || '(未命名客户)')}</div>
+                            <div class="ap-card-sub">订单号: ${apEsc(o.orderNo || '-')} ｜ 当前阶段: <b>${apEsc(cur)}</b> ｜ 创建: ${apFmtTime(o.createdAt)}</div>
+                        </div>
+                        <div class="ap-card-actions">
+                            <button class="ap-del" onclick="deleteOrder('${o.id}')">删除</button>
+                        </div>
+                    </div>
+                    <div class="ap-phase-row">
+                        <label>更改阶段:</label>
+                        <select onchange="setOrderPhase('${o.id}', this.value)">${opts}</select>
+                    </div>
+                    <div class="ap-timeline"><div style="font-size:12px;color:var(--text-light);margin-bottom:4px;">阶段时间节点（留档）</div>${tl}</div>
+                </div>`;
+            }).join('');
+        }
+        function exportOrdersCSV() {
+            const orders = apLoadOrders();
+            const header = ['客户名称', '订单号', '当前阶段', '创建时间'].concat(ORDER_PHASES);
+            const rows = orders.map(o => {
+                const reached = {}; o.phaseHistory.forEach(h => { reached[h.phase] = apFmtTime(h.ts); });
+                return [o.customer, o.orderNo, ORDER_PHASES[o.phaseIdx], apFmtTime(o.createdAt)].concat(ORDER_PHASES.map(p => reached[p] || ''));
+            });
+            apDownloadCSV('订单时间节点_' + apDateStamp() + '.csv', [header].concat(rows));
+        }
+
+        // ---- Follow-ups ----
+        function addFollowup() {
+            const c = document.getElementById('fuCustomer').value.trim();
+            const n = document.getElementById('fuNote').value.trim();
+            if (!c) { alert('请填写客户名称'); return; }
+            const f = apLoadFollowups();
+            const t = apNowISO();
+            f.unshift({ id: 'f' + Date.now(), customer: c, note: n, lastFollowUp: t, createdAt: t });
+            apSaveFollowups(f);
+            document.getElementById('fuCustomer').value = '';
+            document.getElementById('fuNote').value = '';
+            renderFollowups();
+        }
+        function touchFollowup(id) {
+            const f = apLoadFollowups();
+            const x = f.find(y => y.id === id); if (!x) return;
+            x.lastFollowUp = apNowISO(); apSaveFollowups(f); renderFollowups();
+        }
+        function deleteFollowup(id) {
+            if (!confirm('确定删除该跟进客户？')) return;
+            apSaveFollowups(apLoadFollowups().filter(x => x.id !== id));
+            renderFollowups();
+        }
+        function renderFollowups() {
+            const f = apLoadFollowups();
+            const box = document.getElementById('followupList');
+            if (!f.length) { box.innerHTML = '<div class="ap-empty">还没有待跟进客户，使用上方表单添加。</div>'; return; }
+            box.innerHTML = f.map(x => `<div class="ap-card">
+                <div class="ap-card-top">
+                    <div>
+                        <div class="ap-card-title">${apEsc(x.customer)}</div>
+                        <div class="ap-fu-time">最近跟进: ${apFmtTime(x.lastFollowUp) || '-'} ｜ 创建: ${apFmtTime(x.createdAt)}</div>
+                    </div>
+                    <div class="ap-card-actions">
+                        <button class="ap-btn-sm" onclick="touchFollowup('${x.id}')">更新跟进时间</button>
+                        <button class="ap-del" onclick="deleteFollowup('${x.id}')">删除</button>
+                    </div>
+                </div>
+                ${x.note ? `<div class="ap-note">${apEsc(x.note)}</div>` : ''}
+            </div>`).join('');
+        }
+        function exportFollowupsCSV() {
+            const f = apLoadFollowups();
+            const header = ['客户名称', '备注', '最近跟进时间', '创建时间'];
+            const rows = f.map(x => [x.customer, x.note, apFmtTime(x.lastFollowUp), apFmtTime(x.createdAt)]);
+            apDownloadCSV('待跟进客户_' + apDateStamp() + '.csv', [header].concat(rows));
+        }
+
+        // close admin panel when clicking the dimmed background
+        document.getElementById('adminPanelModal').addEventListener('click', e => { if (e.target.id === 'adminPanelModal') closeAdminPanel(); });
     </script>
 </body>
 </html>
