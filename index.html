@@ -693,13 +693,14 @@
 
         .ap-modal {
             display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.6); z-index: 10001; justify-content: flex-start; align-items: flex-start;
-            padding: 40px 20px; overflow-y: auto;
+            background: rgba(0,0,0,0.6); z-index: 10001; justify-content: center; align-items: center;
+            padding: 40px 20px; overflow: hidden;
         }
         .ap-modal.active { display: flex; }
         .ap-box {
             background: #fff; border-radius: 14px; width: 100%; max-width: 840px; margin: 0 auto;
             box-shadow: 0 20px 60px rgba(0,0,0,0.35); overflow: hidden;
+            max-height: calc(100vh - 80px); display: flex; flex-direction: column;
         }
         .ap-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 22px; background: var(--primary); color: #fff; }
         .ap-header h3 { font-size: 17px; margin: 0; }
@@ -707,7 +708,7 @@
         .ap-tabs { display: flex; border-bottom: 1px solid var(--border); }
         .ap-tab { flex: 1; padding: 13px; background: #f5f6fa; border: none; cursor: pointer; font-size: 14px; font-weight: 600; color: var(--text-light); }
         .ap-tab.active { background: #fff; color: var(--accent); border-bottom: 2px solid var(--accent); }
-        .ap-body { padding: 20px 22px; }
+        .ap-body { padding: 20px 22px; overflow-y: auto; flex: 1 1 auto; }
         .ap-pane { display: none; }
         .ap-pane.active { display: block; }
         .ap-form { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
