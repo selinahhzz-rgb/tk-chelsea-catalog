@@ -1597,7 +1597,7 @@
         // ===== Load Products =====
         async function loadProducts() {
             try {
-                const resp = await fetch('products.json');
+                const resp = await fetch('products.json?v=2');
                 products = await resp.json();
                 let customCount = 0;
                 try {
