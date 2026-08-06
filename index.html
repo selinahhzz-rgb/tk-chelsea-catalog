@@ -732,6 +732,16 @@
         .ap-timeline .tl-phase { font-weight: 600; color: var(--text); min-width: 72px; }
         .ap-note { margin-top: 8px; font-size: 13px; color: var(--text); white-space: pre-wrap; word-break: break-word; }
         .ap-fu-time { font-size: 12px; color: var(--text-light); }
+        .ap-fu-time b { color: var(--text); }
+        .ap-btn-sm.ghost { background: #fff; color: #2d6cdf; border: 1px solid #bcd0f5; }
+        .ap-btn-sm.ghost:hover { background: #eef3ff; }
+        .ap-fu-edit { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+        .ap-fu-edit textarea { width: 100%; min-height: 64px; padding: 8px 10px; border: 2px solid var(--border); border-radius: var(--radius); font-size: 13px; font-family: inherit; resize: vertical; box-sizing: border-box; }
+        .ap-fu-edit-btns { display: flex; gap: 8px; }
+        .ap-fu-history { margin-top: 10px; border-top: 1px dashed var(--border); padding-top: 8px; }
+        .ap-fu-history summary { font-size: 12.5px; color: #2d6cdf; cursor: pointer; user-select: none; }
+        .ap-fu-history .h-item { font-size: 12px; color: var(--text-light); padding: 2px 0; }
+        .ap-fu-history .h-item:first-of-type { color: var(--text); font-weight: 600; }
         .ap-empty { text-align: center; color: var(--text-light); padding: 26px; font-size: 14px; }
 
         .ap-pane h4 { margin: 6px 0 12px; font-size: 14px; color: var(--text); font-weight: 600; }
@@ -2821,7 +2831,7 @@
             if (!c) { alert('请填写客户名称'); return; }
             const f = apLoadFollowups();
             const t = apNowISO();
-            f.unshift({ id: 'f' + Date.now(), customer: c, note: n, lastFollowUp: t, createdAt: t });
+            f.unshift({ id: 'f' + Date.now(), customer: c, note: n, lastFollowUp: t, createdAt: t, history: [t] });
             apSaveFollowups(f);
             document.getElementById('fuCustomer').value = '';
             document.getElementById('fuNote').value = '';
@@ -2830,35 +2840,78 @@
         function touchFollowup(id) {
             const f = apLoadFollowups();
             const x = f.find(y => y.id === id); if (!x) return;
-            x.lastFollowUp = apNowISO(); apSaveFollowups(f); renderFollowups();
+            const now = apNowISO();
+            if (!Array.isArray(x.history)) x.history = x.lastFollowUp ? [x.lastFollowUp] : [];
+            x.history.push(now);
+            x.lastFollowUp = now;
+            apSaveFollowups(f); renderFollowups();
         }
         function deleteFollowup(id) {
             if (!confirm('确定删除该跟进客户？')) return;
             apSaveFollowups(apLoadFollowups().filter(x => x.id !== id));
             renderFollowups();
         }
+        let editingFuId = null;
+        function normalizeFollowup(x) {
+            if (!Array.isArray(x.history)) { x.history = x.lastFollowUp ? [x.lastFollowUp] : []; return true; }
+            return false;
+        }
         function renderFollowups() {
             const f = apLoadFollowups();
             const box = document.getElementById('followupList');
             if (!f.length) { box.innerHTML = '<div class="ap-empty">还没有待跟进客户，使用上方表单添加。</div>'; return; }
-            box.innerHTML = f.map(x => `<div class="ap-card">
+            let dirty = false;
+            box.innerHTML = f.map(x => {
+                if (normalizeFollowup(x)) dirty = true;
+                const hist = x.history.slice().sort(); // 时间升序
+                const count = hist.length;
+                const last = x.lastFollowUp;
+                const prev = count >= 2 ? hist[count - 2] : null;
+                const editing = (x.id === editingFuId);
+                return `<div class="ap-card">
                 <div class="ap-card-top">
                     <div>
                         <div class="ap-card-title">${apEsc(x.customer)}</div>
-                        <div class="ap-fu-time">最近跟进: ${apFmtTime(x.lastFollowUp) || '-'} ｜ 创建: ${apFmtTime(x.createdAt)}</div>
+                        <div class="ap-fu-time">最近跟进: <b>${apFmtTime(last) || '-'}</b> ｜ 上一次: ${apFmtTime(prev) || '—'} ｜ 共 ${count} 次 ｜ 创建: ${apFmtTime(x.createdAt)}</div>
                     </div>
                     <div class="ap-card-actions">
                         <button class="ap-btn-sm" onclick="touchFollowup('${x.id}')">更新跟进时间</button>
+                        <button class="ap-btn-sm ghost" onclick="editFollowupNote('${x.id}')">修改备注</button>
                         <button class="ap-del" onclick="deleteFollowup('${x.id}')">删除</button>
                     </div>
                 </div>
-                ${x.note ? `<div class="ap-note">${apEsc(x.note)}</div>` : ''}
-            </div>`).join('');
+                ${editing
+                    ? `<div class="ap-fu-edit"><textarea id="fuEdit_${x.id}">${apEsc(x.note || '')}</textarea><div class="ap-fu-edit-btns"><button class="ap-btn-sm" onclick="saveFollowupNote('${x.id}')">保存</button><button class="ap-btn-sm ghost" onclick="cancelEditFollowupNote()">取消</button></div></div>`
+                    : (x.note ? `<div class="ap-note">${apEsc(x.note)}</div>` : '')}
+                ${count ? `<details class="ap-fu-history"><summary>查看跟进时间节点 (${count} 次)</summary>${hist.map((h, i) => `<div class="h-item">${i + 1}. ${apFmtTime(h)}${i === count - 1 ? ' （最近）' : ''}</div>`).join('')}</details>` : ''}
+            </div>`;
+            }).join('');
+            if (dirty) apSaveFollowupsRaw(f);
         }
+        function editFollowupNote(id) {
+            editingFuId = id;
+            renderFollowups();
+            const ta = document.getElementById('fuEdit_' + id);
+            if (ta) ta.focus();
+        }
+        function saveFollowupNote(id) {
+            const ta = document.getElementById('fuEdit_' + id); if (!ta) return;
+            const f = apLoadFollowups();
+            const x = f.find(y => y.id === id); if (!x) return;
+            x.note = ta.value.trim();
+            editingFuId = null;
+            apSaveFollowups(f); renderFollowups();
+        }
+        function cancelEditFollowupNote() { editingFuId = null; renderFollowups(); }
         function exportFollowupsCSV() {
             const f = apLoadFollowups();
-            const header = ['客户名称', '备注', '最近跟进时间', '创建时间'];
-            const rows = f.map(x => [x.customer, x.note, apFmtTime(x.lastFollowUp), apFmtTime(x.createdAt)]);
+            const header = ['客户名称', '备注', '最近跟进时间', '上一次跟进时间', '跟进次数', '创建时间'];
+            const rows = f.map(x => {
+                const hist = Array.isArray(x.history) ? x.history.slice().sort() : (x.lastFollowUp ? [x.lastFollowUp] : []);
+                const count = hist.length;
+                const prev = count >= 2 ? hist[count - 2] : '';
+                return [x.customer, x.note, apFmtTime(x.lastFollowUp), apFmtTime(prev), count, apFmtTime(x.createdAt)];
+            });
             apDownloadCSV('待跟进客户_' + apDateStamp() + '.csv', [header].concat(rows));
         }
 
