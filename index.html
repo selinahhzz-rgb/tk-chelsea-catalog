@@ -743,6 +743,7 @@
         .ap-level.L3 { background: #d97706; }
         .ap-level.L4 { background: #dc2626; }
         .ap-level-sel { margin-top: 6px; padding: 5px 8px; border: 2px solid var(--border); border-radius: var(--radius); font-size: 12px; background: #fff; }
+        .ap-nation { display: inline-block; margin-left: 8px; padding: 2px 9px; border-radius: 6px; font-size: 12px; font-weight: 600; color: #4a5568; background: #eef1f5; vertical-align: middle; }
         .ap-btn-sm.ghost { background: #fff; color: #2d6cdf; border: 1px solid #bcd0f5; }
         .ap-btn-sm.ghost:hover { background: #eef3ff; }
         .ap-fu-edit { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
@@ -1150,6 +1151,7 @@
                             <option value="L3">L3</option>
                             <option value="L4">L4</option>
                         </select>
+                        <input id="fuNation" placeholder="国籍">
                         <button onclick="addFollowup()">+ 添加客户</button>
                     </div>
                     <div class="ap-actions">
@@ -2863,15 +2865,17 @@
             const c = document.getElementById('fuCustomer').value.trim();
             const n = document.getElementById('fuNote').value.trim();
             const lv = document.getElementById('fuLevel').value;
+            const nat = document.getElementById('fuNation').value.trim();
             if (!c) { alert('请填写客户名称'); return; }
             if (!lv) { alert('请选择客户等级（必选）'); return; }
             const f = apLoadFollowups();
             const t = apNowISO();
-            f.unshift({ id: 'f' + Date.now(), customer: c, note: n, level: lv, lastFollowUp: t, createdAt: t, history: [t] });
+            f.unshift({ id: 'f' + Date.now(), customer: c, note: n, level: lv, nation: nat, lastFollowUp: t, createdAt: t, history: [t] });
             apSaveFollowups(f);
             document.getElementById('fuCustomer').value = '';
             document.getElementById('fuNote').value = '';
             document.getElementById('fuLevel').value = '';
+            document.getElementById('fuNation').value = '';
             renderFollowups();
         }
         function setFollowupLevel(id, lv) {
@@ -2900,6 +2904,7 @@
             let dirty = false;
             if (!Array.isArray(x.history)) { x.history = x.lastFollowUp ? [x.lastFollowUp] : []; dirty = true; }
             if (!x.level) { x.level = '/'; dirty = true; }
+            if (typeof x.nation === 'undefined') { x.nation = ''; dirty = true; }
             return dirty;
         }
         function renderFollowups() {
@@ -2917,7 +2922,7 @@
                 return `<div class="ap-card">
                 <div class="ap-card-top">
                     <div>
-                        <div class="ap-card-title">${apEsc(x.customer)} <span class="ap-level ${apLevelClass(x.level)}">${apEsc(x.level || '/')}</span></div>
+                        <div class="ap-card-title">${apEsc(x.customer)} <span class="ap-level ${apLevelClass(x.level)}">${apEsc(x.level || '/')}</span>${x.nation ? '<span class="ap-nation">' + apEsc(x.nation) + '</span>' : ''}</div>
                         <div class="ap-fu-time">最近跟进: <b>${apFmtTime(last) || '-'}</b> ｜ 上一次: ${apFmtTime(prev) || '—'} ｜ 共 ${count} 次 ｜ 创建: ${apFmtTime(x.createdAt)}</div>
                         <select class="ap-level-sel" onchange="setFollowupLevel('${x.id}', this.value)">
                             <option value="/" ${x.level === '/' ? 'selected' : ''}>/（未分级）</option>
@@ -2958,12 +2963,12 @@
         function cancelEditFollowupNote() { editingFuId = null; renderFollowups(); }
         function exportFollowupsCSV() {
             const f = apLoadFollowups();
-            const header = ['客户名称', '客户等级', '备注', '最近跟进时间', '上一次跟进时间', '跟进次数', '创建时间'];
+            const header = ['客户名称', '客户等级', '国籍', '备注', '最近跟进时间', '上一次跟进时间', '跟进次数', '创建时间'];
             const rows = f.map(x => {
                 const hist = Array.isArray(x.history) ? x.history.slice().sort() : (x.lastFollowUp ? [x.lastFollowUp] : []);
                 const count = hist.length;
                 const prev = count >= 2 ? hist[count - 2] : '';
-                return [x.customer, x.level || '/', x.note, apFmtTime(x.lastFollowUp), apFmtTime(prev), count, apFmtTime(x.createdAt)];
+                return [x.customer, x.level || '/', x.nation || '', x.note, apFmtTime(x.lastFollowUp), apFmtTime(prev), count, apFmtTime(x.createdAt)];
             });
             apDownloadCSV('待跟进客户_' + apDateStamp() + '.csv', [header].concat(rows));
         }
