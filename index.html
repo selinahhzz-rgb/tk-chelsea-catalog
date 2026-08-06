@@ -1816,6 +1816,11 @@
                 const searchMatch = !searchQuery || p.model.toLowerCase().includes(searchQuery.toLowerCase()) || catEn.toLowerCase().includes(searchQuery.toLowerCase());
                 return catMatch && searchMatch;
             });
+            // Featured pin: DN1005 always sits at 3rd position in Wind Jacket (first row, 3rd card)
+            if (currentCategory === 'Wind jacket') {
+                const di = filteredProducts.findIndex(p => p.model === 'DN1005');
+                if (di !== -1 && di !== 2) { const [d] = filteredProducts.splice(di, 1); filteredProducts.splice(2, 0, d); }
+            }
             renderProducts();
         }
 
