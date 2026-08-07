@@ -1753,7 +1753,7 @@
         // ===== Load Products =====
         async function loadProducts() {
             try {
-                const resp = await fetch('products.json?v=3&t=' + Date.now());
+                const resp = await fetch('products.json?v=4&t=' + Date.now());
                 products = await resp.json();
                 let customCount = 0;
                 try {
@@ -1766,7 +1766,7 @@
                 }
                 // Load OCR-detected price ("$") box positions for per-box blur
                 try {
-                    const pResp = await fetch('price_positions.json?v=3&t=' + Date.now());
+                    const pResp = await fetch('price_positions.json?v=4&t=' + Date.now());
                     pricePosData = await pResp.json();
                 } catch (e) {
                     console.error('Failed to load price_positions.json:', e);
