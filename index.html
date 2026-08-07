@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>TK-Chelsea Product Catalog</title>
     <style>
         /* ===== Security ===== */
@@ -1753,7 +1756,7 @@
         // ===== Load Products =====
         async function loadProducts() {
             try {
-                const resp = await fetch('products.json?v=4&t=' + Date.now());
+                const resp = await fetch('products.json?v=5&t=' + Date.now());
                 products = await resp.json();
                 let customCount = 0;
                 try {
@@ -1766,7 +1769,7 @@
                 }
                 // Load OCR-detected price ("$") box positions for per-box blur
                 try {
-                    const pResp = await fetch('price_positions.json?v=4&t=' + Date.now());
+                    const pResp = await fetch('price_positions.json?v=5&t=' + Date.now());
                     pricePosData = await pResp.json();
                 } catch (e) {
                     console.error('Failed to load price_positions.json:', e);
