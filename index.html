@@ -1235,7 +1235,7 @@
         function cdn(rel) {
             if (!CLOUD_NAME) return rel;
             const remote = SITE_BASE + rel;
-            return `https://res.cloudinary.com/${CLOUD_NAME}/image/fetch/${encodeURIComponent(remote)}`;
+            return `https://res.cloudinary.com/${CLOUD_NAME}/image/fetch/${encodeURIComponent(remote)}?v=5`;
         }
         const CATEGORY_EN = {
             'Wind jacket': 'Wind Jacket', 'Football bag': 'Football Bag',
