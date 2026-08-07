@@ -1330,45 +1330,14 @@
             applyFilters();         // 若正在查看该类，自动切回默认子类别
         }
 
-        // ===== Decrypt Pantone color data (AES-256-GCM + PBKDF2, same password as admin) =====
-        // Encrypted file format: salt.iv.authTag.ciphertext (all base64)
-        function b64ToBytes(b64) {
-            const bin = atob(b64);
-            const arr = new Uint8Array(bin.length);
-            for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
-            return arr;
-        }
-        async function decryptPantone(encrypted, password) {
-            const [saltB64, ivB64, tagB64, dataB64] = encrypted.split('.');
-            if (!saltB64 || !ivB64 || !tagB64 || !dataB64) throw new Error('Invalid encrypted format');
-            const salt = b64ToBytes(saltB64);
-            const iv = b64ToBytes(ivB64);
-            const tag = b64ToBytes(tagB64);
-            const data = b64ToBytes(dataB64);
-            const enc = new TextEncoder();
-            const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
-            const key = await crypto.subtle.deriveKey(
-                { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' },
-                keyMaterial,
-                { name: 'AES-GCM', length: 256 },
-                false,
-                ['decrypt']
-            );
-            // Web Crypto expects the authTag appended to the ciphertext
-            const cipherWithTag = new Uint8Array(data.length + tag.length);
-            cipherWithTag.set(data, 0);
-            cipherWithTag.set(tag, data.length);
-            const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, cipherWithTag);
-            return JSON.parse(new TextDecoder().decode(decrypted));
-        }
+        // ===== Pantone color data (plain JSON, admin-only) =====
         async function loadPantoneColors() {
-            if (pantoneColorsData) return; // already decrypted
+            if (pantoneColorsData) return; // already loaded
             try {
-                const resp = await fetch('pantone_colors.json?v=5');
-                const text = await resp.text();
-                pantoneColorsData = await decryptPantone(text, ADMIN_PASSWORD);
+                const resp = await fetch('pantone_colors.json?v=6');
+                pantoneColorsData = await resp.json();
             } catch (e) {
-                console.error('Failed to decrypt pantone_colors.json:', e);
+                console.error('Failed to load pantone_colors.json:', e);
                 pantoneColorsData = null;
             }
         }
@@ -1775,7 +1744,7 @@
                     console.error('Failed to load price_positions.json:', e);
                     pricePosData = { positions: {} };
                 }
-                // Pantone color data is encrypted; loaded + decrypted only after admin login (see loadPantoneColors)
+                // Pantone color data is admin-only; loaded after admin login (see loadPantoneColors)
                 pantoneColorsData = null;
                 document.getElementById('totalCount').textContent = products.length + customCount;
                 dataReady = true;
