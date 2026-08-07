@@ -542,6 +542,13 @@
         }
         .fabric-badge.patterned { background: #e7f1ff; color: #1f6fd1; border: 1px solid #c2dbff; }
         .fabric-badge.regular   { background: #f1f1f1; color: #6b6b6b; border: 1px solid #dcdcdc; }
+        /* NEW badge for freshly-added products */
+        .new-badge {
+            position: absolute; top: 8px; right: 8px; z-index: 6;
+            background: #e8322f; color: #fff; font-size: 11px; font-weight: 800;
+            letter-spacing: .6px; padding: 3px 10px; border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.28); pointer-events: none;
+        }
         .fabric-filter { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 4px 0 18px; }
         .fabric-filter .ff-label { font-size: 12px; color: var(--text-light); margin-right: 4px; }
         .fabric-filter .ff-btn {
@@ -2374,6 +2381,7 @@
                     <div class="product-image-wrap">
                         <img src="${imgSrc}" alt="${product.model}" loading="lazy" draggable="false">
                         ${product.fabric_category ? `<span class="fabric-badge ${product.fabric_category}">${FABRIC_CAT[product.fabric_category].en}</span>` : ''}
+                        ${product.isNew ? '<span class="new-badge">NEW</span>' : ''}
                         <div class="watermark"></div>
                         ${protectWm}
                         ${needsPriceBlur(product) ? priceBlurHTML(product.page) : ''}
