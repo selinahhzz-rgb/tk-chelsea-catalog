@@ -2819,6 +2819,7 @@
                             <div class="ap-card-sub">订单号: ${apEsc(o.orderNo || '-')} ｜ 当前阶段: <b>${apEsc(cur)}</b> ｜ 创建: ${apFmtTime(o.createdAt)}</div>
                         </div>
                         <div class="ap-card-actions">
+                            <button class="ap-btn-sm" onclick="exportOrderHTML('${o.id}')" title="导出为独立HTML文件（可打印发给客户）">📄 导出</button>
                             <button class="ap-del" onclick="deleteOrder('${o.id}')">删除</button>
                         </div>
                     </div>
@@ -2838,6 +2839,73 @@
                 return [o.customer, o.orderNo, ORDER_PHASES[o.phaseIdx], apFmtTime(o.createdAt)].concat(ORDER_PHASES.map(p => reached[p] || ''));
             });
             apDownloadCSV('订单时间节点_' + apDateStamp() + '.csv', [header].concat(rows));
+        }
+        function exportOrderHTML(id) {
+            const orders = apLoadOrders();
+            const o = orders.find(x => x.id === id);
+            if (!o) { alert('订单不存在'); return; }
+            const cur = ORDER_PHASES[o.phaseIdx] || '-';
+            const safeName = (o.customer || 'order').replace(/[\\/:*?"<>|]/g, '_');
+            const safeNo = (o.orderNo || '').replace(/[\\/:*?"<>|]/g, '_');
+            const filename = (safeNo ? `${safeNo}_${safeName}` : safeName) + '.html';
+            const tlRows = o.phaseHistory.map(h =>
+                `<tr><td class="ph">${apEsc(h.phase)}</td><td class="ts">${apFmtTime(h.ts)}</td></tr>`
+            ).join('');
+            const html = `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${apEsc(o.customer || 'Order')} - ${apEsc(o.orderNo || '')}</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:#f0f2f5;padding:40px 20px;color:#1a1a1a;}
+  .card{max-width:520px;margin:0 auto;background:#fff;border:1px solid #e1e4e8;border-radius:12px;padding:24px 28px;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+  .name{font-size:22px;font-weight:700;color:#1a1a1a;margin-bottom:6px;}
+  .meta{font-size:13px;color:#586069;margin-bottom:16px;line-height:1.6;}
+  .meta b{color:#1a1a1a;}
+  .phase-bar{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding-bottom:14px;border-bottom:1px dashed #e1e4e8;}
+  .phase-bar label{font-size:13px;color:#586069;white-space:nowrap;}
+  .phase-bar .badge{display:inline-block;background:#eaf2ff;color:#0969da;border-radius:6px;padding:4px 12px;font-size:13px;font-weight:600;}
+  .tl-title{font-size:12px;color:#8b949e;margin-bottom:8px;}
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th{text-align:left;font-size:12px;color:#8b949e;font-weight:600;padding:6px 0;border-bottom:1px solid #e1e4e8;}
+  td{padding:7px 0;border-bottom:1px solid #f0f0f0;}
+  td.ph{font-weight:600;color:#1a1a1a;min-width:90px;}
+  td.ts{color:#586069;text-align:right;}
+  tr:last-child td{border-bottom:none;}
+  @media print{
+    body{background:#fff;padding:0;}
+    .card{box-shadow:none;border:1px solid #ddd;max-width:100%;}
+    .no-print{display:none!important;}
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="name">${apEsc(o.customer || '(未命名客户)')}</div>
+  <div class="meta">订单号: <b>${apEsc(o.orderNo || '-')}</b> ｜ 当前阶段: <b>${apEsc(cur)}</b> ｜ 创建: ${apFmtTime(o.createdAt)}</div>
+  <div class="phase-bar">
+    <label>当前阶段:</label>
+    <span class="badge">${apEsc(cur)}</span>
+  </div>
+  <div class="tl-title">阶段时间节点（留档）</div>
+  <table>
+    <thead><tr><th>阶段</th><th style="text-align:right">时间</th></tr></thead>
+    <tbody>${tlRows}</tbody>
+  </table>
+</div>
+<script>window.onload=function(){setTimeout(function(){window.print();},300);}<\/script>
+</body>
+</html>`;
+            const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(a.href), 1000);
         }
 
         // ---- Follow-ups ----
