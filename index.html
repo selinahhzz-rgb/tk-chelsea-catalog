@@ -1165,6 +1165,7 @@
                         <button onclick="addFollowup()">+ 添加客户</button>
                     </div>
                     <div class="ap-actions">
+                        <input id="fuSearch" placeholder="🔍 搜索客户名称（模糊匹配，查重防重复录入）" oninput="renderFollowups()" style="flex:1;min-width:160px;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;">
                         <button onclick="exportFollowupsCSV()">&#11015; 导出跟进客户 (CSV)</button>
                     </div>
                     <div class="ap-list" id="followupList"></div>
@@ -2819,7 +2820,7 @@
                             <div class="ap-card-sub">订单号: ${apEsc(o.orderNo || '-')} ｜ 当前阶段: <b>${apEsc(cur)}</b> ｜ 创建: ${apFmtTime(o.createdAt)}</div>
                         </div>
                         <div class="ap-card-actions">
-                            <button class="ap-btn-sm" onclick="exportOrderHTML('${o.id}')" title="导出为独立HTML文件（可打印发给客户）">📄 导出</button>
+                            <button class="ap-btn-sm" onclick="exportOrderImage('${o.id}')" title="导出为独立图片 PNG（可打印/存档发给客户）">🖼 导出图</button>
                             <button class="ap-del" onclick="deleteOrder('${o.id}')">删除</button>
                         </div>
                     </div>
@@ -2840,73 +2841,92 @@
             });
             apDownloadCSV('订单时间节点_' + apDateStamp() + '.csv', [header].concat(rows));
         }
-        function exportOrderHTML(id) {
+        function apRoundRect(ctx, x, y, w, h, r) {
+            if (ctx.roundRect) { ctx.beginPath(); ctx.roundRect(x, y, w, h, r); return; }
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.arcTo(x + w, y, x + w, y + h, r);
+            ctx.arcTo(x + w, y + h, x, y + h, r);
+            ctx.arcTo(x, y + h, x, y, r);
+            ctx.arcTo(x, y, x + w, y, r);
+            ctx.closePath();
+        }
+        function exportOrderImage(id) {
             const orders = apLoadOrders();
             const o = orders.find(x => x.id === id);
             if (!o) { alert('订单不存在'); return; }
             const cur = ORDER_PHASES[o.phaseIdx] || '-';
+            const FONT = '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",Arial,sans-serif';
+            const W = 680, pad = 28, scale = 2, margin = 24;
+            const name = o.customer || '(未命名客户)';
+            const meta = '订单号: ' + (o.orderNo || '-') + '   ｜   当前阶段: ' + cur + '   ｜   创建: ' + apFmtTime(o.createdAt);
+            const rows = (o.phaseHistory || []).map(h => ({ phase: h.phase, ts: apFmtTime(h.ts) }));
+            const nameH = 30, metaH = 22, phaseBarH = 34, tlTitleH = 20, rowH = 30, gap1 = 16, gap2 = 16, gap3 = 8;
+            const innerH = nameH + 6 + metaH + gap1 + phaseBarH + gap2 + tlTitleH + gap3 + rows.length * rowH;
+            const cardH = innerH + pad * 2;
+            const H = cardH + margin * 2;
+            const canvas = document.createElement('canvas');
+            canvas.width = W * scale; canvas.height = H * scale;
+            const ctx = canvas.getContext('2d');
+            ctx.scale(scale, scale);
+            ctx.textBaseline = 'top';
+            // 外底色
+            ctx.fillStyle = '#f0f2f5'; ctx.fillRect(0, 0, W, H);
+            // 卡片
+            const cx = margin, cy = margin, cw = W - margin * 2;
+            apRoundRect(ctx, cx, cy, cw, cardH, 12);
+            ctx.fillStyle = '#ffffff'; ctx.fill();
+            ctx.strokeStyle = '#e1e4e8'; ctx.lineWidth = 1; ctx.stroke();
+            let x = cx + pad, y = cy + pad;
+            // 客户名
+            ctx.fillStyle = '#1a1a1a'; ctx.font = '700 22px ' + FONT;
+            ctx.fillText(name, x, y); y += nameH + 6;
+            // 元信息
+            ctx.fillStyle = '#586069'; ctx.font = '13px ' + FONT;
+            ctx.fillText(meta, x, y); y += metaH + gap1;
+            // 当前阶段标签
+            const label = '当前阶段:';
+            ctx.fillStyle = '#586069'; ctx.font = '13px ' + FONT;
+            ctx.fillText(label, x, y + 6);
+            const labelW = ctx.measureText(label).width;
+            const badgeText = cur;
+            ctx.font = '600 13px ' + FONT;
+            const badgeW = ctx.measureText(badgeText).width + 24, badgeH = 26;
+            apRoundRect(ctx, x + labelW + 10, y, badgeW, badgeH, 6);
+            ctx.fillStyle = '#eaf2ff'; ctx.fill();
+            ctx.fillStyle = '#0969da';
+            ctx.fillText(badgeText, x + labelW + 10 + 12, y + 6);
+            y += phaseBarH + gap2;
+            // 时间节点标题
+            ctx.fillStyle = '#8b949e'; ctx.font = '12px ' + FONT;
+            ctx.fillText('阶段时间节点（留档）', x, y); y += tlTitleH + gap3;
+            // 表头
+            const tableW = cw - pad * 2;
+            ctx.fillStyle = '#8b949e'; ctx.font = '600 12px ' + FONT;
+            ctx.fillText('阶段', x, y);
+            ctx.textAlign = 'right'; ctx.fillText('时间', x + tableW, y); ctx.textAlign = 'left';
+            y += 22;
+            // 行
+            rows.forEach(r => {
+                ctx.strokeStyle = '#f0f0f0'; ctx.lineWidth = 1;
+                ctx.beginPath(); ctx.moveTo(x, y + rowH - 7); ctx.lineTo(x + tableW, y + rowH - 7); ctx.stroke();
+                ctx.fillStyle = '#1a1a1a'; ctx.font = '600 13px ' + FONT;
+                ctx.fillText(r.phase, x, y);
+                ctx.fillStyle = '#586069'; ctx.font = '13px ' + FONT;
+                ctx.textAlign = 'right'; ctx.fillText(r.ts, x + tableW, y); ctx.textAlign = 'left';
+                y += rowH;
+            });
             const safeName = (o.customer || 'order').replace(/[\\/:*?"<>|]/g, '_');
             const safeNo = (o.orderNo || '').replace(/[\\/:*?"<>|]/g, '_');
-            const filename = (safeNo ? `${safeNo}_${safeName}` : safeName) + '.html';
-            const tlRows = o.phaseHistory.map(h =>
-                `<tr><td class="ph">${apEsc(h.phase)}</td><td class="ts">${apFmtTime(h.ts)}</td></tr>`
-            ).join('');
-            const html = `<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>${apEsc(o.customer || 'Order')} - ${apEsc(o.orderNo || '')}</title>
-<style>
-  *{margin:0;padding:0;box-sizing:border-box;}
-  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:#f0f2f5;padding:40px 20px;color:#1a1a1a;}
-  .card{max-width:520px;margin:0 auto;background:#fff;border:1px solid #e1e4e8;border-radius:12px;padding:24px 28px;box-shadow:0 2px 8px rgba(0,0,0,.06);}
-  .name{font-size:22px;font-weight:700;color:#1a1a1a;margin-bottom:6px;}
-  .meta{font-size:13px;color:#586069;margin-bottom:16px;line-height:1.6;}
-  .meta b{color:#1a1a1a;}
-  .phase-bar{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding-bottom:14px;border-bottom:1px dashed #e1e4e8;}
-  .phase-bar label{font-size:13px;color:#586069;white-space:nowrap;}
-  .phase-bar .badge{display:inline-block;background:#eaf2ff;color:#0969da;border-radius:6px;padding:4px 12px;font-size:13px;font-weight:600;}
-  .tl-title{font-size:12px;color:#8b949e;margin-bottom:8px;}
-  table{width:100%;border-collapse:collapse;font-size:13px;}
-  th{text-align:left;font-size:12px;color:#8b949e;font-weight:600;padding:6px 0;border-bottom:1px solid #e1e4e8;}
-  td{padding:7px 0;border-bottom:1px solid #f0f0f0;}
-  td.ph{font-weight:600;color:#1a1a1a;min-width:90px;}
-  td.ts{color:#586069;text-align:right;}
-  tr:last-child td{border-bottom:none;}
-  @media print{
-    body{background:#fff;padding:0;}
-    .card{box-shadow:none;border:1px solid #ddd;max-width:100%;}
-    .no-print{display:none!important;}
-  }
-</style>
-</head>
-<body>
-<div class="card">
-  <div class="name">${apEsc(o.customer || '(未命名客户)')}</div>
-  <div class="meta">订单号: <b>${apEsc(o.orderNo || '-')}</b> ｜ 当前阶段: <b>${apEsc(cur)}</b> ｜ 创建: ${apFmtTime(o.createdAt)}</div>
-  <div class="phase-bar">
-    <label>当前阶段:</label>
-    <span class="badge">${apEsc(cur)}</span>
-  </div>
-  <div class="tl-title">阶段时间节点（留档）</div>
-  <table>
-    <thead><tr><th>阶段</th><th style="text-align:right">时间</th></tr></thead>
-    <tbody>${tlRows}</tbody>
-  </table>
-</div>
-<script>window.onload=function(){setTimeout(function(){window.print();},300);}<\/script>
-</body>
-</html>`;
-            const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+            const fname = (safeNo ? safeNo + '_' + safeName : safeName) + '.png';
+            canvas.toBlob(function (blob) {
+                const a = document.createElement('a');
+                a.download = fname; a.href = URL.createObjectURL(blob);
+                document.body.appendChild(a); a.click(); document.body.removeChild(a);
+                setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+            }, 'image/png');
         }
+
 
         // ---- Follow-ups ----
         function addFollowup() {
@@ -2957,10 +2977,14 @@
         }
         function renderFollowups() {
             const f = apLoadFollowups();
+            const fuSearchEl = document.getElementById('fuSearch');
+            const q = (fuSearchEl && fuSearchEl.value ? fuSearchEl.value : '').trim().toLowerCase();
+            const list = q ? f.filter(x => (x.customer || '').toLowerCase().includes(q) || (x.nation || '').toLowerCase().includes(q)) : f;
             const box = document.getElementById('followupList');
             if (!f.length) { box.innerHTML = '<div class="ap-empty">还没有待跟进客户，使用上方表单添加。</div>'; return; }
+            if (!list.length) { box.innerHTML = '<div class="ap-empty">没有匹配「' + apEsc(q) + '」的客户。</div>'; return; }
             let dirty = false;
-            box.innerHTML = f.map(x => {
+            box.innerHTML = list.map(x => {
                 if (normalizeFollowup(x)) dirty = true;
                 const hist = x.history.slice().sort(); // 时间升序
                 const count = hist.length;
