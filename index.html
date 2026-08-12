@@ -740,7 +740,8 @@
         .ap-phase-row select { padding: 8px 10px; border: 2px solid var(--border); border-radius: var(--radius); font-size: 13px; }
         .ap-timeline { margin-top: 10px; border-top: 1px dashed var(--border); padding-top: 10px; }
         .ap-timeline .tl-item { font-size: 12px; color: var(--text-light); display: flex; gap: 8px; padding: 2px 0; align-items: center; }
-        .ap-timeline .tl-del { margin-left: auto; background: #fff; border: 1px solid #e6c2c2; color: #c0392b; border-radius: 6px; width: 22px; height: 22px; line-height: 1; cursor: pointer; font-size: 14px; padding: 0; flex: none; }
+        .ap-timeline .tl-dur { margin-left: auto; color: #57606a; font-size: 12px; white-space: nowrap; }
+        .ap-timeline .tl-del { margin-left: 8px; background: #fff; border: 1px solid #e6c2c2; color: #c0392b; border-radius: 6px; width: 22px; height: 22px; line-height: 1; cursor: pointer; font-size: 14px; padding: 0; flex: none; }
         .ap-timeline .tl-del:hover { background: #fdeaea; }
         .ap-timeline .tl-phase { font-weight: 600; color: var(--text); min-width: 72px; }
         .ap-note { margin-top: 8px; font-size: 13px; color: var(--text); white-space: pre-wrap; word-break: break-word; }
@@ -2734,6 +2735,17 @@
             const p = n => String(n).padStart(2, '0');
             return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
         }
+        function apDaysBetween(a, b) {
+            const d1 = new Date(a), d2 = new Date(b);
+            if (isNaN(d1.getTime()) || isNaN(d2.getTime())) return null;
+            return Math.floor(Math.abs(d2 - d1) / 86400000);
+        }
+        function apDurLabel(prevTs, ts) {
+            const days = apDaysBetween(prevTs, ts);
+            if (days === null) return '—';
+            if (days === 0) return '当天';
+            return days + ' 天';
+        }
         function apEsc(s) {
             return String(s == null ? '' : s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
         }
@@ -2811,13 +2823,20 @@
             if (!orders.length) { box.innerHTML = '<div class="ap-empty">还没有订单记录，使用上方表单添加。</div>'; return; }
             box.innerHTML = orders.map(o => {
                 const opts = ORDER_PHASES.map((p, i) => `<option value="${i}" ${i === o.phaseIdx ? 'selected' : ''}>${p}</option>`).join('');
-                const tl = o.phaseHistory.map(h => `<div class="tl-item"><span class="tl-phase">${apEsc(h.phase)}</span><span>${apFmtTime(h.ts)}</span><button class="tl-del" title="删除该阶段节点" onclick="deleteOrderPhaseNode('${o.id}','${h.ts}')">×</button></div>`).join('');
+                const hist = [...o.phaseHistory].sort((a, b) => new Date(a.ts) - new Date(b.ts));
+                const tl = hist.map((h, i) => {
+                    const prev = i === 0 ? o.createdAt : hist[i - 1].ts;
+                    const dur = i === 0 ? '—' : apDurLabel(prev, h.ts);
+                    return `<div class="tl-item"><span class="tl-phase">${apEsc(h.phase)}</span><span>${apFmtTime(h.ts)}</span><span class="tl-dur">耗时 ${dur}</span><button class="tl-del" title="删除该阶段节点" onclick="deleteOrderPhaseNode('${o.id}','${h.ts}')">×</button></div>`;
+                }).join('');
                 const cur = ORDER_PHASES[o.phaseIdx];
+                const totalDays = apDaysBetween(o.createdAt, apNowISO());
+                const totalLabel = totalDays === 0 ? '今天创建' : ('总耗时 ' + totalDays + ' 天');
                 return `<div class="ap-card">
                     <div class="ap-card-top">
                         <div>
                             <div class="ap-card-title">${apEsc(o.customer || '(未命名客户)')}</div>
-                            <div class="ap-card-sub">订单号: ${apEsc(o.orderNo || '-')} ｜ 当前阶段: <b>${apEsc(cur)}</b> ｜ 创建: ${apFmtTime(o.createdAt)}</div>
+                            <div class="ap-card-sub">订单号: ${apEsc(o.orderNo || '-')} ｜ 当前阶段: <b>${apEsc(cur)}</b> ｜ 创建: ${apFmtTime(o.createdAt)} ｜ ${totalLabel}</div>
                         </div>
                         <div class="ap-card-actions">
                             <button class="ap-btn-sm" onclick="exportOrderImage('${o.id}')" title="导出为独立图片 PNG（可打印/存档发给客户）">🖼 导出图</button>
@@ -2859,8 +2878,15 @@
             const FONT = '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",Arial,sans-serif';
             const W = 680, pad = 28, scale = 2, margin = 24;
             const name = o.customer || '(未命名客户)';
-            const meta = '订单号: ' + (o.orderNo || '-') + '   ｜   当前阶段: ' + cur + '   ｜   创建: ' + apFmtTime(o.createdAt);
-            const rows = (o.phaseHistory || []).map(h => ({ phase: h.phase, ts: apFmtTime(h.ts) }));
+            const totalDays = apDaysBetween(o.createdAt, apNowISO());
+            const totalTxt = totalDays === 0 ? '今天创建' : ('总耗时 ' + totalDays + ' 天');
+            const meta = '订单号: ' + (o.orderNo || '-') + '   ｜   当前阶段: ' + cur + '   ｜   创建: ' + apFmtTime(o.createdAt) + '   ｜   ' + totalTxt;
+            const hist = [...(o.phaseHistory || [])].sort((a, b) => new Date(a.ts) - new Date(b.ts));
+            const rows = hist.map((h, i) => {
+                const prev = i === 0 ? o.createdAt : hist[i - 1].ts;
+                const dur = i === 0 ? '—' : apDurLabel(prev, h.ts);
+                return { phase: h.phase, ts: apFmtTime(h.ts), dur: dur };
+            });
             const nameH = 30, metaH = 22, phaseBarH = 34, tlTitleH = 20, rowH = 30, gap1 = 16, gap2 = 16, gap3 = 8;
             const innerH = nameH + 6 + metaH + gap1 + phaseBarH + gap2 + tlTitleH + gap3 + rows.length * rowH;
             const cardH = innerH + pad * 2;
@@ -2902,9 +2928,13 @@
             ctx.fillText('阶段时间节点（留档）', x, y); y += tlTitleH + gap3;
             // 表头
             const tableW = cw - pad * 2;
+            const durX = x + tableW * 0.72;
             ctx.fillStyle = '#8b949e'; ctx.font = '600 12px ' + FONT;
             ctx.fillText('阶段', x, y);
-            ctx.textAlign = 'right'; ctx.fillText('时间', x + tableW, y); ctx.textAlign = 'left';
+            ctx.textAlign = 'right';
+            ctx.fillText('耗时', durX, y);
+            ctx.fillText('时间', x + tableW, y);
+            ctx.textAlign = 'left';
             y += 22;
             // 行
             rows.forEach(r => {
@@ -2912,8 +2942,11 @@
                 ctx.beginPath(); ctx.moveTo(x, y + rowH - 7); ctx.lineTo(x + tableW, y + rowH - 7); ctx.stroke();
                 ctx.fillStyle = '#1a1a1a'; ctx.font = '600 13px ' + FONT;
                 ctx.fillText(r.phase, x, y);
-                ctx.fillStyle = '#586069'; ctx.font = '13px ' + FONT;
-                ctx.textAlign = 'right'; ctx.fillText(r.ts, x + tableW, y); ctx.textAlign = 'left';
+                ctx.fillStyle = '#57606a'; ctx.font = '13px ' + FONT;
+                ctx.textAlign = 'right';
+                ctx.fillText(r.dur, durX, y);
+                ctx.fillText(r.ts, x + tableW, y);
+                ctx.textAlign = 'left';
                 y += rowH;
             });
             const safeName = (o.customer || 'order').replace(/[\\/:*?"<>|]/g, '_');
