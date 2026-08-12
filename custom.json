@@ -563,6 +563,18 @@
       "type": "image"
     },
     {
+      "name": "EU Size Chart",
+      "subcategory": "size",
+      "image": "Size/eu-size.png",
+      "type": "image"
+    },
+    {
+      "name": "US Size Chart",
+      "subcategory": "size",
+      "image": "Size/US-SIZE1.png",
+      "type": "image"
+    },
+    {
       "name": "socks_size_chart",
       "subcategory": "size",
       "image": "Size/socks_size_chart.jpg",
