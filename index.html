@@ -1339,15 +1339,22 @@
         }
 
         // ===== Pantone color data (plain JSON, admin-only) =====
+        let pantoneLoadPromise = null; // 防并发重复 fetch
         async function loadPantoneColors() {
             if (pantoneColorsData) return; // already loaded
-            try {
-                const resp = await fetch('pantone_colors.json?v=6');
-                pantoneColorsData = await resp.json();
-            } catch (e) {
-                console.error('Failed to load pantone_colors.json:', e);
-                pantoneColorsData = null;
-            }
+            if (pantoneLoadPromise) return pantoneLoadPromise; // 已在加载中，复用同一请求
+            pantoneLoadPromise = (async () => {
+                try {
+                    const resp = await fetch('pantone_colors.json?v=6');
+                    pantoneColorsData = await resp.json();
+                } catch (e) {
+                    console.error('Failed to load pantone_colors.json:', e);
+                    pantoneColorsData = null;
+                } finally {
+                    pantoneLoadPromise = null;
+                }
+            })();
+            return pantoneLoadPromise;
         }
 
         // ===== Search Tab Switch =====
@@ -1971,7 +1978,12 @@
             const section = document.getElementById('productsSection');
             section.innerHTML = '';
             if (!pantoneColorsData || !pantoneColorsData.colors) {
-                section.innerHTML = '<div class="empty-state"><p>Color data not loaded</p></div>';
+                // 潘通数据为异步加载（admin 登录后才 fetch），首次进入可能尚未就绪。
+                // 主动触发加载，加载完成后若仍停留在潘通子类则自动重渲染，消除「点了没反应/要再点一次」。
+                loadPantoneColors().finally(() => {
+                    if (currentSubcategory === 'pantone-colors') renderPantoneColors();
+                });
+                section.innerHTML = '<div class="empty-state"><p>Loading color data…</p></div>';
                 return;
             }
             const colors = pantoneColorsData.colors;
