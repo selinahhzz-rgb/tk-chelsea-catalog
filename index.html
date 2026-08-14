@@ -252,6 +252,12 @@
         .pantone-chip { width: 100%; aspect-ratio: 1; }
         .pantone-code { font-size: 11px; font-weight: 600; padding: 5px 5px 0; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .pantone-cmyk { font-size: 9px; color: var(--text-light); padding: 0 5px 5px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .pantone-hex { font-size: 10px; font-family: monospace; font-weight: 700; padding: 3px 5px 0; text-align: center; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: 0.3px; cursor: pointer; }
+        .pantone-rgb { font-size: 8px; color: var(--text-light); padding: 0 5px 6px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .pantone-swatch.copied { box-shadow: 0 0 0 2px var(--shop); transform: translateY(-2px); }
+        .pantone-copy-tip { font-size: 8px; color: var(--text-light); text-align: center; padding: 0 5px 5px; margin-top: -4px; }
+        .pantone-toast { position: fixed; left: 50%; bottom: 32px; transform: translateX(-50%) translateY(20px); background: rgba(20,20,20,0.92); color: #fff; padding: 10px 18px; border-radius: 10px; font-size: 13px; font-weight: 600; opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; z-index: 9999; box-shadow: 0 6px 20px rgba(0,0,0,0.25); }
+        .pantone-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
         .cmyk-converter { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 16px; }
         .cmyk-conv-title { font-size: 13px; font-weight: 700; margin-bottom: 10px; color: var(--text); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
         .cmyk-toggle { font-size: 11px; font-weight: 600; color: var(--text-light); display: inline-flex; align-items: center; gap: 4px; cursor: pointer; margin-left: auto; user-select: none; }
@@ -272,6 +278,8 @@
             .pantone-grid { grid-template-columns: repeat(auto-fill, minmax(62px, 1fr)); gap: 6px; }
             .pantone-code { font-size: 9px; }
             .pantone-cmyk { font-size: 8px; }
+            .pantone-hex { font-size: 8px; }
+            .pantone-rgb { font-size: 7px; }
             .pantone-search { flex-direction: column; }
         }
 
@@ -2071,10 +2079,11 @@
                 grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><p>No matching colors</p></div>';
             } else {
                 grid.innerHTML = matches.map((c, idx) => `
-                    <div class="pantone-swatch" data-code="${escapeHtml(c.code)}" data-idx="${idx}" title="${escapeHtml(c.code)} ${escapeHtml(c.cmyk)}">
+                    <div class="pantone-swatch" data-code="${escapeHtml(c.code)}" data-idx="${idx}" data-hex="${escapeHtml(c.hex)}" title="Click to copy ${escapeHtml(c.hex)} — ${escapeHtml(c.code)} ${escapeHtml(c.cmyk)}">
                         <div class="pantone-chip" style="background-color:${c.hex}"></div>
                         <div class="pantone-code">${escapeHtml(c.code.replace('PANTONE ', ''))}</div>
-                        <div class="pantone-cmyk">${escapeHtml(c.cmyk)}</div>
+                        <div class="pantone-hex">${escapeHtml(c.hex)}</div>
+                        <div class="pantone-rgb">${c.rgb ? escapeHtml('rgb(' + c.rgb.join(', ') + ')') : ''}</div>
                     </div>
                 `).join('');
             }
@@ -2122,6 +2131,45 @@
             const cIcc = document.getElementById('cmykIcc');
             if (cIcc) cIcc.addEventListener('change', cmykUpdate);
             cmykUpdate();
+
+            // ===== Pantone swatch: click to copy HEX =====
+            let pantoneToast = document.querySelector('.pantone-toast');
+            if (!pantoneToast) {
+                pantoneToast = document.createElement('div');
+                pantoneToast.className = 'pantone-toast';
+                document.body.appendChild(pantoneToast);
+            }
+            let pantoneToastTimer = null;
+            const showPantoneToast = (msg) => {
+                pantoneToast.textContent = msg;
+                pantoneToast.classList.add('show');
+                clearTimeout(pantoneToastTimer);
+                pantoneToastTimer = setTimeout(() => pantoneToast.classList.remove('show'), 1400);
+            };
+            grid.querySelectorAll('.pantone-swatch').forEach(sw => {
+                sw.addEventListener('click', (e) => {
+                    const hex = sw.dataset.hex || '';
+                    if (!hex) return;
+                    const copyText = (txt) => {
+                        if (navigator.clipboard && navigator.clipboard.writeText) {
+                            navigator.clipboard.writeText(txt).then(
+                                () => showPantoneToast('Copied ' + txt),
+                                () => showPantoneToast('HEX ' + txt)
+                            );
+                        } else {
+                            const ta = document.createElement('textarea');
+                            ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0';
+                            document.body.appendChild(ta); ta.select();
+                            try { document.execCommand('copy'); showPantoneToast('Copied ' + txt); }
+                            catch (err) { showPantoneToast('HEX ' + txt); }
+                            document.body.removeChild(ta);
+                        }
+                    };
+                    copyText(hex.toUpperCase());
+                    sw.classList.add('copied');
+                    setTimeout(() => sw.classList.remove('copied'), 600);
+                });
+            });
         }
 
         // ===== Quote Calculator (admin only) =====
