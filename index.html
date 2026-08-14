@@ -251,7 +251,10 @@
         .pantone-swatch:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         .pantone-chip { width: 100%; aspect-ratio: 1; }
         .pantone-code { font-size: 11px; font-weight: 600; padding: 5px 5px 0; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .pantone-cmyk { font-size: 9px; color: var(--text-light); padding: 0 5px 5px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .pantone-cmyk { font-size: 9px; color: var(--text-light); padding: 2px 5px 5px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; user-select: none; border-top: 1px dashed transparent; transition: color 0.15s, border-color 0.15s; }
+        .pantone-cmyk:hover { color: var(--shop); border-top-color: var(--border); }
+        .pantone-cmyk-hint { opacity: 0.45; font-size: 8px; }
+        .pantone-cmyk:hover .pantone-cmyk-hint { opacity: 0.9; }
         .pantone-hex { font-size: 10px; font-family: monospace; font-weight: 700; padding: 3px 5px 0; text-align: center; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: 0.3px; cursor: pointer; }
         .pantone-swatch.copied { box-shadow: 0 0 0 2px var(--shop); transform: translateY(-2px); }
         .pantone-copy-tip { font-size: 8px; color: var(--text-light); text-align: center; padding: 0 5px 5px; margin-top: -4px; }
@@ -2013,11 +2016,11 @@
                 grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><p>No matching colors</p></div>';
             } else {
                 grid.innerHTML = matches.map((c, idx) => `
-                    <div class="pantone-swatch" data-code="${escapeHtml(c.code)}" data-idx="${idx}" data-hex="${escapeHtml(c.hex)}" title="Click to copy ${escapeHtml(c.hex)} — ${escapeHtml(c.code)} ${escapeHtml(c.cmyk)}">
+                    <div class="pantone-swatch" data-code="${escapeHtml(c.code)}" data-idx="${idx}" data-hex="${escapeHtml(c.hex)}" data-cmyk="${escapeHtml(c.cmyk)}" title="点击复制 HEX ${escapeHtml(c.hex)} — ${escapeHtml(c.code)} ${escapeHtml(c.cmyk)}">
                         <div class="pantone-chip" style="background-color:${c.hex}"></div>
                         <div class="pantone-code">${escapeHtml(c.code.replace('PANTONE ', ''))}</div>
                         <div class="pantone-hex">${escapeHtml(c.hex)}</div>
-                        <div class="pantone-cmyk">${escapeHtml(c.cmyk)}</div>
+                        <div class="pantone-cmyk" title="点击复制 CMYK ${escapeHtml(c.cmyk)}">${escapeHtml(c.cmyk)} <span class="pantone-cmyk-hint">⧉</span></div>
                     </div>
                 `).join('');
             }
@@ -2059,24 +2062,31 @@
             };
             grid.querySelectorAll('.pantone-swatch').forEach(sw => {
                 sw.addEventListener('click', (e) => {
-                    const hex = sw.dataset.hex || '';
-                    if (!hex) return;
-                    const copyText = (txt) => {
+                    const copyText = (txt, label) => {
                         if (navigator.clipboard && navigator.clipboard.writeText) {
                             navigator.clipboard.writeText(txt).then(
-                                () => showPantoneToast('Copied ' + txt),
-                                () => showPantoneToast('HEX ' + txt)
+                                () => showPantoneToast('已复制 ' + label + ' ' + txt),
+                                () => showPantoneToast(label + ' ' + txt)
                             );
                         } else {
                             const ta = document.createElement('textarea');
                             ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0';
                             document.body.appendChild(ta); ta.select();
-                            try { document.execCommand('copy'); showPantoneToast('Copied ' + txt); }
-                            catch (err) { showPantoneToast('HEX ' + txt); }
+                            try { document.execCommand('copy'); showPantoneToast('已复制 ' + label + ' ' + txt); }
+                            catch (err) { showPantoneToast(label + ' ' + txt); }
                             document.body.removeChild(ta);
                         }
                     };
-                    copyText(hex.toUpperCase());
+                    // click on the CMYK line -> copy CMYK; otherwise copy HEX
+                    if (e.target.closest('.pantone-cmyk')) {
+                        const cmyk = sw.dataset.cmyk || '';
+                        if (!cmyk) return;
+                        copyText(cmyk, 'CMYK');
+                    } else {
+                        const hex = sw.dataset.hex || '';
+                        if (!hex) return;
+                        copyText(hex.toUpperCase(), 'HEX');
+                    }
                     sw.classList.add('copied');
                     setTimeout(() => sw.classList.remove('copied'), 600);
                 });
