@@ -264,6 +264,8 @@
         .cmyk-conv-preview { width: 54px; height: 54px; border-radius: 10px; border: 1px solid var(--border); background: #ccc; flex: none; }
         .cmyk-conv-values { font-size: 13px; line-height: 1.7; }
         .cmyk-conv-values b { font-family: monospace; font-size: 14px; letter-spacing: 0.5px; }
+        .cmyk-conv-note { font-size: 11px; color: var(--text-light); line-height: 1.5; margin-top: 10px; border-top: 1px dashed var(--border); padding-top: 8px; }
+        .cmyk-conv-note code { font-family: monospace; background: #f6f6f6; padding: 1px 4px; border-radius: 4px; }
         @media (max-width: 640px) {
             .pantone-grid { grid-template-columns: repeat(auto-fill, minmax(62px, 1fr)); gap: 6px; }
             .pantone-code { font-size: 9px; }
@@ -2016,6 +2018,7 @@
                             <div>RGB: <b id="cmykRgb">rgb(0, 0, 0)</b></div>
                         </div>
                     </div>
+                    <div class="cmyk-conv-note">本工具为 <b>CMYK&rarr;RGB 标准近似公式</b>（无 ICC 色彩管理），结果仅供屏幕快速估算。Adobe 等带 ICC 配置文件的软件会走 profile+CMM 转换，显示值可能不同——例如 <code>C100 M47 Y56 K2</code> 本工具得 <code>#00846e</code>，Adobe 显示 <code>#007078</code>。<b>交付工厂 / 打样请以 Adobe 值或实物色卡为准。</b></div>
                 </div>
                 <div class="pantone-search">
                     <input type="text" id="pantoneSearchInput" placeholder="Search color code or family, e.g. 100, Black, Blue..." value="${escapeHtml(pantoneSearchQuery)}">
