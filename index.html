@@ -253,7 +253,9 @@
         .pantone-code { font-size: 11px; font-weight: 600; padding: 5px 5px 0; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .pantone-cmyk { font-size: 9px; color: var(--text-light); padding: 0 5px 5px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .cmyk-converter { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 16px; }
-        .cmyk-conv-title { font-size: 13px; font-weight: 700; margin-bottom: 10px; color: var(--text); display: flex; align-items: center; gap: 6px; }
+        .cmyk-conv-title { font-size: 13px; font-weight: 700; margin-bottom: 10px; color: var(--text); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .cmyk-toggle { font-size: 11px; font-weight: 600; color: var(--text-light); display: inline-flex; align-items: center; gap: 4px; cursor: pointer; margin-left: auto; user-select: none; }
+        .cmyk-toggle input { width: 14px; height: 14px; accent-color: var(--shop); cursor: pointer; }
         .cmyk-conv-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }
         .cmyk-conv-field { display: flex; flex-direction: column; gap: 4px; }
         .cmyk-conv-field label { font-size: 11px; font-weight: 600; color: var(--text-light); }
@@ -1214,6 +1216,7 @@
         </div>
     </footer>
 
+    <script src="cmyk_lut.js?v=1"></script>
     <script>
         // ===== Security =====
         document.addEventListener('contextmenu', e => e.preventDefault());
@@ -1987,6 +1990,33 @@
             const toHex = n => n.toString(16).padStart(2, '0');
             return { hex: '#' + toHex(r) + toHex(g) + toHex(b), rgb: [r, g, b] };
         }
+        // 4D linear interpolation over the precomputed SWOP v2 LUT (11^4 grid, step 10)
+        // LUT layout: index = (((c*11+m)*11+y)*11+k)*3, c/m/y/k in 0..10 (x10 of percent)
+        function cmykSampleSWOP(c, m, y, k) {
+            const LUT = window.CMYK_SWOP_LUT;
+            if (!LUT) return null;
+            const N = 11;
+            const f = v => Math.max(0, Math.min(100, v)) / 10;
+            const cf = f(c), mf = f(m), yf = f(y), kf = f(k);
+            const ci = Math.max(0, Math.min(10, Math.floor(cf))), cj = Math.min(10, ci + 1), ct = cf - ci;
+            const mi = Math.max(0, Math.min(10, Math.floor(mf))), mj = Math.min(10, mi + 1), mt = mf - mi;
+            const yi = Math.max(0, Math.min(10, Math.floor(yf))), yj = Math.min(10, yi + 1), yt = yf - yi;
+            const ki = Math.max(0, Math.min(10, Math.floor(kf))), kj = Math.min(10, ki + 1), kt = kf - ki;
+            const at = (a, b, d, e) => { const i = (((a * N + b) * N + d) * N + e) * 3; return [LUT[i], LUT[i + 1], LUT[i + 2]]; };
+            const L = (p, q, t) => [p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t, p[2] + (q[2] - p[2]) * t];
+            const c000 = L(at(ci, mi, yi, ki), at(cj, mi, yi, ki), ct);
+            const c001 = L(at(ci, mi, yi, kj), at(cj, mi, yi, kj), ct);
+            const c010 = L(at(ci, mi, yj, ki), at(cj, mi, yj, ki), ct);
+            const c011 = L(at(ci, mi, yj, kj), at(cj, mi, yj, kj), ct);
+            const c100 = L(at(ci, mj, yi, ki), at(cj, mj, yi, ki), ct);
+            const c101 = L(at(ci, mj, yi, kj), at(cj, mj, yi, kj), ct);
+            const c110 = L(at(ci, mj, yj, ki), at(cj, mj, yj, ki), ct);
+            const c111 = L(at(ci, mj, yj, kj), at(cj, mj, yj, kj), ct);
+            const m00 = L(c000, c100, mt), m01 = L(c001, c101, mt), m10 = L(c010, c110, mt), m11 = L(c011, c111, mt);
+            const y0 = L(m00, m10, yt), y1 = L(m01, m11, yt);
+            const r = L(y0, y1, kt);
+            return r.map(Math.round);
+        }
         function renderPantoneColors() {
             const section = document.getElementById('productsSection');
             section.innerHTML = '';
@@ -2003,7 +2033,9 @@
             header.innerHTML = `
                 <div class="section-title"><span class="cat-icon">&#127912;</span> Pantone Colors (${matches.length})</div>
                 <div class="cmyk-converter">
-                    <div class="cmyk-conv-title">&#127912; CMYK &rarr; HEX 转换器（输入数值，实时换算）</div>
+                    <div class="cmyk-conv-title">&#127912; CMYK &rarr; HEX 转换器（输入数值，实时换算）
+                        <label class="cmyk-toggle"><input type="checkbox" id="cmykIcc" checked> 精确模式 · Adobe SWOP v2</label>
+                    </div>
                     <div class="cmyk-conv-row">
                         <div class="cmyk-conv-field"><label>C</label><input type="number" min="0" max="100" id="cmykC" value="${cmykConvState[0]}"></div>
                         <div class="cmyk-conv-field"><label>M</label><input type="number" min="0" max="100" id="cmykM" value="${cmykConvState[1]}"></div>
@@ -2018,7 +2050,7 @@
                             <div>RGB: <b id="cmykRgb">rgb(0, 0, 0)</b></div>
                         </div>
                     </div>
-                    <div class="cmyk-conv-note">本工具为 <b>CMYK&rarr;RGB 标准近似公式</b>（无 ICC 色彩管理），结果仅供屏幕快速估算。Adobe 等带 ICC 配置文件的软件会走 profile+CMM 转换，显示值可能不同——例如 <code>C100 M47 Y56 K2</code> 本工具得 <code>#00846e</code>，Adobe 显示 <code>#007078</code>。<b>交付工厂 / 打样请以 Adobe 值或实物色卡为准。</b></div>
+                    <div class="cmyk-conv-note"><b>精确模式</b>基于 <code>U.S. Web Coated (SWOP) v2</code> 印刷 profile（与 Adobe 默认 CMYK 工作空间一致），由离线 Little-CMS 引擎预计算查找表，结果与 AI 设计工具显示<b>基本一致</b>（如 <code>C100 M47 Y56 K2</code> → <code>#007078</code> 级）。取消勾选则用无 ICC 的标准公式（仅供快速估算）。交付打样仍建议以实物色卡最终确认。</div>
                 </div>
                 <div class="pantone-search">
                     <input type="text" id="pantoneSearchInput" placeholder="Search color code or family, e.g. 100, Black, Blue..." value="${escapeHtml(pantoneSearchQuery)}">
@@ -2075,7 +2107,11 @@
                 const clamp = el => { let v = parseInt(el.value || '0', 10); if (isNaN(v)) v = 0; return Math.max(0, Math.min(100, v)); };
                 const cv = [clamp(cC), clamp(cM), clamp(cY), clamp(cK)];
                 cmykConvState = cv;
-                const { hex, rgb } = cmykToHex(cv[0], cv[1], cv[2], cv[3]);
+                const useICC = document.getElementById('cmykIcc') && document.getElementById('cmykIcc').checked;
+                const rgb = (useICC && window.CMYK_SWOP_LUT)
+                    ? (cmykSampleSWOP(cv[0], cv[1], cv[2], cv[3]) || cmykToHex(cv[0], cv[1], cv[2], cv[3]).rgb)
+                    : cmykToHex(cv[0], cv[1], cv[2], cv[3]).rgb;
+                const hex = '#' + rgb.map(v => Math.max(0, Math.min(255, v)).toString(16).padStart(2, '0')).join('');
                 document.getElementById('cmykPreview').style.background = hex;
                 document.getElementById('cmykHex').textContent = hex.toUpperCase();
                 document.getElementById('cmykRgb').textContent = `rgb(${rgb.join(', ')})`;
@@ -2083,6 +2119,8 @@
             [cC, cM, cY, cK].forEach(el => el.addEventListener('input', cmykUpdate));
             const cBtn = document.getElementById('cmykConvertBtn');
             if (cBtn) cBtn.addEventListener('click', cmykUpdate);
+            const cIcc = document.getElementById('cmykIcc');
+            if (cIcc) cIcc.addEventListener('change', cmykUpdate);
             cmykUpdate();
         }
 
