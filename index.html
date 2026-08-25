@@ -102,6 +102,35 @@
         }
         .admin-toggle:hover { background: rgba(255,255,255,0.2); }
         .admin-toggle.active { background: var(--accent); border-color: var(--accent); }
+        /* ===== Hero Banner ===== */
+        .hero-banner {
+            position: relative; width: 100%; overflow: hidden;
+            background: var(--primary);
+        }
+        .hero-img {
+            display: block; width: 100%; height: auto;
+            max-height: 460px; object-fit: cover; object-position: center 35%;
+        }
+        .hero-overlay {
+            position: absolute; right: 28px; bottom: 26px;
+            z-index: 2;
+        }
+        .hero-cta {
+            display: inline-flex; align-items: center; gap: 10px;
+            background: var(--whatsapp); color: #fff; text-decoration: none;
+            padding: 13px 22px; border-radius: 999px;
+            font-size: 15px; font-weight: 700; letter-spacing: 0.2px;
+            box-shadow: 0 6px 22px rgba(0,0,0,0.35);
+            transition: transform 0.18s, box-shadow 0.18s;
+        }
+        .hero-cta:hover { transform: translateY(-2px) scale(1.03); box-shadow: 0 10px 30px rgba(0,0,0,0.45); }
+        .hero-cta-ico { font-size: 19px; line-height: 1; }
+        .hero-cta-txt { white-space: nowrap; }
+        .hero-cta-num {
+            background: rgba(255,255,255,0.22); padding: 3px 10px;
+            border-radius: 999px; font-size: 13px; font-weight: 700; letter-spacing: 0.4px;
+        }
+
         /* ===== Category Nav ===== */
         .category-nav {
             background: white; border-bottom: 1px solid var(--border);
@@ -1035,6 +1064,18 @@
             </div>
         </div>
     </header>
+
+    <!-- Hero Banner: 公司品牌门面 + 业务员直连 -->
+    <section class="hero-banner" id="heroBanner">
+        <img class="hero-img" src="images/hero-banner.jpg" alt="Mingxin — Professional Football Solutions">
+        <div class="hero-overlay">
+            <a class="hero-cta" href="https://wa.me/8618969078738" target="_blank" rel="noopener">
+                <span class="hero-cta-ico">&#128241;</span>
+                <span class="hero-cta-txt">Contact me directly on WhatsApp</span>
+                <span class="hero-cta-num">+86 189 6907 8738</span>
+            </a>
+        </div>
+    </section>
 
     <!-- 视图模式切换：把定制项目单独拉出来，不再埋在类目末尾 -->
     <div class="mode-toggle" id="modeToggle">
