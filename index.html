@@ -27,6 +27,10 @@
             --border: #e0e0e0;
             --shadow: 0 2px 12px rgba(0,0,0,0.08);
             --radius: 8px;
+            /* 吸顶栏基准高度：由 JS syncStickyOffsets() 按实际渲染高度动态校正，请勿写死 */
+            --hdr-h: 96px;      /* 顶栏高度 */
+            --toggle-h: 58px;   /* Products/Custom 切换条高度（隐藏时为 0） */
+            --catnav-h: 44px;   /* 类目栏高度（隐藏时为 0） */
         }
         body {
             font-family: -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
@@ -122,7 +126,7 @@
         /* ===== Category Nav ===== */
         .category-nav {
             background: white; border-bottom: 1px solid var(--border);
-            position: sticky; top: 154px; z-index: 999; box-shadow: var(--shadow);
+            position: sticky; top: calc(var(--hdr-h) + var(--toggle-h)); z-index: 999; box-shadow: var(--shadow);
         }
         .category-nav-inner {
             max-width: 1400px; margin: 0 auto;
@@ -147,9 +151,10 @@
         /* ===== Subcategory Nav ===== */
         .subcategory-nav {
             background: #fff; border-bottom: 1px solid var(--border);
-            position: sticky; top: 198px; z-index: 998; box-shadow: var(--shadow);
+            /* 顶栏 + 切换条(隐藏则 0) + 类目栏(隐藏则 0) —— 三者高度均由 JS 实测 */
+            position: sticky; top: calc(var(--hdr-h) + var(--toggle-h) + var(--catnav-h));
+            z-index: 998; box-shadow: var(--shadow);
         }
-        body.custom-mode .subcategory-nav { top: 154px; }
         .subcategory-nav-inner {
             max-width: 1400px; margin: 0 auto; display: flex; align-items: center;
             padding: 0 24px; gap: 0; overflow-x: auto;
@@ -158,7 +163,7 @@
         .mode-toggle {
             display: flex; justify-content: center; gap: 10px;
             background: #fff; border-bottom: 1px solid var(--border);
-            padding: 10px 12px; position: sticky; top: 96px; z-index: 1001;
+            padding: 10px 12px; position: sticky; top: var(--hdr-h); z-index: 1001;
             box-shadow: var(--shadow);
         }
         .mode-toggle-btn {
@@ -870,10 +875,6 @@
             }
             .header-stats { display: none; }
             .admin-toggle { font-size: 11px; padding: 4px 10px; }
-            .category-nav { top: 134px; }
-            .mode-toggle { top: 76px; }
-            .subcategory-nav { top: 178px; }
-            body.custom-mode .subcategory-nav { top: 134px; }
             .category-nav-inner { flex-wrap: nowrap; padding: 0 12px; gap: 0; }
             .cat-btn { padding: 10px 10px; font-size: 12px; }
             .products-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
@@ -1826,6 +1827,32 @@
             });
         }
 
+        // ===== 吸顶栏偏移自动计算 =====
+        // 顶栏/切换条/类目栏的高度会随「模式切换、是否管理员、屏幕宽度、字体加载」而变。
+        // 写死 top 值必然错位（例如非管理员进定制视图时切换条被隐藏，子类栏就会悬空 58px）。
+        // 这里实测三者真实高度并写入 CSS 变量，吸顶位置永远严丝合缝。
+        function measureBar(el) {
+            if (!el) return 0;
+            const cs = getComputedStyle(el);
+            if (cs.display === 'none' || cs.visibility === 'hidden') return 0;
+            return Math.round(el.getBoundingClientRect().height);
+        }
+        function syncStickyOffsets() {
+            const root = document.documentElement.style;
+            root.setProperty('--hdr-h', measureBar(document.querySelector('.header')) + 'px');
+            root.setProperty('--toggle-h', measureBar(document.getElementById('modeToggle')) + 'px');
+            root.setProperty('--catnav-h', measureBar(document.querySelector('.category-nav')) + 'px');
+        }
+        window.addEventListener('resize', syncStickyOffsets);
+        window.addEventListener('load', syncStickyOffsets);
+        if (window.ResizeObserver) {
+            const stickyRO = new ResizeObserver(() => syncStickyOffsets());
+            ['.header', '#modeToggle', '.category-nav'].forEach(sel => {
+                const el = document.querySelector(sel);
+                if (el) stickyRO.observe(el);
+            });
+        }
+
         // ===== URL Hash Routing（每个类目都有可分享/可直达的链接） =====
         function syncViewUI() {
             document.querySelectorAll('.mode-toggle-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === viewMode));
@@ -1850,6 +1877,7 @@
                 renderCategories();   // 内部按 currentCategory 控制 searchArea 显隐
             }
             applyFilters();
+            syncStickyOffsets();   // 显隐变化后立刻重算吸顶偏移
         }
         function setHash() {
             const params = new URLSearchParams();
