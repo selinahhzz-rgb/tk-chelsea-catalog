@@ -173,6 +173,18 @@
             background: var(--primary); color: #fff; border-color: var(--primary);
             box-shadow: 0 2px 8px rgba(255,107,53,0.25);
         }
+        /* 锁定定制模式：客户视角下隐藏切换开关，只留定制内容（拆门机制） */
+        body.locked-custom .mode-toggle { display: none; }
+        .copy-custom-link {
+            display: none; align-items: center; gap: 6px;
+            background: var(--whatsapp); color: #fff;
+            border: none; border-radius: 999px;
+            padding: 9px 18px; font-size: 13px; font-weight: 700;
+            cursor: pointer; white-space: nowrap; margin: 10px auto;
+            box-shadow: 0 2px 8px rgba(37,211,102,0.3);
+        }
+        .copy-custom-link:hover { opacity: 0.9; }
+        .copy-custom-link.copied { background: #128c7e; }
 
         /* ===== Case Marquee ===== */
         .case-marquee {
@@ -1058,6 +1070,7 @@
         <button class="mode-toggle-btn active" data-mode="catalog" onclick="switchMode('catalog')">Products</button>
         <button class="mode-toggle-btn" data-mode="custom" onclick="switchMode('custom')">Custom Project</button>
     </div>
+    <button class="copy-custom-link" id="copyCustomLinkBtn" onclick="copyCustomLink()" title="复制定制目录链接，发给客户只看得到定制内容">&#128203; Copy custom link</button>
 
     <!-- Category Nav -->
     <nav class="category-nav">
@@ -1817,6 +1830,10 @@
         function syncViewUI() {
             document.querySelectorAll('.mode-toggle-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === viewMode));
             document.body.classList.toggle('custom-mode', viewMode === 'custom');
+            // 锁定机制：非管理员在定制模式下隐藏切换开关，客户只见定制（现货/定制拆门）
+            document.body.classList.toggle('locked-custom', viewMode === 'custom' && !isAdmin);
+            const copyBtn = document.getElementById('copyCustomLinkBtn');
+            if (copyBtn) copyBtn.style.display = (viewMode === 'custom' && isAdmin) ? 'inline-flex' : 'none';
             const catNav = document.querySelector('.category-nav');
             const subNav = document.getElementById('subCategoryNav');
             const searchArea = document.getElementById('searchArea');
@@ -1875,6 +1892,23 @@
             if (mode === 'custom') { currentCategory = '__custom__'; currentSubcategory = defaultSub(); }
             else { currentCategory = 'Short training kit'; currentSubcategory = 'all'; }
             setHash();
+        }
+
+        // ===== 复制纯定制目录链接（拆门后发给客户，客户只见定制） =====
+        function copyCustomLink() {
+            const url = location.origin + location.pathname + '#mode=custom';
+            const done = () => {
+                const b = document.getElementById('copyCustomLinkBtn');
+                if (!b) return;
+                b.innerHTML = '&#10003; Copied!';
+                b.classList.add('copied');
+                setTimeout(() => { b.innerHTML = '&#128203; Copy custom link'; b.classList.remove('copied'); }, 1600);
+            };
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(url).then(done).catch(() => window.prompt('Copy this link:', url));
+            } else {
+                window.prompt('Copy this link:', url);
+            }
         }
 
         // ===== Default custom subcategory (first with items) =====
